@@ -81,7 +81,7 @@ main();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(apiKey);
 
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // Generate AI Response
 async function run(promptMsg) {
@@ -693,3 +693,4 @@ app.get("/logout", (req, res, next) => {
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+
