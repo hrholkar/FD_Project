@@ -11,10 +11,11 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 require("dotenv").config();
 
-const dburl = process.env.ATLAS_URL;
-const apiKey = process.env.api_Key; // Store your API key in .env
+const dburl = process.env.ATLAS_URL || process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/learnsmart";
+const apiKey = process.env.api_Key || process.env.GEMINI_API_KEY; // Store your API key in .env
 
 // Middleware
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", path.join(__dirname, "views"));
@@ -30,7 +31,7 @@ function isAuthenticated(req, res, next) {
 const store = MongoStore.create({
   mongoUrl: dburl,
   crypto: {
-    secret: "dciudcdh",
+    secret: process.env.SESSION_SECRET || "dciudcdh",
   },
   touchAfter: 24 * 3600,
 });
@@ -42,7 +43,7 @@ store.on("error", (error) => {
 // Session configuration
 const sessionOptions = {
   store,
-  secret: "hfwfgfuhfuwhfdh",
+  secret: process.env.SESSION_SECRET || "hfwfgfuhfuwhfdh",
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -79,13 +80,24 @@ main();
 
 // Google Generative AI Setup
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(apiKey);
-
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+let genAI = null;
+let model = null;
+if (apiKey && apiKey !== "your_gemini_api_key_here") {
+  try {
+    genAI = new GoogleGenerativeAI(apiKey);
+    model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  } catch (err) {
+    console.error("Error configuring Gemini AI:", err);
+  }
+}
 
 // Generate AI Response
 async function run(promptMsg) {
   try {
+    if (!model) {
+      console.warn("Gemini API key is not configured.");
+      return "Gemini AI is not configured. Please set a valid api_Key in your .env file to enable AI generation.";
+    }
     const prompt = promptMsg;
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -689,8 +701,61 @@ app.get("/logout", (req, res, next) => {
   });
 });
 
-// Server Start
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+// ==========================================
+// HEALTH CHECK ENDPOINT (Practical 07)
+// ==========================================
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    database: mongoose.connection.readyState === 1 ? "connected" : "connecting/disconnected",
+    service: "LearnSmart AI Learning Platform",
+  });
 });
+
+// ==========================================
+// STUDENT CRUD REST APIs (Practical 05)
+// ==========================================
+const studentRoutes = require("./routes/students");
+app.use("/api/students", studentRoutes);
+
+// ==========================================
+// INTEGRATED LEARNSMART FEATURE ROUTES
+// ==========================================
+
+// 1. Student Management System (React 18 + Redux Toolkit)
+const reactDistPath = path.join(__dirname, "practicals", "react-student-management", "dist");
+app.use("/students", express.static(reactDistPath));
+app.get("/students*", (req, res) => {
+  res.sendFile(path.join(reactDistPath, "index.html"));
+});
+app.use("/practical/student-management", express.static(reactDistPath));
+app.get("/practical/student-management*", (req, res) => {
+  res.sendFile(path.join(reactDistPath, "index.html"));
+});
+
+// 2. Learning & Academic Analytics Dashboard (Bootstrap 4)
+app.get(["/analytics", "/practical/bootstrap-dashboard"], (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "practical", "bootstrap-dashboard", "index.html"));
+});
+
+// 3. Curriculum & Course Catalog (Express Static Site)
+app.get(["/courses", "/practical/static-site"], (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "practical", "static-site", "index.html"));
+});
+
+// 4. Mobile Learning Experience (jQuery Mobile)
+app.get(["/mobile", "/practical/mobile"], (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "practical", "mobile", "index.html"));
+});
+
+// ==========================================
+// Server Start
+// ==========================================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mobile Learning Portal | LearnSmart</title>
+  <!-- jQuery Mobile 1.4.5 CSS -->
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <style>
+    /* Scoped customizations for jQuery Mobile demo */
+    .ui-header, .ui-footer {
+      background: #1e293b !important;
+      border-color: #0f172a !important;
+      color: #ffffff !important;
+      text-shadow: none !important;
+    }
+    .custom-hero {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: #e0f2fe;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .custom-hero h2 {
+      margin-top: 0;
+      color: #0369a1;
+    }
+    .badge-count {
+      background: #0284c7;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+    .ui-content {
+      padding: 1em;
+    }
+  </style>
+  <!-- jQuery 1.11.1 & jQuery Mobile 1.4.5 Scripts -->
+  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+
+  <!-- ============================================== -->
+  <!-- PAGE 1: HOME PAGE                              -->
+  <!-- ============================================== -->
+  <div data-role="page" id="homePage" data-theme="a">
+    <!-- Left Navigation Panel -->
+    <div data-role="panel" id="navPanelHome" data-display="overlay" data-theme="b">
+      <h3>LearnSmart Mobile</h3>
+      <p>Integrated Mobile Hub</p>
+      <ul data-role="listview">
+        <li data-icon="home"><a href="#homePage">Home Dashboard</a></li>
+        <li data-icon="bullets"><a href="#directoryPage">Student Directory</a></li>
+        <li data-icon="edit"><a href="#feedbackPage">Mobile Form</a></li>
+        <li data-icon="info"><a href="#aboutPage">About Mobile Portal</a></li>
+        <li data-role="list-divider">Platform Navigation</li>
+        <li data-icon="user"><a href="/students" data-ajax="false">Student Management</a></li>
+        <li data-icon="gear"><a href="/analytics" data-ajax="false">Analytics Dashboard</a></li>
+        <li data-icon="grid"><a href="/courses" data-ajax="false">Course Catalog</a></li>
+        <li data-icon="action"><a href="/dashboard" data-ajax="false">Student Dashboard</a></li>
+        <li data-icon="back"><a href="/" data-ajax="false">LearnSmart Main Site</a></li>
+      </ul>
+      <br>
+      <a href="#homePage" data-rel="close" class="ui-btn ui-corner-all ui-shadow ui-icon-delete ui-btn-icon-left">Close Menu</a>
+    </div>
+
+    <!-- Header -->
+    <div data-role="header" data-position="fixed">
+      <a href="#navPanelHome" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all">Menu</a>
+      <h1>LearnSmart Mobile</h1>
+      <a href="#popupInfo" data-rel="popup" data-transition="pop" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all">Info</a>
+    </div>
+
+    <!-- Content -->
+    <div role="main" class="ui-content">
+      <div class="custom-hero">
+        <h2>LearnSmart Mobile Learning</h2>
+        <p>Touch-optimized responsive web portal with real-time academic records access.</p>
+        <a href="#directoryPage" class="ui-btn ui-btn-inline ui-btn-b ui-corner-all ui-icon-user ui-btn-icon-left">Explore Directory</a>
+      </div>
+
+      <div data-role="collapsible-set" data-theme="a" data-content-theme="a">
+        <div data-role="collapsible" data-collapsed="false">
+          <h3>Quick Academic Metrics</h3>
+          <p><strong>Enrolled Students:</strong> 1,248 Active</p>
+          <p><strong>Available Courses:</strong> 42 Technical Modules</p>
+          <p><strong>Average Attendance:</strong> 93.6%</p>
+          <a href="/analytics" data-ajax="false" class="ui-btn ui-corner-all ui-mini ui-icon-action ui-btn-icon-right">Open Analytics Dashboard</a>
+        </div>
+        <div data-role="collapsible">
+          <h3>Mobile Learning Architecture</h3>
+          <p>This touch-optimized mobile interface provides fast access to student records, interactive touch forms (sliders, flip switches), searchable listviews, and multi-page routing on handheld devices.</p>
+        </div>
+        <div data-role="collapsible">
+          <h3>Platform Features</h3>
+          <ul data-role="listview" data-inset="true">
+            <li><a href="/students" data-ajax="false">Student Management System</a></li>
+            <li><a href="/analytics" data-ajax="false">Academic Analytics Dashboard</a></li>
+            <li><a href="/courses" data-ajax="false">Course & Tech Catalog</a></li>
+            <li><a href="/dashboard" data-ajax="false">Student Learning Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Popup Dialog -->
+      <div data-role="popup" id="popupInfo" class="ui-content" style="max-width:280px">
+        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+        <h4>LearnSmart Mobile</h4>
+        <p>Fully connected to the LearnSmart platform with synchronized student records and MongoDB database storage.</p>
+      </div>
+    </div>
+
+    <!-- Persistent Footer -->
+    <div data-role="footer" data-position="fixed">
+      <div data-role="navbar">
+        <ul>
+          <li><a href="#homePage" class="ui-btn-active ui-state-persist" data-icon="home">Home</a></li>
+          <li><a href="#directoryPage" data-icon="bullets">Directory</a></li>
+          <li><a href="#feedbackPage" data-icon="edit">Form</a></li>
+          <li><a href="#aboutPage" data-icon="info">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- PAGE 2: STUDENT DIRECTORY (LISTVIEW)           -->
+  <!-- ============================================== -->
+  <div data-role="page" id="directoryPage" data-theme="a">
+    <!-- Header -->
+    <div data-role="header" data-position="fixed">
+      <a href="#homePage" class="ui-btn ui-icon-home ui-btn-icon-notext ui-corner-all">Home</a>
+      <h1>Student Directory</h1>
+      <a href="#feedbackPage" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all">Add</a>
+    </div>
+
+    <div role="main" class="ui-content">
+      <h4>Student & Department Directory</h4>
+      <p class="small">Filter dynamically through mobile touch listview:</p>
+
+      <ul data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Search student or department...">
+        <li data-role="list-divider">Computer Science & Engineering</li>
+        <li>
+          <a href="#popupStudent" data-rel="popup" data-position-to="window" data-transition="pop">
+            <h2>Aarav Sharma</h2>
+            <p><strong>Roll:</strong> CS-2026-001 | 4th Year</p>
+            <p>Specialization: Cloud Computing & Distributed Systems</p>
+            <span class="ui-li-count">GPA 9.4</span>
+          </a>
+        </li>
+        <li>
+          <a href="#popupStudent" data-rel="popup" data-position-to="window" data-transition="pop">
+            <h2>Priya Verma</h2>
+            <p><strong>Roll:</strong> CS-2026-002 | 3rd Year</p>
+            <p>Specialization: Full-Stack Web Architecture</p>
+            <span class="ui-li-count">GPA 9.1</span>
+          </a>
+        </li>
+
+        <li data-role="list-divider">Artificial Intelligence & Data Science</li>
+        <li>
+          <a href="#popupStudent" data-rel="popup" data-position-to="window" data-transition="pop">
+            <h2>Rohan Kulkarni</h2>
+            <p><strong>Roll:</strong> AI-2026-015 | 3rd Year</p>
+            <p>Specialization: Deep Learning & NLP</p>
+            <span class="ui-li-count">GPA 8.9</span>
+          </a>
+        </li>
+        <li>
+          <a href="#popupStudent" data-rel="popup" data-position-to="window" data-transition="pop">
+            <h2>Ananya Deshmukh</h2>
+            <p><strong>Roll:</strong> AI-2026-018 | 2nd Year</p>
+            <p>Specialization: Computer Vision</p>
+            <span class="ui-li-count">GPA 9.6</span>
+          </a>
+        </li>
+
+        <li data-role="list-divider">Information Technology</li>
+        <li>
+          <a href="#popupStudent" data-rel="popup" data-position-to="window" data-transition="pop">
+            <h2>Siddharth Mehta</h2>
+            <p><strong>Roll:</strong> IT-2026-042 | 4th Year</p>
+            <p>Specialization: Cyber Security & Ethical Hacking</p>
+            <span class="ui-li-count">GPA 8.7</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Student Profile Popup -->
+      <div data-role="popup" id="popupStudent" data-theme="a" class="ui-corner-all">
+        <div style="padding:15px 20px;">
+          <h3>Student Record Overview</h3>
+          <p>Synchronized with the LearnSmart database and management portal.</p>
+          <a href="/students" data-ajax="false" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-edit">Manage in Student Portal</a>
+          <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a">Dismiss</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Persistent Footer -->
+    <div data-role="footer" data-position="fixed">
+      <div data-role="navbar">
+        <ul>
+          <li><a href="#homePage" data-icon="home">Home</a></li>
+          <li><a href="#directoryPage" class="ui-btn-active ui-state-persist" data-icon="bullets">Directory</a></li>
+          <li><a href="#feedbackPage" data-icon="edit">Form</a></li>
+          <li><a href="#aboutPage" data-icon="info">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- PAGE 3: MOBILE TOUCH FORMS                     -->
+  <!-- ============================================== -->
+  <div data-role="page" id="feedbackPage" data-theme="a">
+    <!-- Header -->
+    <div data-role="header" data-position="fixed">
+      <a href="#homePage" class="ui-btn ui-icon-home ui-btn-icon-notext ui-corner-all">Home</a>
+      <h1>Mobile Controls</h1>
+    </div>
+
+    <div role="main" class="ui-content">
+      <h4>Student Touch Controls</h4>
+      <p>Demonstrating mobile-specific touch controls: sliders, flip switches, selects, and text fields.</p>
+
+      <form id="mobileDemoForm">
+        <div class="ui-field-contain">
+          <label for="studentNameInput">Student Full Name:</label>
+          <input type="text" name="name" id="studentNameInput" placeholder="Enter student full name" data-clear-btn="true">
+        </div>
+
+        <div class="ui-field-contain">
+          <label for="selectCourseMenu">Course / Department:</label>
+          <select name="course" id="selectCourseMenu" data-native-menu="false">
+            <option value="CSE">Computer Science & Engineering</option>
+            <option value="AIDS">AI & Data Science</option>
+            <option value="IT">Information Technology</option>
+            <option value="ETC">Electronics & Telecommunication</option>
+          </select>
+        </div>
+
+        <div class="ui-field-contain">
+          <label for="satisfactionSlider">Lab Satisfaction Rating (1-10):</label>
+          <input type="range" name="slider" id="satisfactionSlider" value="8" min="1" max="10" data-highlight="true">
+        </div>
+
+        <div class="ui-field-contain">
+          <label for="flipAttendance">Attendance Above 85%:</label>
+          <select name="flipAttendance" id="flipAttendance" data-role="flipswitch">
+            <option value="no">No</option>
+            <option value="yes" selected>Yes</option>
+          </select>
+        </div>
+
+        <div class="ui-field-contain">
+          <label for="textareaNotes">Course Lab Feedback:</label>
+          <textarea name="notes" id="textareaNotes" placeholder="Provide student observations..."></textarea>
+        </div>
+
+        <button type="button" id="submitMobileFormBtn" class="ui-btn ui-btn-b ui-corner-all ui-shadow ui-icon-check ui-btn-icon-left">Submit Mobile Response</button>
+      </form>
+
+      <!-- Success Dialog Popup -->
+      <div data-role="popup" id="formSuccessPopup" data-theme="b" class="ui-corner-all">
+        <div style="padding:15px 20px; text-align:center;">
+          <h3>Feedback Recorded!</h3>
+          <p>Mobile form controls were captured successfully.</p>
+          <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-mini">OK</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Persistent Footer -->
+    <div data-role="footer" data-position="fixed">
+      <div data-role="navbar">
+        <ul>
+          <li><a href="#homePage" data-icon="home">Home</a></li>
+          <li><a href="#directoryPage" data-icon="bullets">Directory</a></li>
+          <li><a href="#feedbackPage" class="ui-btn-active ui-state-persist" data-icon="edit">Form</a></li>
+          <li><a href="#aboutPage" data-icon="info">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- PAGE 4: ABOUT MOBILE LEARNING                  -->
+  <!-- ============================================== -->
+  <div data-role="page" id="aboutPage" data-theme="a">
+    <div data-role="header" data-position="fixed">
+      <a href="#homePage" class="ui-btn ui-icon-home ui-btn-icon-notext ui-corner-all">Home</a>
+      <h1>About Mobile</h1>
+    </div>
+
+    <div role="main" class="ui-content">
+      <div class="custom-hero">
+        <h2>LearnSmart Mobile Portal</h2>
+        <p>Adaptive Handheld Academic Environment</p>
+      </div>
+
+      <ul data-role="listview" data-inset="true">
+        <li data-role="list-divider">Platform Capabilities</li>
+        <li>Mobile-friendly navigation with Slide Panel & Persistent Navbar</li>
+        <li>Filterable touch directory with instant search</li>
+        <li>Mobile form widgets: Touch Slider, Flip Switch, Select Menu</li>
+        <li>Single HTML DOM multi-page routing</li>
+        <li>Real-time connection with LearnSmart student database</li>
+        <li data-role="list-divider">Seamless Integration</li>
+        <li>Runs under the same domain, server, and authentication pipeline</li>
+      </ul>
+
+      <a href="/" data-ajax="false" class="ui-btn ui-btn-b ui-corner-all ui-icon-back ui-btn-icon-left">Return to LearnSmart Homepage</a>
+    </div>
+
+    <div data-role="footer" data-position="fixed">
+      <div data-role="navbar">
+        <ul>
+          <li><a href="#homePage" data-icon="home">Home</a></li>
+          <li><a href="#directoryPage" data-icon="bullets">Directory</a></li>
+          <li><a href="#feedbackPage" data-icon="edit">Form</a></li>
+          <li><a href="#aboutPage" class="ui-btn-active ui-state-persist" data-icon="info">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).on("pagecreate", "#feedbackPage", function() {
+      $("#submitMobileFormBtn").on("click", function() {
+        var student = $("#studentNameInput").val() || "Anonymous Student";
+        var rating = $("#satisfactionSlider").val();
+        $("#formSuccessPopup").popup("open");
+      });
+    });
+  </script>
+</body>
+</html>
