@@ -12,7 +12,8 @@ const MongoStore = require("connect-mongo");
 require("dotenv").config();
 
 const dburl = process.env.ATLAS_URL || process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/learnsmart";
-const apiKey = process.env.api_Key || process.env.GEMINI_API_KEY; // Store your API key in .env
+const rawApiKey = process.env.api_Key || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GEMINI_KEY || process.env.API_KEY || "";
+const apiKey = typeof rawApiKey === "string" ? rawApiKey.trim().replace(/^["']|["']$/g, "") : "";
 
 // Middleware
 app.use(express.json());
@@ -162,7 +163,7 @@ function generateFallbackQuiz(topic, educationLevel, difficulty) {
         explanation: "C++ was designed by Bjarne Stroustrup as 'C with Classes', extending C with OOP principles like classes, inheritance, and encapsulation."
       },
       {
-        question: "Which header file is required for standard input and output streams (`std::cout`, `std::cin`) in C++?",
+        question: "Which header file is required for standard input and output streams (std::cout, std::cin) in C++?",
         options: ["<iostream>", "<stdio.h>", "<conio.h>", "<fstream>"],
         answer: "<iostream>",
         explanation: "<iostream> defines standard stream objects like cout, cin, and cerr."
@@ -174,7 +175,7 @@ function generateFallbackQuiz(topic, educationLevel, difficulty) {
         explanation: "The 'new' operator allocates heap memory and calls the object constructor, while 'delete' frees it."
       },
       {
-        question: "What is the primary role of a class destructor (`~ClassName()`) in C++?",
+        question: "What is the primary role of a class destructor (~ClassName()) in C++?",
         options: ["To release allocated resources and perform cleanup before object destruction", "To initialize class member variables", "To duplicate an existing object instance", "To allocate memory for static members"],
         answer: "To release allocated resources and perform cleanup before object destruction",
         explanation: "Destructors are invoked automatically when an object goes out of scope to release heap memory, file handles, or network sockets."
