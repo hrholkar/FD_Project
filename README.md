@@ -1,55 +1,65 @@
-# LearnSmart — AI-Powered Learning Platform & Full-Stack Syllabus Suite
+# LearnSmart — AI-Powered Learning Platform
 
-> **Production Deployment:** [https://ai-learning-platform-f13x.onrender.com/](https://ai-learning-platform-f13x.onrender.com/)
+> **Live Deployment:** [https://ai-learning-platform-f13x.onrender.com/](https://ai-learning-platform-f13x.onrender.com/)
 
-LearnSmart is an intelligent, full-stack educational web application powered by **Google Gemini Generative AI**, **Node.js**, **Express.js**, **MongoDB / Mongoose**, and **Passport.js**. The platform provides personalized AI quiz generation, dynamic learning resource roadmaps, student notes management, to-do task tracking, academic progress visualization, and administrative score analytics.
+**LearnSmart** is an enterprise-grade, integrated, AI-enabled full-stack educational platform built with **Google Gemini Generative AI**, **Node.js**, **Express.js**, **MongoDB / Mongoose**, **React 18 with Redux Toolkit**, **HTML5/CSS3 with Bootstrap 4**, and **Passport.js**. 
 
-In addition to preserving the entire original LearnSmart user interface and feature set without any visual regression, this repository implements the complete **Full-Stack Practicals 01–08 syllabus**, showcasing isolated implementations across **HTML, CSS, Bootstrap 4, Git/GitHub, React JS with Redux Toolkit, Node.js static hosting, Express CRUD REST APIs, jQuery Mobile, and cloud deployment**.
+LearnSmart is architected as **ONE unified application, ONE server, ONE shared database, and ONE responsive interface**, seamlessly integrating:
+- **AI-Powered Learning Engine:** Instant tailored quiz generation and personalized study guides via Google Gemini AI.
+- **Student Management System:** Real-time CRUD state management powered by React 18, Redux Toolkit, and MongoDB.
+- **Responsive Analytics Dashboard:** Statistics cards, KPI metrics, and Chart.js performance curves utilizing HTML5, CSS3, and Bootstrap 4.
+- **Node.js Static & Dynamic Serving:** High-performance static pipeline (`express.static`) alongside EJS server-side rendering.
+- **RESTful CRUD Backend:** Complete Mongoose-backed endpoints with validation and standard HTTP response status codes.
+- **Touch-Friendly Mobile Experience:** Mobile swipe gestures, responsive drawer, focus study view, and touch-optimized topic filters.
+- **Robust Authentication & Sessions:** Passport.js Local Strategy with persistent MongoDB session store (`connect-mongo`).
+- **Production Health Monitoring:** Live diagnostic endpoint (`/health`) tracking database readiness, uptime, and memory.
+- **Git & GitHub Version Control:** Complete professional version control workflows and best practices.
 
 ---
 
 ## Table of Contents
-1. [Syllabus Practical Mapping & URLs](#syllabus-practical-mapping--urls)
-2. [Practical 02 — Git & GitHub Version Control Master Guide](#practical-02--git--github-version-control-master-guide)
-3. [Practical 05 — Student Management CRUD REST APIs](#practical-05--student-management-crud-rest-apis)
-4. [API Testing Guide (Postman & cURL)](#api-testing-guide-postman--curl)
-5. [Practicals Overview (P01, P03, P04, P06, P08)](#practicals-overview)
+1. [Platform Architecture & Unified Routing](#platform-architecture--unified-routing)
+2. [Git & GitHub Version Control Master Guide](#git--github-version-control-master-guide)
+3. [Student Management CRUD REST APIs](#student-management-crud-rest-apis)
+4. [API Testing Guide (cURL & Postman)](#api-testing-guide-curl--postman)
+5. [Core Technology Integrations](#core-technology-integrations)
 6. [Environment Variables Reference](#environment-variables-reference)
 7. [Installation & Local Setup](#installation--local-setup)
-8. [Build & Production Deployment Guide](#build--production-deployment-guide)
-9. [Architecture & Zero-Regression Isolation](#architecture--zero-regression-isolation)
+8. [Build & Single-Deployment Guide](#build--single-deployment-guide)
 
 ---
 
-## Syllabus Practical Mapping & URLs
+## Platform Architecture & Unified Routing
 
-All practical demonstrations are accessible directly through dedicated, isolated routes on the running server:
+All features operate under a single domain and coordinated navigation hierarchy:
 
-| Practical Focus | Technology | Integrated Platform URL | Alias Route | Description |
-|---|---|---|---|---|
-| **Practical 01** | HTML5, CSS3, Bootstrap 4.6.2 | [`/analytics`](http://localhost:3000/analytics) | `/practical/bootstrap-dashboard` | Academic analytics dashboard with sidebar nav, KPI stat cards, and data tables. |
-| **Practical 02** | Git & GitHub Version Control | Documented below in `README.md` | N/A | Comprehensive guide covering repository setup, branching, remote syncing, and `.gitignore`. |
-| **Practical 03** | React 18, Vite, Redux Toolkit | [`/students`](http://localhost:3000/students) | `/practical/student-management` | Single Page Application (SPA) utilizing Redux Toolkit store, async thunks, and MongoDB CRUD. |
-| **Practical 04** | Node.js & Express.js Static Hosting | [`/courses`](http://localhost:3000/courses) | `/practical/static-site` | Curriculum catalog served via `express.static()` with client-side interactive calculation engine. |
-| **Practical 05** | Express.js, MongoDB, Mongoose | [`/api/students`](http://localhost:3000/api/students) | N/A | Complete 4-operation CRUD REST API with validation, duplicate prevention, and standard HTTP codes. |
-| **Practical 06** | jQuery Mobile 1.4.5 | [`/mobile`](http://localhost:3000/mobile) | `/practical/mobile` | Touch-optimized mobile web app with side panels, filterable listviews, sliders, and flip switches. |
-| **Practical 07** | Node.js Deployment & Diagnostics | [`/health`](http://localhost:3000/health) | N/A | Production-ready health check endpoint, dynamic port binding, and Atlas configuration. |
-| **Practical 08** | Full-Stack AI Project (LearnSmart) | [`/`](http://localhost:3000/) | N/A | Core AI-enabled learning platform with Gemini quiz generation, auth, notes, todos, and admin analytics. |
+| Feature Area | Technology Stack | Integrated URL | Description |
+|---|---|---|---|
+| **Home Landing Page** | EJS, Vanilla CSS, Inter Typography | [`/`](http://localhost:3000/) | Hero presentation, feature showcase, dynamic auth links, and AI assessment CTA. |
+| **Learning Dashboard** | HTML5, CSS3, Bootstrap 4 Grid, Chart.js | [`/dashboard`](http://localhost:3000/dashboard) | KPI statistics cards, performance charts, topic completion summaries, and AI insights. |
+| **Student Management** | React 18, Redux Toolkit, MongoDB | [`/students`](http://localhost:3000/students) | Interactive directory with Add, Edit, Delete, Search, and Department filters. |
+| **AI Quiz Generator** | Google Gemini Generative AI, EJS | [`/quiz`](http://localhost:3000/quiz) | Automated multi-choice quiz engine with custom difficulty calibration. |
+| **Academic Progress** | EJS, Canvas Chart.js, HTML2PDF | [`/progress`](http://localhost:3000/progress) | Historical assessment timeline, downloadable PDF reports, and topic mastery. |
+| **Student Notes** | Express, MongoDB, EJS | [`/notes`](http://localhost:3000/notes) | Personal study notepad with real-time create, update, and delete support. |
+| **To-Do Task Tracker** | Express, MongoDB, EJS | [`/todo`](http://localhost:3000/todo) | Daily study agenda with task completion toggles and quick additions. |
+| **Student REST APIs** | Express.js, Mongoose, MongoDB | [`/api/students`](http://localhost:3000/api/students) | Standard REST CRUD endpoints with validation and error handling. |
+| **Health Diagnostics** | Node.js, Express.js, Mongoose | [`/health`](http://localhost:3000/health) | Real-time service uptime, MongoDB connection state, and ISO timestamps. |
+| **Admin Score Analytics** | Express, Mongoose Aggregations, EJS | [`/admin/scores`](http://localhost:3000/admin/scores) | Multi-student score comparison matrix and cohort analytics for educators. |
 
 ---
 
-## Practical 02 — Git & GitHub Version Control Master Guide
+## Git & GitHub Version Control Master Guide
 
-This section outlines practical, step-by-step instructions for managing modern software projects using **Git** and **GitHub**.
+This section outlines best practices and command-line procedures for version-controlling full-stack software applications with **Git** and **GitHub**.
 
 ### 1. Initializing a Local Git Repository
-To start tracking a project with Git:
+To initialize version tracking in a project root:
 ```bash
-# Initialize a new Git repository in the current project root
+# Initialize a Git repository
 git init
 
-# Verify the .git hidden directory exists
-ls -la .git      # macOS/Linux
+# Verify the .git directory exists
+ls -la .git                 # Linux / macOS
 Get-ChildItem -Force .git   # Windows PowerShell
 ```
 
@@ -58,12 +68,12 @@ To inspect tracked, modified, and untracked files:
 ```bash
 git status
 ```
-- **Untracked files:** New files not yet added to the staging area.
-- **Changes to be committed:** Files staged for the next commit.
-- **Changes not staged:** Modified files that haven't been staged yet.
+- **Untracked files:** New files created on disk not yet tracked by Git.
+- **Changes to be committed (Staged):** Files added to the index via `git add`.
+- **Changes not staged:** Modifications to existing tracked files not yet staged.
 
 ### 3. Securing Secrets with `.gitignore`
-Never commit API keys, database credentials, or node modules to Git. The project's `.gitignore` contains:
+Sensitive credentials, build outputs, and third-party dependencies must never be committed. LearnSmart's `.gitignore` contains:
 ```gitignore
 # Dependency directories
 node_modules/
@@ -84,110 +94,144 @@ practicals/react-student-management/dist/
 Thumbs.db
 ```
 
-### 4. Staging and Committing Files
-Stage specific files or all changes, and record them with descriptive commit messages:
+### 4. Staging and Committing Changes
+Stage specific files or all changes with informative, semantic commit messages:
 ```bash
-# Stage a specific file
-git add package.json
-
-# Stage all files in the current directory
+# Stage all modified and new files
 git add .
 
 # Commit staged changes with a semantic message
-git commit -m "feat(practicals): implement syllabus practicals 1 through 8"
+git commit -m "feat(core): combine all platform capabilities into unified LearnSmart platform"
 ```
 
 ### 5. Managing Branches
-Branching allows you to build features or practicals in isolation without disturbing the stable `main` branch:
+Branches allow developing features in complete isolation without disturbing the production `main` branch:
 ```bash
-# List all local branches
+# List all local branches (* marks current branch)
 git branch
 
 # Create and switch to a new feature branch
-git checkout -b feature/practical-03-redux
+git checkout -b feature/student-management-redux
 # Or using modern git:
-git switch -c feature/practical-03-redux
+git switch -c feature/student-management-redux
 
-# Work on files, then commit:
+# Work on code, stage and commit
 git add .
-git commit -m "feat: add React Redux student management slice"
+git commit -m "feat(students): integrate Redux Toolkit store and CRUD operations"
 
-# Switch back to main branch
+# Return to main branch
 git checkout main
 # Or:
 git switch main
 
-# Merge feature branch into main
-git merge feature/practical-03-redux
+# Merge the feature branch into main
+git merge feature/student-management-redux
+
+# Delete feature branch after merge
+git branch -d feature/student-management-redux
 ```
 
-### 6. Connecting to a Remote GitHub Repository
-To link your local Git repository to GitHub:
+### 6. Working with Remote Repositories (GitHub)
+Connect your local repository to a remote GitHub repository:
 ```bash
-# Check existing remotes
+# Verify existing remotes
 git remote -v
 
-# Link to a remote GitHub repository (replace with your repo URL)
-git remote add origin https://github.com/your-username/learnsmart-syllabus.git
+# Link to GitHub remote (HTTPS or SSH)
+git remote add origin https://github.com/<your-username>/LearnSmart.git
 
-# Verify the remote connection
-git remote -v
-```
+# Set the default upstream branch to main
+git branch -M main
 
-### 7. Pushing Code to GitHub
-Push your commits to the remote repository:
-```bash
-# Push and set upstream branch for the first time
+# Push code to GitHub
 git push -u origin main
-
-# Subsequent pushes on the tracking branch
-git push
 ```
 
-### 8. Pulling Updates & Inspecting Commit History
-Collaborate and review history:
+### 7. Pulling, Syncing and Resolving Conflicts
+Collaborate by syncing changes from team members:
 ```bash
-# Fetch and merge updates from the remote repository
+# Fetch latest remote references
+git fetch origin
+
+# Pull remote changes into current branch
 git pull origin main
 
-# View one-line visual history graph
-git log --oneline --graph --decorate --all
+# If merge conflicts occur:
+# 1. Open conflicted files and resolve <<<<<<< HEAD markers
+# 2. Stage resolved files:
+git add <resolved-file>
+# 3. Finalize the merge commit:
+git commit -m "merge: resolve branch conflicts"
+```
 
-# View detailed diff of recent changes
-git diff HEAD~1 HEAD
+### 8. Inspecting History & Undoing Mistakes
+```bash
+# View concise, one-line commit log
+git log --oneline -n 10
+
+# View detailed file changes
+git log -p -2
+
+# Discard unstaged working directory changes for a file
+git checkout -- <filename>
+# Or:
+git restore <filename>
+
+# Unstage a file from the staging area without losing changes
+git reset HEAD <filename>
+# Or:
+git restore --staged <filename>
 ```
 
 ---
 
-## Practical 05 — Student Management CRUD REST APIs
+## Student Management CRUD REST APIs
 
-The backend provides a complete RESTful API for student records backed by **MongoDB** and **Mongoose**.
+All student management actions execute through RESTful endpoints backed by MongoDB and Mongoose:
 
-### Data Schema (`models/Student.js`)
-| Field | Type | Required | Unique | Description |
+| HTTP Method | Endpoint | Description | Request Body | Success Status |
 |---|---|---|---|---|
-| `name` | String | Yes | No | Full name of the student (2-100 characters) |
-| `rollNumber` | String | Yes | **Yes** | Alphanumeric roll number (indexed, uppercase) |
-| `email` | String | Yes | No | Valid university/personal email address |
-| `course` | String | Yes | No | Engineering / Academic department enum |
-| `academicYear` | String | Yes | No | 1st Year, 2nd Year, 3rd Year, 4th Year, Postgraduate |
-| `createdAt` | Date | Auto | No | Record creation timestamp |
-| `updatedAt` | Date | Auto | No | Last update timestamp |
+| `GET` | `/api/students` | Get all students (supports `?search=`, `?course=`, `?academicYear=`) | None | `200 OK` |
+| `GET` | `/api/students/:id` | Get single student by 24-character MongoDB `_id` | None | `200 OK` |
+| `POST` | `/api/students` | Create new student record with schema validation | Student JSON object | `201 Created` |
+| `PUT` | `/api/students/:id` | Update existing student record fields | Fields to update | `200 OK` |
+| `DELETE` | `/api/students/:id` | Delete student record by MongoDB `_id` | None | `200 OK` |
 
-### API Endpoints
-| HTTP Method | Route | Description | Success Code | Error Codes |
-|---|---|---|---|---|
-| `POST` | `/api/students` | **CREATE**: Add a new student record to MongoDB | `201 Created` | `400 Bad Request` |
-| `GET` | `/api/students` | **READ**: Retrieve all students (supports `?search=...`) | `200 OK` | `500 Server Error` |
-| `GET` | `/api/students/:id` | **READ**: Retrieve a single student by MongoDB `_id` | `200 OK` | `400`, `404 Not Found` |
-| `PUT` | `/api/students/:id` | **UPDATE**: Update an existing student record | `200 OK` | `400`, `404 Not Found` |
-| `DELETE` | `/api/students/:id` | **DELETE**: Remove a student record permanently | `200 OK` | `400`, `404 Not Found` |
+### Data Model Schema (`models/Student.js`)
+```javascript
+{
+  name: { type: String, required: true, trim: true, minlength: 2, maxlength: 100 },
+  rollNumber: { type: String, required: true, unique: true, uppercase: true, trim: true },
+  email: { type: String, required: true, lowercase: true, trim: true, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+  course: { 
+    type: String, 
+    required: true, 
+    enum: [
+      "Computer Science & Engineering",
+      "Information Technology",
+      "Artificial Intelligence & Data Science",
+      "Electronics & Telecommunication",
+      "Mechanical Engineering",
+      "Civil Engineering",
+      "Electrical Engineering",
+      "Other"
+    ]
+  },
+  academicYear: { 
+    type: String, 
+    required: true, 
+    enum: ["1st Year", "2nd Year", "3rd Year", "4th Year", "Postgraduate"] 
+  },
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
 ---
 
-## API Testing Guide (Postman & cURL)
+## API Testing Guide (cURL & Postman)
 
-### 1. Create Student (`POST /api/students`)
+### 1. Create a Student Record (`POST /api/students`)
 **cURL:**
 ```bash
 curl -X POST http://localhost:3000/api/students \
@@ -212,31 +256,23 @@ curl -X POST http://localhost:3000/api/students \
     "email": "rohan.sharma@learnsmart.edu",
     "course": "Computer Science & Engineering",
     "academicYear": "3rd Year",
-    "createdAt": "2026-10-19T08:38:57.808Z",
-    "updatedAt": "2026-10-19T08:38:57.808Z"
+    "createdAt": "2026-10-21T08:00:00.000Z",
+    "updatedAt": "2026-10-21T08:00:00.000Z"
   }
 }
 ```
 
-### 2. Read All Students (`GET /api/students`)
+### 2. Fetch All Students (`GET /api/students`)
 **cURL:**
 ```bash
 curl -X GET http://localhost:3000/api/students
 ```
-**Filter by search term:**
+**Filtered Query:**
 ```bash
-curl -X GET "http://localhost:3000/api/students?search=Rohan"
-```
-**Expected Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "count": 1,
-  "data": [ ... ]
-}
+curl -X GET "http://localhost:3000/api/students?course=Computer%20Science%20%26%20Engineering&search=Rohan"
 ```
 
-### 3. Read Single Student (`GET /api/students/:id`)
+### 3. Fetch Single Student (`GET /api/students/:id`)
 **cURL:**
 ```bash
 curl -X GET http://localhost:3000/api/students/6ad5d721c52641b382dee339
@@ -252,59 +288,47 @@ curl -X PUT http://localhost:3000/api/students/6ad5d721c52641b382dee339 \
     "academicYear": "4th Year"
   }'
 ```
-**Expected Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "message": "Student record updated successfully.",
-  "data": { ... }
-}
-```
 
 ### 5. Delete Student (`DELETE /api/students/:id`)
 **cURL:**
 ```bash
 curl -X DELETE http://localhost:3000/api/students/6ad5d721c52641b382dee339
 ```
-**Expected Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "message": "Student \"Rohan Sharma\" (CS-2026-001) deleted successfully."
-}
-```
 
 ---
 
-## Practicals Overview
+## Core Technology Integrations
 
-### Practical 01 — Bootstrap 4 Responsive Dashboard
-- **Route:** `/practical/bootstrap-dashboard`
-- **Features:** Responsive collapsible sidebar navigation, top navigation bar with search and notification counters, KPI stat cards with trend metrics, department enrollment table with progress indicators, quick action buttons, and responsive breakpoints.
-- **Engine:** Bootstrap 4.6.2 CSS and JS with jQuery and Popper.js, isolated from the rest of the application.
+### 1. HTML5, CSS3 & Bootstrap 4 Responsive Dashboard
+- Integrated directly into `views/dashboard.ejs`.
+- Uses Bootstrap 4.6.2 responsive grid classes (`row`, `col-12 col-sm-6 col-lg-3`, `h-100`) to present responsive statistics cards (Overall Score, Topics Covered, Quizzes Completed, Best Score).
+- Preserves the custom LearnSmart theme (Inter font, gradients, cards, and smooth CSS transitions) without global stylesheet conflicts.
 
-### Practical 03 — React JS & Redux Toolkit Student Management System
-- **Route:** `/practical/student-management`
-- **Location:** `practicals/react-student-management/`
-- **Architecture:**
-  - `src/app/store.js`: Configures centralized Redux Toolkit store.
-  - `src/features/students/studentsSlice.js`: Contains `fetchStudents`, `addStudent`, `updateStudent`, and `deleteStudent` async thunks communicating with `/api/students`.
-  - `src/features/students/StudentForm.jsx`: Reusable controlled form with validation.
-  - `src/features/students/StudentList.jsx`: Searchable and filterable student directory table with edit/delete triggers.
-  - `src/App.jsx`: Main interface with live KPI counters and toast alerts.
-- **Build:** Built with Vite and served statically by Express in production.
+### 2. React 18 & Redux Toolkit Student Management
+- Located in `practicals/react-student-management/` and built into `dist/`.
+- Served by the Express application at `/students`.
+- Configured with a Redux Toolkit centralized store (`app/store.js`) and `studentsSlice.js`.
+- Features asynchronous thunks (`fetchStudents`, `addStudent`, `updateStudent`, `deleteStudent`) interacting with `/api/students`.
+- Controlled form validation, live department KPI counters, searchable directory, and toast notifications.
 
-### Practical 04 — Node.js & Express Static Website
-- **Route:** `/practical/static-site`
-- **Features:** Demonstrates `express.static()` middleware, semantic HTML5 structure, Vanilla CSS custom properties with light/dark theme switching, and client-side JavaScript calculation engine.
+### 3. Node.js & Express Static Pipeline
+- Static files served via `app.use(express.static(path.join(__dirname, "public")))` and `app.use("/assets", express.static(...))`.
+- Serves CSS stylesheets, client scripts, icons, images, and the React production bundle from one Express process.
 
-### Practical 06 — jQuery Mobile Web Application
-- **Route:** `/practical/mobile`
-- **Features:** Touch-optimized UI using jQuery Mobile 1.4.5, multi-page single-DOM routing (`#homePage`, `#directoryPage`, `#feedbackPage`, `#aboutPage`), slide-out navigation panel, filterable listview, interactive sliders, and flip switches.
+### 4. Touch-Friendly Mobile Experience
+- Responsive breakpoints (`@media (max-width: 768px)` and `@media (max-width: 576px)`) across all views.
+- Mobile quick-filter study bar for instant real-time quiz topic search.
+- Focus View flip switch to simplify views for reading on small screens.
+- Touch swipe gesture detection for opening and closing the mobile navigation drawer.
 
-### Practical 08 — AI-Enabled Full-Stack Mini Project (LearnSmart)
-- **Route:** `/`
-- **Features:** AI Quiz Maker using Google Gemini AI, personalized learning resource recommendations, notes editor, todo tracker, student progress reports, and admin score performance analysis.
+### 5. Google Gemini AI Quiz & Resource Generation
+- Integrated with `@google/generative-ai` (`gemini-2.5-flash`).
+- Dynamic 5-question multi-choice quiz generation formatted directly in strict JSON.
+- Automated performance analysis with tailored study roadmaps and practice questions based on individual user scores.
+
+### 6. Deployment & Health Monitoring
+- Single-deployment architecture configured for cloud platforms like Render, Railway, AWS, or Heroku.
+- Health diagnostics at `/health` providing real-time database connection state, process uptime, and memory status.
 
 ---
 
@@ -324,7 +348,7 @@ ATLAS_URL=mongodb://127.0.0.1:27017/learnsmart
 # Google Gemini API Key (Obtain from https://aistudio.google.com/app/apikey)
 api_Key=your_gemini_api_key_here
 
-# Express Session Encryption Secret
+# Express Session Secret
 SESSION_SECRET=learnsmart_super_secret_session_key_2026
 ```
 
@@ -333,109 +357,60 @@ SESSION_SECRET=learnsmart_super_secret_session_key_2026
 ## Installation & Local Setup
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher (v24 LTS recommended)
+- **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
-- **MongoDB**: Local MongoDB Server or MongoDB Atlas cluster connection string
+- **MongoDB**: Local MongoDB Server or MongoDB Atlas connection URI
 
 ### Step-by-Step Setup
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/FD_Project.git
+   git clone https://github.com/<your-username>/FD_Project.git
    cd FD_Project
    ```
 
-2. **Install root server dependencies:**
+2. **Install root dependencies:**
    ```bash
    npm install
    ```
 
-3. **Install and build the React Student Management System:**
+3. **Install React Student Management dependencies & build bundle:**
    ```bash
-   npm run build:react
+   npm --prefix practicals/react-student-management install
+   npm run build
    ```
 
 4. **Configure environment variables:**
    ```bash
    cp .env.example .env
-   # Edit .env with your MongoDB URL and Gemini API key
+   # Populate .env with your MongoDB URI and Gemini API key
    ```
 
-5. **Start the Express application:**
+5. **Start the application:**
    ```bash
    # Production mode:
    npm start
 
-   # Development mode (with nodemon):
+   # Development mode:
    npm run dev
    ```
 
-6. Open your browser and navigate to:
+6. **Access the unified platform:**
    - LearnSmart Home: `http://localhost:3000/`
+   - Learning Dashboard: `http://localhost:3000/dashboard`
+   - Student Management: `http://localhost:3000/students`
+   - Student Notes: `http://localhost:3000/notes`
+   - Study To-Do List: `http://localhost:3000/todo`
+   - AI Quiz Generator: `http://localhost:3000/quiz`
+   - Progress & Reports: `http://localhost:3000/progress`
    - Health Diagnostic: `http://localhost:3000/health`
-   - Bootstrap Dashboard: `http://localhost:3000/practical/bootstrap-dashboard`
-   - React + Redux Student Management: `http://localhost:3000/practical/student-management`
-   - Static Website: `http://localhost:3000/practical/static-site`
-   - jQuery Mobile: `http://localhost:3000/practical/mobile`
+   - Student CRUD API: `http://localhost:3000/api/students`
 
 ---
 
-## Build & Production Deployment Guide
+## Build & Single-Deployment Guide
 
-### Deploying to Cloud Hosting (Render / Railway / Heroku)
-
-1. **Push your repository to GitHub** (ensure `.env` is ignored by `.gitignore`).
-2. **Create a MongoDB Atlas Cluster:**
-   - Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-   - Create a database user and whitelist `0.0.0.0/0` (allow access from anywhere).
-   - Copy the connection URI: `mongodb+srv://<username>:<password>@cluster0.mongodb.net/learnsmart?retryWrites=true&w=majority`.
-3. **Configure the Web Service on Render / Railway:**
-   - **Build Command:** `npm install && npm run build:react`
-   - **Start Command:** `npm start`
-4. **Set Environment Variables on the Cloud Dashboard:**
-   - `PORT`: `3000` (or leave default assigned by platform)
-   - `ATLAS_URL`: `<your-mongodb-atlas-connection-string>`
-   - `api_Key`: `<your-google-gemini-api-key>`
-   - `SESSION_SECRET`: `<any-random-secure-string>`
-5. **Verify Deployment:**
-   - Check the deployment URL: `https://<your-app>.onrender.com/health`
-   - Status response must return `{"status":"healthy","database":"connected"}`.
-
----
-
-## Architecture & Zero-Regression Isolation
-
-```
-FD_Project/
-├── index.js                     # Express server & route registration
-├── package.json                 # Project dependencies & build pipeline
-├── .env.example                 # Environment configuration template
-├── .gitignore                   # Excludes .env, node_modules, and build artifacts
-├── models/
-│   ├── profile.js               # Original User schema (quizzes, resources, notes, todos)
-│   └── Student.js               # Practical 05 Student CRUD schema with validation
-├── routes/
-│   └── students.js              # Practical 05 REST API endpoints (GET, POST, PUT, DELETE)
-├── practicals/
-│   └── react-student-management/# Practical 03 React 18 + Redux Toolkit SPA
-│       ├── src/
-│       │   ├── app/store.js     # Redux store
-│       │   ├── features/students/
-│       │   │   ├── studentsSlice.js # Async thunks and student state
-│       │   │   ├── StudentForm.jsx  # Controlled form component
-│       │   │   └── StudentList.jsx  # Student directory table
-│       │   └── App.jsx
-│       └── dist/                # Production build served at /practical/student-management
-├── public/
-│   ├── css/ & js/               # Original LearnSmart assets (untouched)
-│   └── practical/
-│       ├── bootstrap-dashboard/ # Practical 01 isolated Bootstrap 4 dashboard
-│       ├── static-site/         # Practical 04 isolated static website
-│       └── mobile/              # Practical 06 isolated jQuery Mobile web app
-└── views/                       # Original LearnSmart EJS templates (100% preserved)
-```
-
-### Isolation Guarantee:
-- No Bootstrap, jQuery Mobile, or React styles are loaded into existing LearnSmart EJS templates.
-- Navigation links on the existing LearnSmart navbar were left untouched.
-- Existing fonts, colors, layouts, animations, and DOM hierarchies remain bit-for-bit identical to the original repository.
+The application builds and deploys as **one unified web application**:
+1. **Build Step:** `npm run build` compiles the React 18 / Redux student management frontend into `practicals/react-student-management/dist`.
+2. **Start Step:** `npm start` executes `node index.js`, which serves the dynamic EJS pages, the React production build, the REST APIs, and connects to MongoDB.
+3. **Environment:** Set `PORT`, `ATLAS_URL`, `api_Key`, and `SESSION_SECRET` in your cloud deployment settings.

@@ -46,9 +46,9 @@ export default function App() {
         <div className="sms-nav-actions">
           <nav style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <a href="/dashboard" className="btn-link-home"><i className="fa-solid fa-chart-bar"></i> Dashboard</a>
-            <a href="/analytics" className="btn-link-home"><i className="fa-solid fa-chart-pie"></i> Analytics</a>
-            <a href="/courses" className="btn-link-home"><i className="fa-solid fa-book-open"></i> Courses</a>
-            <a href="/mobile" className="btn-link-home"><i className="fa-solid fa-mobile-screen"></i> Mobile</a>
+            <a href="/notes" className="btn-link-home"><i className="fa-solid fa-sticky-note"></i> Notes</a>
+            <a href="/todo" className="btn-link-home"><i className="fa-solid fa-tasks"></i> To-Do</a>
+            <a href="/quiz" className="btn-link-home"><i className="fa-solid fa-brain"></i> Quiz</a>
             <a href="/" className="btn-link-home" style={{ background: '#f1f5f9', fontWeight: 'bold' }}><i className="fa-solid fa-house"></i> Home</a>
           </nav>
           <span className="badge-redux">

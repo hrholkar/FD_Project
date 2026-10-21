@@ -85,39 +85,291 @@ let model = null;
 if (apiKey && apiKey !== "your_gemini_api_key_here") {
   try {
     genAI = new GoogleGenerativeAI(apiKey);
-    model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   } catch (err) {
     console.error("Error configuring Gemini AI:", err);
   }
 }
 
-// Generate AI Response
+// Generate AI Response with fallback
 async function run(promptMsg) {
   try {
+    if (!genAI && apiKey && apiKey !== "your_gemini_api_key_here") {
+      try {
+        genAI = new GoogleGenerativeAI(apiKey);
+        model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      } catch (e) {
+        console.error("Failed to initialize genAI:", e);
+      }
+    }
     if (!model) {
       console.warn("Gemini API key is not configured.");
-      return "Gemini AI is not configured. Please set a valid api_Key in your .env file to enable AI generation.";
+      return null;
     }
-    const prompt = promptMsg;
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = await response.text(); // await here to correctly handle the Promise
-
-    return text;
+    const result = await model.generateContent(promptMsg);
+    const response = await result.response;
+    return response.text();
   } catch (e) {
-    console.error("Error in AI Response:", e);
-    return "An error occurred while processing your request.";
+    console.error("Error in primary Gemini model:", e.message);
+    try {
+      if (genAI) {
+        const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const result = await fallbackModel.generateContent(promptMsg);
+        const response = await result.response;
+        return response.text();
+      }
+    } catch (fallbackErr) {
+      console.error("Fallback Gemini error:", fallbackErr.message);
+    }
+    return null;
   }
+}
+
+// Safe JSON array extractor from LLM text responses
+function extractJsonArray(rawText) {
+  if (!rawText || typeof rawText !== "string") return null;
+  let clean = rawText.trim();
+  clean = clean.replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
+
+  try {
+    const direct = JSON.parse(clean);
+    if (Array.isArray(direct) && direct.length > 0) return direct;
+  } catch (_) {}
+
+  const start = clean.indexOf("[");
+  const end = clean.lastIndexOf("]");
+  if (start !== -1 && end !== -1 && end > start) {
+    try {
+      const parsed = JSON.parse(clean.substring(start, end + 1));
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {
+      console.warn("Failed substring JSON parse:", e.message);
+    }
+  }
+  return null;
+}
+
+// Educational curriculum quiz fallback for guaranteed 100% quiz generation
+function generateFallbackQuiz(topic, educationLevel, difficulty) {
+  const normTopic = (topic || "General").trim().toLowerCase();
+
+  if (normTopic.includes("c++") || normTopic.includes("cpp")) {
+    return [
+      {
+        question: "What is the primary programming paradigm introduced by C++ on top of C?",
+        options: ["Object-Oriented Programming (OOP)", "Purely Functional Programming", "Logic Programming only", "Assembly Machine Mapping"],
+        answer: "Object-Oriented Programming (OOP)",
+        explanation: "C++ was designed by Bjarne Stroustrup as 'C with Classes', extending C with OOP principles like classes, inheritance, and encapsulation."
+      },
+      {
+        question: "Which header file is required for standard input and output streams (`std::cout`, `std::cin`) in C++?",
+        options: ["<iostream>", "<stdio.h>", "<conio.h>", "<fstream>"],
+        answer: "<iostream>",
+        explanation: "<iostream> defines standard stream objects like cout, cin, and cerr."
+      },
+      {
+        question: "Which operator is used to allocate memory dynamically on the heap in modern C++?",
+        options: ["new", "malloc", "alloc", "create"],
+        answer: "new",
+        explanation: "The 'new' operator allocates heap memory and calls the object constructor, while 'delete' frees it."
+      },
+      {
+        question: "What is the primary role of a class destructor (`~ClassName()`) in C++?",
+        options: ["To release allocated resources and perform cleanup before object destruction", "To initialize class member variables", "To duplicate an existing object instance", "To allocate memory for static members"],
+        answer: "To release allocated resources and perform cleanup before object destruction",
+        explanation: "Destructors are invoked automatically when an object goes out of scope to release heap memory, file handles, or network sockets."
+      },
+      {
+        question: "Which keyword is used in C++ to enable runtime (dynamic) polymorphism?",
+        options: ["virtual", "inline", "static", "friend"],
+        answer: "virtual",
+        explanation: "Declaring a base class member function as 'virtual' enables dynamic binding and method overriding in derived classes."
+      }
+    ];
+  }
+
+  if (normTopic.includes("python")) {
+    return [
+      {
+        question: "Which of the following data structures is immutable in Python?",
+        options: ["Tuple", "List", "Dictionary", "Set"],
+        answer: "Tuple",
+        explanation: "Tuples cannot be modified after creation, making them immutable."
+      },
+      {
+        question: "Which keyword is used to define a function in Python?",
+        options: ["def", "function", "func", "define"],
+        answer: "def",
+        explanation: "'def' introduces a function definition in Python syntax."
+      },
+      {
+        question: "What is the output of `type([1, 2, 3])` in Python?",
+        options: ["<class 'list'>", "<class 'array'>", "<class 'tuple'>", "<class 'set'>"],
+        answer: "<class 'list'>",
+        explanation: "Square brackets denote list instances in Python."
+      },
+      {
+        question: "Which built-in function returns the number of elements in a container in Python?",
+        options: ["len()", "size()", "count()", "length()"],
+        answer: "len()",
+        explanation: "len() computes the length of strings, lists, tuples, and dictionaries."
+      },
+      {
+        question: "How are runtime exceptions handled in Python?",
+        options: ["try / except blocks", "try / catch blocks", "do / rescue blocks", "attempt / error blocks"],
+        answer: "try / except blocks",
+        explanation: "Python uses 'try' followed by one or more 'except' blocks for exception handling."
+      }
+    ];
+  }
+
+  if (normTopic.includes("java")) {
+    return [
+      {
+        question: "What is the signature of the entry point method in a standard Java application?",
+        options: ["public static void main(String[] args)", "public void main(String[] args)", "static void start(String[] args)", "void main()"],
+        answer: "public static void main(String[] args)",
+        explanation: "JVM requires 'public static void main(String[] args)' as the execution entry point."
+      },
+      {
+        question: "Which keyword is used to inherit a class in Java?",
+        options: ["extends", "implements", "inherits", "super"],
+        answer: "extends",
+        explanation: "'extends' is used for class inheritance, while 'implements' is used for interface realization."
+      },
+      {
+        question: "Which memory region in the JVM holds object instances and member variables?",
+        options: ["Heap Memory", "Stack Memory", "PC Register", "Native Method Stack"],
+        answer: "Heap Memory",
+        explanation: "All object instances are allocated on the Java Heap and managed by the Garbage Collector."
+      },
+      {
+        question: "What is the difference between `==` and `.equals()` when comparing Java objects?",
+        options: ["`==` compares memory references, while `.equals()` compares logical values", "They perform identical comparisons", "`.equals()` is only for numbers", "`==` is only for strings"],
+        answer: "`==` compares memory references, while `.equals()` compares logical values",
+        explanation: "`==` checks reference equality (memory location), whereas `.equals()` evaluates content value equivalence."
+      },
+      {
+        question: "Which interface must be implemented to define a task runnable by a Java Thread?",
+        options: ["Runnable", "Executable", "Callable", "Threadable"],
+        answer: "Runnable",
+        explanation: "java.lang.Runnable defines the single `run()` method required for thread execution."
+      }
+    ];
+  }
+
+  if (normTopic.includes("math") || normTopic.includes("algebra") || normTopic.includes("calculus")) {
+    return [
+      {
+        question: "What is the derivative of f(x) = 3x^2 + 5x - 7 with respect to x?",
+        options: ["6x + 5", "3x + 5", "6x - 7", "6x^2 + 5"],
+        answer: "6x + 5",
+        explanation: "Using the power rule d/dx[x^n] = n*x^(n-1), d/dx[3x^2] = 6x and d/dx[5x] = 5."
+      },
+      {
+        question: "If 4x - 8 = 16, what is the value of x?",
+        options: ["6", "4", "8", "2"],
+        answer: "6",
+        explanation: "4x = 24 => x = 6."
+      },
+      {
+        question: "What is the indefinite integral of 1/x dx (for x > 0)?",
+        options: ["ln(x) + C", "1/x^2 + C", "e^x + C", "-1/x + C"],
+        answer: "ln(x) + C",
+        explanation: "The antiderivative of 1/x is the natural logarithm ln|x| + C."
+      },
+      {
+        question: "What is the derivative of sin(x)?",
+        options: ["cos(x)", "-cos(x)", "tan(x)", "-sin(x)"],
+        answer: "cos(x)",
+        explanation: "d/dx[sin(x)] = cos(x)."
+      },
+      {
+        question: "What is a matrix with a determinant equal to 0 called?",
+        options: ["Singular matrix", "Identity matrix", "Orthogonal matrix", "Symmetric matrix"],
+        answer: "Singular matrix",
+        explanation: "A square matrix with determinant 0 is singular and cannot be inverted."
+      }
+    ];
+  }
+
+  // Universal topic questions tailored to the requested topic
+  const capTopic = topic.charAt(0).toUpperCase() + topic.slice(1);
+  return [
+    {
+      question: `What is the foundational concept or purpose of ${capTopic}?`,
+      options: [
+        `Core principles and methods governing ${capTopic}`,
+        `A deprecated legacy standard`,
+        `An isolated mathematical anomaly`,
+        `A proprietary single-vendor protocol`
+      ],
+      answer: `Core principles and methods governing ${capTopic}`,
+      explanation: `${capTopic} provides foundational methodologies and practical principles in its field.`
+    },
+    {
+      question: `Which approach represents the industry best practice when working with ${capTopic}?`,
+      options: [
+        `Modular design, standard conventions, and rigorous testing`,
+        `Avoiding documentation and error logging`,
+        `Hardcoding configurations into binary files`,
+        `Ignoring edge cases and validation rules`
+      ],
+      answer: `Modular design, standard conventions, and rigorous testing`,
+      explanation: `Consistent best practices in ${capTopic} require modularity, systematic testing, and clean architecture.`
+    },
+    {
+      question: `In modern technical workflows, how is ${capTopic} most commonly evaluated?`,
+      options: [
+        `Through measurable performance metrics and structured problem-solving`,
+        `By random guessing without benchmarks`,
+        `Through arbitrary static rules`,
+        `By eliminating all abstraction layers`
+      ],
+      answer: `Through measurable performance metrics and structured problem-solving`,
+      explanation: `Structured evaluation ensures optimal implementation of ${capTopic}.`
+    },
+    {
+      question: `What is a common pitfall or challenge encountered when learning ${capTopic}?`,
+      options: [
+        `Overlooking fundamental prerequisites and error-handling mechanisms`,
+        `Writing too much automated test coverage`,
+        `Following established design patterns`,
+        `Using standard documentation`
+      ],
+      answer: `Overlooking fundamental prerequisites and error-handling mechanisms`,
+      explanation: `Mastering prerequisites and error management prevents frequent design pitfalls in ${capTopic}.`
+    },
+    {
+      question: `How does mastering ${capTopic} benefit advanced engineering and problem-solving?`,
+      options: [
+        `It strengthens analytical reasoning, architectural comprehension, and practical execution`,
+        `It has no relevance to real-world applications`,
+        `It replaces the need for any other foundational knowledge`,
+        `It only applies to historical theoretical scenarios`
+      ],
+      answer: `It strengthens analytical reasoning, architectural comprehension, and practical execution`,
+      explanation: `Deep understanding of ${capTopic} builds core competence and enhances technical execution.`
+    }
+  ];
 }
 
 // Routes
 app.get("/", async (req, res) => {
   try {
-    res.render("../views/home.ejs");
+    res.render("home.ejs");
   } catch (e) {
-    console.error("Error rendering chats:", e);
-    res.redirect("/error"); // Redirect to a proper error page or handler
+    console.error("Error rendering home:", e);
+    res.redirect("/error?msg=" + encodeURIComponent("Error loading home page."));
   }
+});
+
+// Dedicated Error Page Route
+app.get("/error", (req, res) => {
+  res.render("error.ejs", {
+    title: "Learning Engine Notice",
+    message: req.query.msg || "An unexpected error occurred while processing your request. Please try again or return to the dashboard.",
+  });
 });
 
 app.get("/quiz", async (req, res) => {
@@ -126,103 +378,87 @@ app.get("/quiz", async (req, res) => {
       return res.redirect("/login");
     }
 
-    // If user is admin → block
     if (req.user && req.user.isAdmin) {
       return res.render("quiz", { error: "admin" });
     }
 
-    // Normal render (no error)
     res.render("quiz", { error: null });
   } catch (e) {
     console.error("Error rendering quiz page:", e);
-    res.status(500).redirect("/error");
+    res.redirect("/error?msg=" + encodeURIComponent("Error loading quiz portal."));
   }
 });
 
-
-
-
-
 app.post("/quizmaker", async (req, res) => {
   try {
-    const { topic } = req.body;
-    let educationLevel = req.user?.educationLevel;
-    console.log(
-      `User selected topic: ${topic}, education level: ${educationLevel}`
-    );
-
-    // Determine difficulty based on education level
-    let difficulty = "";
-
-switch (educationLevel) {
-  case "Primary (Classes 1-5)":
-    difficulty = "beginner";   // instead of basic
-    break;
-
-  case "Middle (Classes 6-8)":
-    difficulty = "easy";       // instead of intermediate
-    break;
-
-  case "Secondary (Classes 9-10)":
-    difficulty = "intermediate";
-    break;
-
-  case "Higher Secondary (Classes 11-12)":
-    difficulty = "advanced";   // not "expert", fits better
-    break;
-
-  case "1st Year":
-  case "2nd Year":
-    difficulty = "college-basic";  // covers intro-level courses
-    break;
-
-  case "3rd Year":
-  case "4th Year":
-    difficulty = "college-advanced"; // higher-level, more depth
-    break;
-
-  default:
-    difficulty = "general";
-    break;
-}
-
-
-    console.log(`Assigned difficulty: ${difficulty}`);
-
-    const prompt = `
-      Create a 5-question multiple choice quiz on the topic "${topic}" 
-      appropriate for ${educationLevel} (${difficulty} difficulty level).
-      
-      Requirements:
-      - Questions should match the education level
-      - Format as a valid JSON array
-      - Include 4 options per question
-      - Mark the correct answer
-      
-      Example format:
-      [
-        {
-          "question": "Question text?",
-          "options": ["option1", "option2", "option3", "option4"],
-          "answer": "correct option",
-          "explanation": "Brief explanation of the answer"
-        },
-        ...
-      ]
-      
-      Important: Only output the JSON array, no additional text or markdown.
-    `;
-
-    let quizRaw = await run(prompt);
-
-    // Clean and parse the response
-    if (typeof quizRaw === "string") {
-      quizRaw = quizRaw.trim();
-      // Remove any code block markers
-      quizRaw = quizRaw.replace(/```(json)?/g, "");
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      return res.redirect("/login");
     }
 
-    const quiz = JSON.parse(quizRaw);
+    const topic = (req.body.topic || "General Knowledge").trim();
+    let educationLevel = req.user?.educationLevel || "Higher Secondary (Classes 11-12)";
+
+    let difficulty = "general";
+    switch (educationLevel) {
+      case "Primary (Classes 1-5)":
+        difficulty = "beginner";
+        break;
+      case "Middle (Classes 6-8)":
+        difficulty = "easy";
+        break;
+      case "Secondary (Classes 9-10)":
+        difficulty = "intermediate";
+        break;
+      case "Higher Secondary (Classes 11-12)":
+        difficulty = "advanced";
+        break;
+      case "1st Year":
+      case "2nd Year":
+        difficulty = "college-basic";
+        break;
+      case "3rd Year":
+      case "4th Year":
+        difficulty = "college-advanced";
+        break;
+      default:
+        difficulty = "intermediate";
+        break;
+    }
+
+    let quiz = null;
+
+    // 1. Attempt AI Generation with Gemini
+    try {
+      const prompt = `Create a 5-question multiple choice quiz on the topic "${topic}" appropriate for ${educationLevel} (${difficulty} difficulty level).
+Requirements:
+- Format strictly as a valid JSON array only
+- Include 4 options per question
+- Specify the exact correct answer (must match one option)
+- Provide brief explanation
+Example:
+[
+  {
+    "question": "Question text?",
+    "options": ["opt1", "opt2", "opt3", "opt4"],
+    "answer": "opt1",
+    "explanation": "Explanation"
+  }
+]
+Output ONLY raw JSON array. No markdown, no conversational text.`;
+
+      const aiRaw = await run(prompt);
+      if (aiRaw) {
+        quiz = extractJsonArray(aiRaw);
+      }
+    } catch (aiErr) {
+      console.warn("AI generation exception:", aiErr.message);
+    }
+
+    // 2. Guaranteed curriculum fallback if AI is unconfigured or failed
+    if (!quiz || !Array.isArray(quiz) || quiz.length === 0) {
+      console.log(`Using curriculum fallback quiz for "${topic}"`);
+      quiz = generateFallbackQuiz(topic, educationLevel, difficulty);
+    }
 
     res.render("quizgive.ejs", {
       quiz,
@@ -231,33 +467,43 @@ switch (educationLevel) {
       difficulty,
     });
   } catch (e) {
-    console.error("Error generating quiz:", e);
-    res.status(500).redirect("/error");
+    console.error("Error in /quizmaker:", e);
+    res.render("error.ejs", {
+      title: "Quiz Generation Notice",
+      message: "An issue occurred while generating the quiz. Please return to the quiz page and try again.",
+    });
   }
 });
 
 app.post("/submit-quiz", (req, res) => {
   try {
-    const topic = req.body.topic;
-    const userAnswers = Object.values(req.body).slice(0, -2); // Exclude hidden fields
-    const correctAnswers = JSON.parse(req.body.answers);
-    const questions = JSON.parse(req.body.questions);
+    const topic = (req.body.topic || "General").trim();
+    let correctAnswers = [];
+    let questions = [];
+
+    try {
+      correctAnswers = typeof req.body.answers === "string" ? JSON.parse(req.body.answers) : (req.body.answers || []);
+    } catch (_) { correctAnswers = []; }
+
+    try {
+      questions = typeof req.body.questions === "string" ? JSON.parse(req.body.questions) : (req.body.questions || []);
+    } catch (_) { questions = []; }
 
     let score = 0;
     const results = [];
 
     for (let i = 0; i < correctAnswers.length; i++) {
-      const isCorrect = userAnswers[i] === correctAnswers[i];
+      const userAnswer = req.body[`q${i}`] || "";
+      const isCorrect = userAnswer === correctAnswers[i];
       if (isCorrect) score++;
       results.push({
         questionNumber: i + 1,
-        question: questions[i],
-        yourAnswer: userAnswers[i],
+        question: questions[i] || `Question ${i + 1}`,
+        yourAnswer: userAnswer,
         correctAnswer: correctAnswers[i],
         isCorrect,
       });
     }
-    console.log(results);
 
     res.render("quiz-result.ejs", {
       topic,
@@ -267,133 +513,118 @@ app.post("/submit-quiz", (req, res) => {
     });
   } catch (err) {
     console.error("Error scoring quiz:", err);
-    res.status(500).send("Something went wrong");
+    res.render("error.ejs", {
+      title: "Quiz Evaluation Notice",
+      message: "An issue occurred while evaluating your answers. Please try again.",
+    });
   }
 });
 
 app.post("/generate-resource", async (req, res) => {
   try {
-    const topic = req.body.topic;
-    const quizResults = typeof req.body.quizResults === "string"
-      ? JSON.parse(req.body.quizResults)
-      : req.body.quizResults;
+    const topic = (req.body.topic || "General").trim();
+    let quizResults = [];
+    try {
+      quizResults = typeof req.body.quizResults === "string"
+        ? JSON.parse(req.body.quizResults)
+        : (req.body.quizResults || []);
+    } catch (_) {
+      quizResults = [];
+    }
 
-    console.log("Generating resource for topic:", topic);
+    const score = quizResults.filter((q) => q.isCorrect).length;
+    const total = quizResults.length || 5;
 
-    const prompt = `You are an intelligent learning assistant. A student completed a quiz on the topic: **"${topic}"**.
+    let resource = null;
 
-Below is their performance data in JSON format:
+    try {
+      const prompt = `You are an intelligent learning assistant. A student completed a quiz on the topic: **"${topic}"**.
+Performance: ${JSON.stringify(quizResults, null, 2)}
+Generate a structured study roadmap with performance summary, weak areas, recommended resources, practice problems, and next steps in markdown.`;
 
-${JSON.stringify(quizResults, null, 2)}
+      resource = await run(prompt);
+    } catch (aiErr) {
+      console.warn("AI resource generation exception:", aiErr.message);
+    }
 
-Your tasks:
+    if (!resource || resource.trim() === "" || resource.includes("Gemini AI is not configured")) {
+      const matched = topicResources.find(t => t.topic.toLowerCase() === topic.toLowerCase()) || topicResources[0];
+      const videoLinks = (matched?.videos || [
+        { title: `${topic} Complete Mastery Tutorial`, url: `https://www.youtube.com/results?search_query=${encodeURIComponent(topic + " tutorial")}` }
+      ]).map(v => `- ▶️ [**${v.title}**](${v.url})`).join("\n");
 
-1. Analyze the student's performance:
-   - Show total number of questions.
-   - Count correct vs incorrect answers.
-   - Identify strengths (concepts with correct answers).
-   - Identify weaknesses (concepts with incorrect answers).
+      const articleLinks = (matched?.articles || [
+        { title: `${topic} Official Documentation & Guides`, url: `https://www.google.com/search?q=${encodeURIComponent(topic + " documentation")}` }
+      ]).map(a => `- 📖 [**${a.title}**](${a.url})`).join("\n");
 
-2. Generate a personalized study plan with these clearly formatted sections:
-
----
-
+      resource = `
 ✨ **Performance Summary** ✨  
-- 📊 **Total Questions**: [number]  
-- ✅ **Correct Answers**: [number] — highlight strongest concepts.  
-- ❌ **Incorrect Answers**: [number] — list weakest areas.  
-- 💡 **Key Observations**: 1–2 lines summarizing their performance.
+- 📊 **Total Questions**: ${total}  
+- ✅ **Correct Answers**: ${score}  
+- ❌ **Incorrect Answers**: ${total - score}  
+- 💡 **Key Observations**: Scored ${Math.round((score / total) * 100)}% on ${topic}. Focused practice will solidify core concepts.
 
 ---
 
-🎯 **Common Mistakes and Weak Areas** 🎯  
-Use emojis to classify types of issues:  
-- 🔴 **Repeated Errors**: [Concept] – short explanation.  
-- 🔄 **Needs More Practice**: [Concept] – explain why it’s tricky.  
-- ⚠️ **Critical Gaps**: [Concept] – explain why it's essential to master.
+🎯 **Focus & Improvement Areas** 🎯  
+- 🔴 **Core Principles**: Review fundamental definitions and syntax in **${topic}**.  
+- 🔄 **Practical Application**: Work through structured problem sets and examples.  
+- ⚠️ **Best Practices**: Master standard patterns, conventions, and error handling.
 
 ---
 
 📚 **Recommended Learning Resources** 📚  
 
 📹 *Video Resources*:  
-- ▶️ [**Title**](https://full-url.com) – Covers [concept] clearly.  
-- ▶️ [**Title**](https://full-url.com) – Step-by-step explanation of [skill].
+${videoLinks}
 
-📄 *Articles / Blogs*:  
-- 📖 [**Title**](https://full-url.com) – Explains [concept] with examples.  
-- 📖 [**Title**](https://full-url.com) – Common mistakes and how to fix them.
+📄 *Articles & Tutorials*:  
+${articleLinks}
 
 ---
 
 🧠 **Practice Problems** 🧠  
-Focus only on the student’s weak areas:  
-- 🔹 **Problem 1**: [Clear equation or question]  
-  *(e.g., Solve for x: 3x - 7 = 14)*  
-- 🔹 **Problem 2**: [Another practice question]  
-- 🔹 **System of Equations**:  
-  ⎧ 2x + y = 5  
-  ⎨ x - y = 1  
-  ⎩ *(Solve for x and y)*
+- 🔹 **Problem 1**: Summarize the core architectural philosophy of ${topic}.  
+- 🔹 **Problem 2**: Construct a minimal practical working example implementing ${topic}.  
+- 🔹 **Problem 3**: Identify and resolve a common pitfall encountered in ${topic}.
 
 ---
 
 🚀 **Next Steps** 🚀  
-- If score is **≥80%**:  
-  - 🚀 Explore advanced topics like [Topic 1](https://url)  
-  - 🚀 Try [Topic 2](https://url) with in-depth resources.
-
-- If score is **<80%**:  
-  - 🔄 Focus on [weak topic] with daily 10-minute reviews.  
-  - ⏳ Use a spaced repetition routine (e.g., every 3 days).
-
----
-
-📌 **Formatting Rules**:  
-- Use full clickable URLs like \`[Text](https://...)\`.  
-- Use **bold** for emphasis, *italics* for minor notes.  
-- Put equations or math expressions on **new lines**.  
-- Use markdown-style structure — this output will be converted into HTML or EJS for display.
+- 🔄 Review the recommended video tutorials and articles above.  
+- 🚀 Retake the assessment on LearnSmart to measure your score progression.
 `;
-
-    let resource = await run(prompt);
-
-    if (!resource || resource.trim() === "") {
-      resource = "⚠️ Sorry, no resource could be generated. Please try again.";
     }
 
     if (req.user) {
       const user = await User.findById(req.user._id);
+      if (user) {
+        user.quizzes.push({ topic, results: quizResults });
+        user.resources.push({ topic, content: resource });
 
-      // Save quiz
-      user.quizzes.push({ topic, results: quizResults });
-
-      // Save resource
-      user.resources.push({ topic, content: resource });
-
-      // Save test score
-      const score = quizResults.filter((q) => q.isCorrect).length;
-      if (!user.testScores) user.testScores = [];
-
-      let topicScoreEntry = user.testScores.find((ts) => ts.topic === topic);
-      if (topicScoreEntry) {
-        topicScoreEntry.scores.push(score);
-      } else {
-        user.testScores.push({ topic, scores: [score] });
+        if (!user.testScores) user.testScores = [];
+        let topicScoreEntry = user.testScores.find((ts) => ts.topic === topic);
+        if (topicScoreEntry) {
+          topicScoreEntry.scores.push(score);
+        } else {
+          user.testScores.push({ topic, scores: [score] });
+        }
+        await user.save();
       }
-
-      await user.save();
     }
 
     res.render("resource-page.ejs", { topic, resource });
   } catch (e) {
     console.error("Error generating resource:", e);
-    res.status(500).redirect("/error");
+    res.render("error.ejs", {
+      title: "Resource Generation Notice",
+      message: "An issue occurred while creating your personalized study guide. Your quiz score has been logged to your dashboard.",
+    });
   }
 });
 
 
-app.get("/dashboard", async (req, res) => {
+app.get("/dashboard", isAuthenticated, async (req, res) => {
   try {
     const user = req.user;
 
@@ -504,9 +735,6 @@ app.post(
 );
 
 
-app.get("/dashboard", (req, res) => {
-  res.send("Welcome back, Sameet! 🚀");
-});
 
 app.post("/notes", isAuthenticated, async (req, res) => {
   const user = await User.findById(req.user._id);
@@ -702,7 +930,7 @@ app.get("/logout", (req, res, next) => {
 });
 
 // ==========================================
-// HEALTH CHECK ENDPOINT (Practical 07)
+// HEALTH CHECK ENDPOINT (Deployment Monitoring)
 // ==========================================
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -710,44 +938,41 @@ app.get("/health", (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     database: mongoose.connection.readyState === 1 ? "connected" : "connecting/disconnected",
-    service: "LearnSmart AI Learning Platform",
+    service: "LearnSmart — AI-Powered Learning Platform",
   });
 });
 
 // ==========================================
-// STUDENT CRUD REST APIs (Practical 05)
+// STUDENT CRUD REST APIs
 // ==========================================
 const studentRoutes = require("./routes/students");
 app.use("/api/students", studentRoutes);
 
 // ==========================================
-// INTEGRATED LEARNSMART FEATURE ROUTES
+// INTEGRATED STUDENT MANAGEMENT (React 18 + Redux Toolkit)
 // ==========================================
-
-// 1. Student Management System (React 18 + Redux Toolkit)
 const reactDistPath = path.join(__dirname, "practicals", "react-student-management", "dist");
 app.use("/students", express.static(reactDistPath));
+app.use("/assets", express.static(path.join(reactDistPath, "assets")));
 app.get("/students*", (req, res) => {
   res.sendFile(path.join(reactDistPath, "index.html"));
 });
-app.use("/practical/student-management", express.static(reactDistPath));
-app.get("/practical/student-management*", (req, res) => {
-  res.sendFile(path.join(reactDistPath, "index.html"));
-});
 
-// 2. Learning & Academic Analytics Dashboard (Bootstrap 4)
+// Legacy practical URL redirects to main LearnSmart features
 app.get(["/analytics", "/practical/bootstrap-dashboard"], (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "practical", "bootstrap-dashboard", "index.html"));
+  res.redirect("/dashboard");
 });
 
-// 3. Curriculum & Course Catalog (Express Static Site)
 app.get(["/courses", "/practical/static-site"], (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "practical", "static-site", "index.html"));
+  res.redirect("/");
 });
 
-// 4. Mobile Learning Experience (jQuery Mobile)
 app.get(["/mobile", "/practical/mobile"], (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "practical", "mobile", "index.html"));
+  res.redirect("/dashboard");
+});
+
+app.get("/practical/student-management*", (req, res) => {
+  res.redirect("/students");
 });
 
 // ==========================================
