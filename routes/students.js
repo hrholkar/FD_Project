@@ -4,11 +4,24 @@ const mongoose = require("mongoose");
 const Student = require("../models/Student");
 
 /**
+ * Middleware to restrict student management APIs strictly to authenticated administrators
+ */
+function requireAdminApi(req, res, next) {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user && req.user.isAdmin) {
+    return next();
+  }
+  return res.status(403).json({
+    success: false,
+    error: "Access denied. Administrator privileges required to manage student records.",
+  });
+}
+
+/**
  * @route   GET /api/students
  * @desc    Get all students (supports search query ?search=...)
- * @access  Public
+ * @access  Admin only
  */
-router.get("/", async (req, res) => {
+router.get("/", requireAdminApi, async (req, res) => {
   try {
     const { search, course, academicYear } = req.query;
     let query = {};
@@ -48,9 +61,9 @@ router.get("/", async (req, res) => {
 /**
  * @route   GET /api/students/:id
  * @desc    Get a single student by MongoDB _id
- * @access  Public
+ * @access  Admin only
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAdminApi, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -86,9 +99,9 @@ router.get("/:id", async (req, res) => {
 /**
  * @route   POST /api/students
  * @desc    Create a new student record
- * @access  Public
+ * @access  Admin only
  */
-router.post("/", async (req, res) => {
+router.post("/", requireAdminApi, async (req, res) => {
   try {
     const { name, rollNumber, email, course, academicYear } = req.body;
 
@@ -155,9 +168,9 @@ router.post("/", async (req, res) => {
 /**
  * @route   PUT /api/students/:id
  * @desc    Update an existing student record
- * @access  Public
+ * @access  Admin only
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAdminApi, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -239,9 +252,9 @@ router.put("/:id", async (req, res) => {
 /**
  * @route   DELETE /api/students/:id
  * @desc    Delete a student record
- * @access  Public
+ * @access  Admin only
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdminApi, async (req, res) => {
   try {
     const { id } = req.params;
 

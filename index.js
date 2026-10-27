@@ -22,10 +22,30 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated && req.isAuthenticated()) {
     return next();
   }
   res.redirect("/login"); // Or wherever your login route is
+}
+
+function requireAdmin(req, res, next) {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user && req.user.isAdmin) {
+    return next();
+  }
+  if (req.xhr || req.headers.accept?.includes("json") || req.path.startsWith("/api/")) {
+    return res.status(403).json({
+      success: false,
+      error: "Access denied. Administrator privileges required.",
+    });
+  }
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+  return res.status(403).render("error.ejs", {
+    title: "Administrator Access Restricted",
+    message: "You must be signed in with an authorized LearnSmart administrator account to access this page.",
+    statusCode: 403,
+  });
 }
 
 // MongoDB Session Store
@@ -784,21 +804,26 @@ Generate a structured study roadmap with performance summary, weak areas, recomm
 app.get("/dashboard", isAuthenticated, async (req, res) => {
   try {
     const user = req.user;
-
+    if (user && user.isAdmin) {
+      return res.redirect("/admin/dashboard");
+    }
     res.render("dashboard", { user });
   } catch (err) {
     console.error("Dashboard fetch error:", err);
     res.redirect("/login");
   }
 });
-app.get("/progress", async (req, res) => {
+app.get("/progress", isAuthenticated, async (req, res) => {
   try {
     const user = req.user;
-    const testScores = user.testScores;
+    if (user && user.isAdmin) {
+      return res.redirect("/admin/scores");
+    }
+    const testScores = (user && user.testScores) || [];
 
     res.render("progress", { testScores, user });
   } catch (err) {
-    console.error("Dashboard fetch error:", err);
+    console.error("Progress fetch error:", err);
     res.redirect("/login");
   }
 });
@@ -921,9 +946,15 @@ app.post("/signup", async (req, res) => {
     let alreadyuser = await User.findOne({ email: email });
 
     if (!user && !alreadyuser) {
-      const newUser = new User({ email, username, educationLevel });
+      // Server-side RBAC: Explicitly enforce standard student role on public signup
+      const newUser = new User({
+        email: email ? email.trim() : "",
+        username: username ? username.trim() : "",
+        educationLevel: educationLevel ? educationLevel.trim() : "Undergraduate Level",
+        isAdmin: false,
+      });
       const registeredUser = await User.register(newUser, password);
-      console.log("Registered User:", registeredUser);
+      console.log("Registered Student:", registeredUser.username);
       res.redirect("/login");
     } else if (alreadyuser) {
       res.send("Email already exists");
@@ -951,15 +982,15 @@ app.post(
         return res.redirect("/signup");
       }
 
-      console.log("Logged In User:", user);
+      console.log("Logged In User:", user.username, "| Role:", user.isAdmin ? "Administrator" : "Student");
 
-      // Check if admin
+      // Check role and redirect to dedicated role dashboard
       if (user.isAdmin) {
-        return res.redirect("/admin/scores");
+        return res.redirect("/admin/dashboard");
       }
 
-      // Normal user
-      return res.redirect("/");
+      // Normal student
+      return res.redirect("/dashboard");
     } catch (error) {
       console.error("Error during login:", error);
       res.redirect("/login");
@@ -1140,18 +1171,38 @@ const studentRoutes = require("./routes/students");
 app.use("/api/students", studentRoutes);
 
 // ==========================================
-// INTEGRATED STUDENT MANAGEMENT (React 18 + Redux Toolkit)
+// INTEGRATED STUDENT MANAGEMENT (React 18 + Redux Toolkit) - ADMIN AREA
 // ==========================================
 const reactDistPath = path.join(__dirname, "practicals", "react-student-management", "dist");
-app.use("/students", express.static(reactDistPath));
+
+// Serve assets for /admin/students and general assets
+app.use("/admin/students", requireAdmin, express.static(reactDistPath));
+app.use("/admin/students/assets", express.static(path.join(reactDistPath, "assets")));
+app.use("/admin/assets", express.static(path.join(reactDistPath, "assets")));
 app.use("/assets", express.static(path.join(reactDistPath, "assets")));
-app.get("/students*", (req, res) => {
+
+// Canonical location for Student Management portal
+app.get("/admin/students*", requireAdmin, (req, res) => {
   res.sendFile(path.join(reactDistPath, "index.html"));
+});
+
+// Role-aware legacy /students route redirection
+app.get("/students*", (req, res) => {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user && req.user.isAdmin) {
+    return res.redirect("/admin/students");
+  }
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+  return res.redirect("/dashboard");
 });
 
 // Legacy practical URL redirects to main LearnSmart features
 app.get(["/analytics", "/practical/bootstrap-dashboard"], (req, res) => {
-  res.redirect("/dashboard");
+  if (req.isAuthenticated && req.isAuthenticated() && req.user && req.user.isAdmin) {
+    return res.redirect("/admin/analytics");
+  }
+  return res.redirect("/dashboard");
 });
 
 app.get(["/courses", "/practical/static-site"], (req, res) => {
@@ -1163,7 +1214,10 @@ app.get(["/mobile", "/practical/mobile"], (req, res) => {
 });
 
 app.get("/practical/student-management*", (req, res) => {
-  res.redirect("/students");
+  if (req.isAuthenticated && req.isAuthenticated() && req.user && req.user.isAdmin) {
+    return res.redirect("/admin/students");
+  }
+  return res.redirect("/dashboard");
 });
 
 // ==========================================

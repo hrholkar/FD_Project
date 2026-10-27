@@ -197,14 +197,48 @@
                 <p>Real-time platform intelligence, overall student performance trends, subject-wise score benchmarks, and enrollment distribution.</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="/admin/scores" class="btn btn-outline" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white;">
+                <a href="/admin/students" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
+                    <i class="fas fa-users-gear"></i> Student Management
+                </a>
+                <a href="/admin/scores" class="btn btn-outline" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: white;">
                     <i class="fas fa-table-list"></i> Raw Scores Table
                 </a>
-                <button onclick="fetchAdminAnalytics()" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
+                <button onclick="fetchAdminAnalytics()" class="btn btn-outline" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: white;">
                     <i class="fas fa-arrows-rotate"></i> Refresh Data
                 </button>
             </div>
         </header>
+
+        <!-- Admin Core Modules Quick Links -->
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+            <a href="/admin/students" style="text-decoration: none; color: inherit;">
+                <div class="admin-kpi-card" style="border-left: 4px solid var(--primary); cursor: pointer; height: 100%;">
+                    <div class="admin-icon-wrap blue"><i class="fas fa-users-gear"></i></div>
+                    <div>
+                        <div style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--text-main);">Student Management</div>
+                        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 3px;">Enroll students, edit records, view directory & filters</div>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/analytics" style="text-decoration: none; color: inherit;">
+                <div class="admin-kpi-card" style="border-left: 4px solid var(--secondary); cursor: pointer; height: 100%;">
+                    <div class="admin-icon-wrap purple"><i class="fas fa-chart-pie"></i></div>
+                    <div>
+                        <div style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--text-main);">Platform Analytics</div>
+                        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 3px;">Live performance benchmarks, score brackets & graphs</div>
+                    </div>
+                </div>
+            </a>
+            <a href="/admin/scores" style="text-decoration: none; color: inherit;">
+                <div class="admin-kpi-card" style="border-left: 4px solid #10b981; cursor: pointer; height: 100%;">
+                    <div class="admin-icon-wrap green"><i class="fas fa-table-list"></i></div>
+                    <div>
+                        <div style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--text-main);">Quiz Performance Hub</div>
+                        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 3px;">Individual quiz attempts, topic filters & student scores</div>
+                    </div>
+                </div>
+            </a>
+        </section>
 
         <!-- Interactive Admin Filters -->
         <section class="filter-panel-card">

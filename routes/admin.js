@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
 const User = require("../models/profile");
 const Student = require("../models/Student");
 
@@ -10,11 +11,14 @@ function requireAdmin(req, res, next) {
   if (req.isAuthenticated && req.isAuthenticated() && req.user && req.user.isAdmin) {
     return next();
   }
-  if (req.xhr || req.headers.accept?.includes("json")) {
+  if (req.xhr || req.headers.accept?.includes("json") || req.path.startsWith("/api/")) {
     return res.status(403).json({
       success: false,
       error: "Access denied. Administrator privileges required.",
     });
+  }
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.redirect("/login");
   }
   return res.status(403).render("error.ejs", {
     title: "Administrator Access Restricted",
@@ -29,6 +33,25 @@ function requireAdmin(req, res, next) {
  * @access  Admin only
  */
 router.get("/", requireAdmin, (req, res) => {
+  res.redirect("/admin/dashboard");
+});
+
+/**
+ * @route   GET /admin/students
+ * @desc    Serve the React Student Management portal
+ * @access  Admin only
+ */
+router.get("/students*", requireAdmin, (req, res) => {
+  const reactDistPath = path.join(__dirname, "..", "practicals", "react-student-management", "dist");
+  res.sendFile(path.join(reactDistPath, "index.html"));
+});
+
+/**
+ * @route   GET /admin/analytics
+ * @desc    Admin Analytics Dashboard alias
+ * @access  Admin only
+ */
+router.get("/analytics", requireAdmin, (req, res) => {
   res.redirect("/admin/dashboard");
 });
 

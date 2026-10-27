@@ -29,50 +29,36 @@ export default function App() {
 
   return (
     <div className="sms-app">
-      {/* Unified LearnSmart Shared Navigation Bar */}
+      {/* Unified LearnSmart Admin Navigation Bar */}
       <nav className="ls-navbar">
         <div className="ls-nav-container">
-          <a href="/" className="ls-brand">
+          <a href="/admin/dashboard" className="ls-brand">
             <div className="ls-brand-icon">
-              <i className="fa-solid fa-brain"></i>
+              <i className="fa-solid fa-user-shield"></i>
             </div>
             <span>LearnSmart</span>
+            <span style={{ fontSize: '0.72rem', background: 'var(--primary, #4361ee)', color: '#fff', padding: '2px 8px', borderRadius: '9999px', marginLeft: '6px', fontWeight: 700, letterSpacing: '0.5px' }}>ADMIN</span>
           </a>
 
           <ul className="ls-nav-menu" id="lsNavMenu">
             <li>
-              <a href="/dashboard" className="ls-nav-link">
-                <i className="fa-solid fa-gauge-high"></i> Dashboard
+              <a href="/admin/dashboard" className="ls-nav-link">
+                <i className="fa-solid fa-gauge-high"></i> Admin Dashboard
               </a>
             </li>
             <li>
-              <a href="/progress" className="ls-nav-link">
-                <i className="fa-solid fa-chart-line"></i> Progress
+              <a href="/admin/students" className="ls-nav-link active">
+                <i className="fa-solid fa-users-gear"></i> Students
               </a>
             </li>
             <li>
-              <a href="/students" className="ls-nav-link active">
-                <i className="fa-solid fa-user-graduate"></i> Students
+              <a href="/admin/analytics" className="ls-nav-link">
+                <i className="fa-solid fa-chart-pie"></i> Analytics
               </a>
             </li>
             <li>
-              <a href="/notes" className="ls-nav-link">
-                <i className="fa-solid fa-book-open"></i> Notes
-              </a>
-            </li>
-            <li>
-              <a href="/todo" className="ls-nav-link">
-                <i className="fa-solid fa-list-check"></i> To-Do
-              </a>
-            </li>
-            <li>
-              <a href="/quiz" className="ls-nav-link">
-                <i className="fa-solid fa-bolt"></i> Quiz
-              </a>
-            </li>
-            <li>
-              <a href="/interview" className="ls-nav-link">
-                <i className="fa-solid fa-user-tie"></i> Interview
+              <a href="/admin/scores" className="ls-nav-link">
+                <i className="fa-solid fa-table-list"></i> Quiz Performance
               </a>
             </li>
           </ul>
@@ -81,8 +67,8 @@ export default function App() {
             <span className="badge-redux" title="Real-time Redux state synced with MongoDB">
               <i className="fa-solid fa-circle-dot" style={{ color: '#10b981' }}></i> Redux Active
             </span>
-            <a href="/quiz" className="btn btn-primary btn-sm">
-              <i className="fa-solid fa-plus"></i> New Quiz
+            <a href="/admin/dashboard" className="btn btn-primary btn-sm">
+              <i className="fa-solid fa-chart-line"></i> Analytics Overview
             </a>
             <a href="/logout" className="btn btn-outline btn-sm">
               <i className="fa-solid fa-arrow-right-from-bracket"></i> Logout
