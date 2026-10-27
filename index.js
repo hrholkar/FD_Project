@@ -69,10 +69,36 @@ app.use((req, res, next) => {
 });
 
 // MongoDB Connection
+async function ensureAdminExists() {
+  try {
+    const adminCount = await User.countDocuments({ isAdmin: true });
+    if (adminCount === 0) {
+      const existingUser = await User.findOne({ username: "admin" });
+      if (existingUser) {
+        existingUser.isAdmin = true;
+        await existingUser.save();
+        console.log("Account 'admin' promoted to Administrator.");
+      } else {
+        const newAdmin = new User({
+          username: "admin",
+          email: "admin@learnsmart.edu",
+          educationLevel: "Postgraduate Level",
+          isAdmin: true,
+        });
+        await User.register(newAdmin, "Admin@12345");
+        console.log("Default admin account created: admin / Admin@12345");
+      }
+    }
+  } catch (err) {
+    console.warn("Admin initialization notice:", err.message);
+  }
+}
+
 async function main() {
   try {
     await mongoose.connect(dburl);
     console.log("Connection Successful");
+    await ensureAdminExists();
   } catch (err) {
     console.error("MongoDB Connection Error:", err);
   }
@@ -777,6 +803,82 @@ app.get("/progress", async (req, res) => {
   }
 });
 
+// AI Interview Preparation Page Route
+app.get("/interview", isAuthenticated, (req, res) => {
+  res.render("interview.ejs", { user: req.user });
+});
+
+// Student Analytics API
+app.get("/api/student/analytics", isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).lean();
+    if (!user) return res.status(404).json({ success: false, error: "User not found" });
+
+    const quizzes = user.quizzes || [];
+    const performanceOverTime = quizzes.map((q, i) => {
+      const total = q.results && q.results.length > 0 ? q.results.length : 5;
+      const correct = (q.results || []).filter((r) => r.isCorrect).length;
+      const pct = Math.round((correct / total) * 100);
+      return {
+        attemptNumber: i + 1,
+        topic: q.topic || "General",
+        date: q.date || new Date(),
+        score: correct,
+        totalQuestions: total,
+        percentage: pct,
+      };
+    });
+
+    const subjectMap = {};
+    quizzes.forEach((q) => {
+      const t = q.topic || "General";
+      const total = q.results && q.results.length > 0 ? q.results.length : 5;
+      const correct = (q.results || []).filter((r) => r.isCorrect).length;
+      const pct = Math.round((correct / total) * 100);
+      if (!subjectMap[t]) subjectMap[t] = { count: 0, sum: 0, max: 0 };
+      subjectMap[t].count++;
+      subjectMap[t].sum += pct;
+      if (pct > subjectMap[t].max) subjectMap[t].max = pct;
+    });
+
+    const subjects = Object.keys(subjectMap).map((s) => ({
+      subject: s,
+      attempts: subjectMap[s].count,
+      averageScore: Math.round(subjectMap[s].sum / subjectMap[s].count),
+      highestScore: subjectMap[s].max,
+    }));
+
+    const activityMap = {};
+    quizzes.forEach((q) => {
+      const d = (q.date ? new Date(q.date) : new Date()).toISOString().split("T")[0];
+      activityMap[d] = (activityMap[d] || 0) + 1;
+    });
+
+    const totalQuizzes = quizzes.length;
+    const avgScore =
+      performanceOverTime.length > 0
+        ? Math.round(performanceOverTime.reduce((a, b) => a + b.percentage, 0) / performanceOverTime.length)
+        : 0;
+    const highestScore =
+      performanceOverTime.length > 0 ? Math.max(...performanceOverTime.map((p) => p.percentage)) : 0;
+
+    res.json({
+      success: true,
+      summary: {
+        completedQuizzes: totalQuizzes,
+        averageScore: avgScore,
+        highestScore: highestScore,
+        attemptedSubjectsCount: subjects.length,
+      },
+      performanceOverTime,
+      subjects,
+      activity: Object.keys(activityMap).sort().map((d) => ({ date: d, count: activityMap[d] })),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: "Failed to load student analytics" });
+  }
+});
+
 app.get("/delete", (req, res) => {
   res.send("deleting ");
 });
@@ -989,59 +1091,17 @@ app.get("/todo/delete", isAuthenticated, async (req, res) => {
 
 
 
-//gemini logic 
-app.get("/admin/scores", async (req, res) => {
-  try {
-    // Fetch necessary fields from all users
-    const allUsers = await User.find({}, 'username educationLevel testScores');
+// ==========================================
+// ADMIN DASHBOARD & ANALYTICS APIs
+// ==========================================
+const adminRoutes = require("./routes/admin");
+app.use("/admin", adminRoutes);
 
-    // 1. Flatten the data into a more usable format for the frontend
-    let scores = [];
-    allUsers.forEach(user => {
-      user.testScores.forEach(test => {
-        // Calculate the average score for the topic
-        const avgScore = test.scores.length > 0 ?
-          (test.scores.reduce((a, b) => a + b, 0) / test.scores.length * 10).toFixed(2) : // Assuming scores are out of 10
-          0;
-
-        scores.push({
-          username: user.username,
-          educationLevel: user.educationLevel,
-          topic: test.topic,
-          scores: test.scores, // This is the array of individual scores
-          avgScore: avgScore   // This is the calculated average percentage
-        });
-      });
-    });
-    
-    // 2. Handle filtering based on query parameters from the form
-    const { topic: topicFilter, student: studentFilter } = req.query;
-    if (topicFilter) {
-      scores = scores.filter(s => s.topic === topicFilter);
-    }
-    if (studentFilter) {
-      scores = scores.filter(s => s.username === studentFilter);
-    }
-
-    // 3. Get unique topics and students for filter dropdowns
-    // These are derived from all users so the dropdowns always have all options
-    const uniqueTopics = [...new Set(allUsers.flatMap(u => u.testScores.map(t => t.topic)))];
-    const uniqueStudents = allUsers.map(u => u.username);
-
-    // 4. Render the admin panel view with all the necessary data
-    res.render("admin/scores", {
-      scores,
-      uniqueTopics,
-      uniqueStudents,
-      topic: topicFilter || '',      // Pass current filter selection to the view
-      student: studentFilter || '' // to set the selected option in the dropdown
-    });
-
-  } catch (err) {
-    console.error("Error fetching data for admin panel:", err);
-    res.status(500).send("Server Error while fetching admin data.");
-  }
-});
+// ==========================================
+// AI INTERVIEW PREPARATION REST APIs
+// ==========================================
+const interviewRoutes = require("./routes/interviews");
+app.use("/api/interviews", interviewRoutes);
 
 
 

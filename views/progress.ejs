@@ -245,6 +245,29 @@
                 </div>
             </section>
 
+            <!-- Multi-Subject Performance & Activity Grid -->
+            <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <!-- Multi-Subject Bar Chart -->
+                <div class="ls-card">
+                    <div class="ls-card-header">
+                        <h2 class="ls-card-title"><i class="fas fa-chart-column text-primary"></i> Subject-Wise Average Performance</h2>
+                    </div>
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="multiSubjectChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Activity Timeline Chart -->
+                <div class="ls-card">
+                    <div class="ls-card-header">
+                        <h2 class="ls-card-title"><i class="fas fa-calendar-check text-primary"></i> Quiz Activity Timeline</h2>
+                    </div>
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="progressActivityChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
         <% } else { %>
             <div class="empty-state">
                 <div class="empty-state-icon">
@@ -263,6 +286,7 @@
 
     <script>
         const testScoresData = <%- JSON.stringify(testScores || []) %>;
+        const userQuizzesData = <%- JSON.stringify((typeof user !== 'undefined' && user && user.quizzes) ? user.quizzes : []) %>;
         let chartInstance = null;
         let currentChartType = 'line';
         let currentTopic = '';
@@ -403,10 +427,77 @@
             }
         }
 
-        // Initialize automatically with the first topic on page load!
+        // Initialize automatically on page load
         document.addEventListener('DOMContentLoaded', function() {
             if (testScoresData.length > 0) {
                 showChart(testScoresData[0].topic);
+            }
+
+            // Multi-Subject Performance Comparison Bar Chart
+            const multiCtx = document.getElementById('multiSubjectChart');
+            if (multiCtx && testScoresData.length > 0) {
+                const topics = testScoresData.map(t => t.topic);
+                const averages = testScoresData.map(t => {
+                    return t.scores.length > 0 ? (t.scores.reduce((a, b) => a + b, 0) / t.scores.length).toFixed(1) : 0;
+                });
+                const colors = ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4', '#ec4899'];
+                new Chart(multiCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: topics,
+                        datasets: [{
+                            label: 'Average Score',
+                            data: averages,
+                            backgroundColor: topics.map((_, i) => colors[i % colors.length]),
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Activity Timeline Chart
+            const actCtx = document.getElementById('progressActivityChart');
+            if (actCtx) {
+                const activityMap = {};
+                userQuizzesData.forEach(q => {
+                    const d = q.date ? new Date(q.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
+                    activityMap[d] = (activityMap[d] || 0) + 1;
+                });
+                const dates = Object.keys(activityMap);
+                const counts = Object.values(activityMap);
+                new Chart(actCtx, {
+                    type: 'line',
+                    data: {
+                        labels: dates.length > 0 ? dates : ['Recent'],
+                        datasets: [{
+                            label: 'Quizzes Taken',
+                            data: counts.length > 0 ? counts : [testScoresData.reduce((acc, t) => acc + t.scores.length, 0)],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
             }
         });
     </script>

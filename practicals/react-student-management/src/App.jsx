@@ -70,6 +70,11 @@ export default function App() {
                 <i className="fa-solid fa-bolt"></i> Quiz
               </a>
             </li>
+            <li>
+              <a href="/interview" className="ls-nav-link">
+                <i className="fa-solid fa-user-tie"></i> Interview
+              </a>
+            </li>
           </ul>
 
           <div className="ls-nav-actions">

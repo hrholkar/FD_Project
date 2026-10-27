@@ -1,508 +1,782 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Student Analytics</title>
+    <%- include('../includes/head') %>
+    <title>Admin Analytics Dashboard | LearnSmart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/learnsmart-theme.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            font-weight: 300;
-        }
-        
-        .controls {
-            padding: 30px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .control-group {
+        .admin-kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
         }
-        
-        .form-group {
+
+        .admin-kpi-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: var(--transition-fast);
+        }
+
+        .admin-kpi-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+
+        .admin-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+        .admin-icon-wrap.blue { background: var(--primary-light); color: var(--primary); }
+        .admin-icon-wrap.green { background: #ecfdf5; color: #10b981; }
+        .admin-icon-wrap.amber { background: #fef3c7; color: #f59e0b; }
+        .admin-icon-wrap.purple { background: var(--secondary-light); color: var(--secondary); }
+        .admin-icon-wrap.cyan { background: #e0f2fe; color: #0284c7; }
+
+        .admin-kpi-num {
+            font-family: var(--font-heading);
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .admin-kpi-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .filter-panel-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .filter-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.25rem;
+            align-items: end;
+        }
+
+        .filter-field label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            color: var(--text-main);
+            background: #f8fafc;
+            outline: none;
+            transition: var(--transition-fast);
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .admin-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card-box {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
             display: flex;
             flex-direction: column;
         }
-        
-        .form-group label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #2c3e50;
+
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        
-        .form-group select, .form-group input {
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+
+        .chart-card-title {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .form-group select:focus, .form-group input:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        .charts-container {
-            padding: 30px;
-        }
-        
-        .chart-wrapper {
-            margin-bottom: 40px;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        .chart-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #3498db;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        
-        #studentSearch {
+
+        .chart-height-wrap {
+            position: relative;
+            height: 290px;
             width: 100%;
         }
-        
-        .no-data {
-            text-align: center;
-            padding: 60px;
-            color: #7f8c8d;
+
+        .comparison-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
         }
-        
-        .selected-students {
-            margin-top: 15px;
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            text-align: left;
         }
-        
-        .student-tag {
-            display: inline-block;
-            background: #3498db;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin: 3px;
-            font-size: 0.85rem;
+
+        .comparison-table th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
         }
     </style>
 </head>
 <body>
+
     <%- include('../includes/navbar', { currentPage: 'admin' }) %>
-    <div class="container">
-        <div class="header">
-            <h1>📊 Student Analytics Dashboard</h1>
-            <p>Compare and analyze student performance across subjects</p>
-        </div>
-        
-        <div class="controls">
-            <div class="control-group">
-                <div class="form-group">
-                    <label for="studentSearch">🔍 Search & Select Students:</label>
-                    <select id="studentSearch" multiple="multiple"></select>
-                    <div class="selected-students" id="selectedStudents"></div>
+
+    <main class="ls-page-wrap">
+        <!-- Hero Header -->
+        <header class="ls-hero">
+            <div>
+                <div class="ls-pill-tag"><i class="fas fa-user-shield"></i> Administration</div>
+                <h1>Institutional Learning Analytics</h1>
+                <p>Real-time platform intelligence, overall student performance trends, subject-wise score benchmarks, and enrollment distribution.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/admin/scores" class="btn btn-outline" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white;">
+                    <i class="fas fa-table-list"></i> Raw Scores Table
+                </a>
+                <button onclick="fetchAdminAnalytics()" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
+                    <i class="fas fa-arrows-rotate"></i> Refresh Data
+                </button>
+            </div>
+        </header>
+
+        <!-- Interactive Admin Filters -->
+        <section class="filter-panel-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; margin: 0; color: var(--text-main);">
+                    <i class="fas fa-filter text-primary"></i> Data Filter Controls
+                </h3>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                    Applies live across all charts and platform calculations
+                </span>
+            </div>
+
+            <div class="filter-grid-4">
+                <div class="filter-field">
+                    <label for="filterDateRange"><i class="fas fa-calendar"></i> Date Window</label>
+                    <select id="filterDateRange" class="filter-select" onchange="fetchAdminAnalytics()">
+                        <option value="all" selected>All Recorded Time</option>
+                        <option value="90d">Past 90 Days</option>
+                        <option value="30d">Past 30 Days</option>
+                        <option value="7d">Past 7 Days</option>
+                    </select>
                 </div>
-                
-                <div class="form-group">
-                    <label for="topicFilter">📚 Subject/Topic Filter:</label>
-                    <select id="topicFilter">
-                        <option value="all">All Subjects</option>
-                        <% topics.forEach(topic => { %>
-                            <option value="<%= topic %>"><%= topic %></option>
+
+                <div class="filter-field">
+                    <label for="filterTopic"><i class="fas fa-book"></i> Subject / Topic</label>
+                    <select id="filterTopic" class="filter-select" onchange="fetchAdminAnalytics()">
+                        <option value="all" selected>All Subjects</option>
+                        <% (topics || []).forEach(t => { %>
+                            <option value="<%= t %>"><%= t %></option>
                         <% }) %>
                     </select>
                 </div>
+
+                <div class="filter-field">
+                    <label for="filterCourse"><i class="fas fa-graduation-cap"></i> Course / Department</label>
+                    <select id="filterCourse" class="filter-select" onchange="fetchAdminAnalytics()">
+                        <option value="all" selected>All Departments</option>
+                        <% (courses || []).forEach(c => { %>
+                            <option value="<%= c %>"><%= c %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="filter-field">
+                    <label for="filterYear"><i class="fas fa-calendar-days"></i> Academic Year</label>
+                    <select id="filterYear" class="filter-select" onchange="fetchAdminAnalytics()">
+                        <option value="all" selected>All Academic Years</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="Postgraduate">Postgraduate</option>
+                    </select>
+                </div>
             </div>
-            
-            <div style="text-align: center;">
-                <button class="btn" onclick="loadChartData()">📈 Generate Analytics</button>
-                <button class="btn" onclick="clearSelection()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); margin-left: 10px;">🗑️ Clear Selection</button>
+        </section>
+
+        <!-- Platform KPI Summary Metrics -->
+        <section class="admin-kpi-grid">
+            <div class="admin-kpi-card">
+                <div class="admin-icon-wrap blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <div class="admin-kpi-num" id="kpiUsers">0</div>
+                    <div class="admin-kpi-label">Registered Students</div>
+                </div>
             </div>
-        </div>
-        
-        <div class="charts-container">
-            <div id="statsContainer" style="display: none;">
-                <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="admin-kpi-card">
+                <div class="admin-icon-wrap purple">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div>
+                    <div class="admin-kpi-num" id="kpiEnrolled">0</div>
+                    <div class="admin-kpi-label">Enrolled in Departments</div>
+                </div>
             </div>
-            
-            <div class="chart-wrapper" id="barChartContainer" style="display: none;">
-                <div class="chart-title">📊 Student Performance Comparison</div>
-                <canvas id="barChart" width="400" height="200"></canvas>
+
+            <div class="admin-kpi-card">
+                <div class="admin-icon-wrap green">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div>
+                    <div class="admin-kpi-num" id="kpiCompletedQuizzes">0</div>
+                    <div class="admin-kpi-label">Completed Quizzes</div>
+                </div>
             </div>
-            
-            <div class="chart-wrapper" id="lineChartContainer" style="display: none;">
-                <div class="chart-title">📈 Average Scores by Student</div>
-                <canvas id="lineChart" width="400" height="200"></canvas>
+
+            <div class="admin-kpi-card">
+                <div class="admin-icon-wrap amber">
+                    <i class="fas fa-gauge-high"></i>
+                </div>
+                <div>
+                    <div class="admin-kpi-num" id="kpiAvgScore">0%</div>
+                    <div class="admin-kpi-label">Platform Average Score</div>
+                </div>
             </div>
-            
-            <div class="no-data" id="noDataMessage">
-                <h3>👆 Select students and click "Generate Analytics" to view charts</h3>
-                <p>Use the search box above to find and select students for comparison</p>
+
+            <div class="admin-kpi-card">
+                <div class="admin-icon-wrap cyan">
+                    <i class="fas fa-cubes-stacked"></i>
+                </div>
+                <div>
+                    <div class="admin-kpi-num" id="kpiActiveSubjects">0</div>
+                    <div class="admin-kpi-label">Active Tested Subjects</div>
+                </div>
             </div>
-            
-            <div class="loading" id="loadingMessage" style="display: none;">
-                <h3>⏳ Loading analytics data...</h3>
+        </section>
+
+        <!-- Analytics Visualizations Grid -->
+        <section class="admin-charts-grid">
+            <!-- Chart A: Overall Student Performance Over Time -->
+            <div class="chart-card-box">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">
+                        <i class="fas fa-chart-line text-primary"></i> Overall Student Performance Over Time
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Platform Average %</span>
+                </div>
+                <div class="chart-height-wrap">
+                    <canvas id="platformPerformanceChart"></canvas>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <!-- Chart B: Subject-Wise Performance -->
+            <div class="chart-card-box">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">
+                        <i class="fas fa-chart-column text-primary"></i> Subject-Wise Average Performance
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Calculated from completed tests</span>
+                </div>
+                <div class="chart-height-wrap">
+                    <canvas id="subjectWiseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart D: Quiz Activity Analytics (Attempts vs Completed) -->
+            <div class="chart-card-box">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">
+                        <i class="fas fa-clock-rotate-left text-primary"></i> Quiz Activity & Completion Trends
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Attempts & Completed Assessments</span>
+                </div>
+                <div class="chart-height-wrap">
+                    <canvas id="quizActivityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart F: Performance Score Distribution -->
+            <div class="chart-card-box">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">
+                        <i class="fas fa-chart-pie text-primary"></i> Score Performance Distribution
+                    </div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Mutually exclusive grade brackets</span>
+                </div>
+                <div class="chart-height-wrap">
+                    <canvas id="distributionDoughnutChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart E: Student Enrollment Statistics -->
+        <section class="chart-card-box" style="margin-bottom: 2rem;">
+            <div class="chart-card-header">
+                <div class="chart-card-title">
+                    <i class="fas fa-school text-primary"></i> Student Enrollment Distribution
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Department & Academic Year Breakdown</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div style="height: 260px; position: relative;">
+                    <canvas id="courseDistributionChart"></canvas>
+                </div>
+                <div style="height: 260px; position: relative;">
+                    <canvas id="yearDistributionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart C: Student Performance Comparison Table & Chart -->
+        <section class="chart-card-box" style="margin-bottom: 2rem;">
+            <div class="chart-card-header">
+                <div>
+                    <div class="chart-card-title">
+                        <i class="fas fa-ranking-star text-primary"></i> Student Performance Comparison
+                    </div>
+                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">
+                        Authorized academic progress records (sensitive credentials and passwords omitted)
+                    </p>
+                </div>
+                <div>
+                    <input type="text" id="studentSearchInput" placeholder="Filter student username..." onkeyup="filterStudentTable(this.value)" class="filter-select" style="width: 240px;">
+                </div>
+            </div>
+
+            <div class="comparison-table-wrap">
+                <table class="comparison-table" id="studentCompTable">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Education Level</th>
+                            <th>Quizzes Completed</th>
+                            <th>Average Score</th>
+                            <th>Peak Score</th>
+                            <th>Performance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentCompBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                                Loading student performance comparison records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../includes/footer') %>
 
     <script>
-        let barChart = null;
-        let lineChart = null;
-        let allStudents = [];
+        // Chart instances
+        let perfChartInstance = null;
+        let subjectChartInstance = null;
+        let activityChartInstance = null;
+        let distChartInstance = null;
+        let courseChartInstance = null;
+        let yearChartInstance = null;
 
-        // Initialize Select2 for student search
-        $(document).ready(function() {
-            $('#studentSearch').select2({
-                placeholder: "Search students by name or email...",
-                allowClear: true,
-                ajax: {
-                    url: '/admin/api/search-students',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data.map(student => ({
-                                id: student._id,
-                                text: `${student.username} (${student.email}) - ${student.educationLevel}`
-                            }))
-                        };
-                    },
-                    cache: true
+        let studentsListCache = [];
+
+        async function fetchAdminAnalytics() {
+            const dateRange = document.getElementById('filterDateRange').value;
+            const topic = document.getElementById('filterTopic').value;
+            const course = document.getElementById('filterCourse').value;
+            const academicYear = document.getElementById('filterYear').value;
+
+            const params = new URLSearchParams({ dateRange, topic, course, academicYear });
+
+            try {
+                const res = await fetch(`/admin/api/analytics?${params}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    renderKPIs(data.summary);
+                    renderPerformanceOverTime(data.performanceOverTime);
+                    renderSubjectPerformance(data.subjectPerformance);
+                    renderQuizActivity(data.performanceOverTime);
+                    renderScoreDistribution(data.performanceDistribution);
+                    renderEnrollmentStats(data.enrollmentStats);
+                }
+            } catch (err) {
+                console.error('Error fetching admin analytics:', err);
+            }
+
+            // Also load comparative students table
+            fetchStudentsComparison(topic);
+        }
+
+        function renderKPIs(summary) {
+            if (!summary) return;
+            document.getElementById('kpiUsers').textContent = summary.totalRegisteredUsers;
+            document.getElementById('kpiEnrolled').textContent = summary.totalEnrolledStudents;
+            document.getElementById('kpiCompletedQuizzes').textContent = summary.totalCompletedQuizzes;
+            document.getElementById('kpiAvgScore').textContent = `${summary.platformAverageScore}%`;
+            document.getElementById('kpiActiveSubjects').textContent = summary.activeSubjectsCount;
+        }
+
+        function renderPerformanceOverTime(perf) {
+            const canvas = document.getElementById('platformPerformanceChart');
+            if (!canvas) return;
+            if (perfChartInstance) perfChartInstance.destroy();
+
+            const labels = (perf && perf.labels && perf.labels.length > 0) ? perf.labels : ['No Attempts in Window'];
+            const scores = (perf && perf.averageScores && perf.averageScores.length > 0) ? perf.averageScores : [0];
+
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+            gradient.addColorStop(0, 'rgba(67, 97, 238, 0.28)');
+            gradient.addColorStop(1, 'rgba(67, 97, 238, 0.01)');
+
+            perfChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Platform Average Score (%)',
+                        data: scores,
+                        borderColor: '#4361ee',
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#4361ee',
+                        pointBorderWidth: 2.5,
+                        pointRadius: 5
+                    }]
                 },
-                minimumInputLength: 2
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `Average Score: ${ctx.parsed.y}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: val => val + '%' },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
             });
-            
-            // Load all students for dropdown
-            loadAllStudents();
-        });
-
-        function loadAllStudents() {
-            fetch('/admin/api/all-students')
-                .then(response => response.json())
-                .then(students => {
-                    allStudents = students;
-                })
-                .catch(error => console.error('Error loading students:', error));
         }
 
-        function loadChartData() {
-            const selectedStudentIds = $('#studentSearch').val();
-            const selectedTopic = $('#topicFilter').val();
-            
-            if (!selectedStudentIds || selectedStudentIds.length === 0) {
-                alert('Please select at least one student');
-                return;
-            }
+        function renderSubjectPerformance(sub) {
+            const canvas = document.getElementById('subjectWiseChart');
+            if (!canvas) return;
+            if (subjectChartInstance) subjectChartInstance.destroy();
 
-            // Show loading
-            document.getElementById('loadingMessage').style.display = 'block';
-            document.getElementById('noDataMessage').style.display = 'none';
-            
-            const queryParams = new URLSearchParams({
-                studentIds: selectedStudentIds.join(','),
-                topic: selectedTopic
-            });
+            const labels = (sub && sub.labels && sub.labels.length > 0) ? sub.labels : ['No Subject Records'];
+            const averages = (sub && sub.averages && sub.averages.length > 0) ? sub.averages : [0];
+            const palette = ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4', '#ec4899'];
 
-            fetch(`/admin/api/students?${queryParams}`)
-                .then(response => response.json())
-                .then(data => {
-                    displayCharts(data, selectedTopic);
-                    document.getElementById('loadingMessage').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('loadingMessage').style.display = 'none';
-                    alert('Error loading data');
-                });
-        }
-
-        function displayCharts(studentsData, topic) {
-            displayStats(studentsData);
-            displayBarChart(studentsData, topic);
-            displayLineChart(studentsData);
-        }
-
-        function displayStats(studentsData) {
-            const statsContainer = document.getElementById('statsContainer');
-            const statsGrid = document.getElementById('statsGrid');
-            
-            const totalStudents = studentsData.length;
-            const totalQuizzes = studentsData.reduce((sum, student) => sum + student.totalQuizzes, 0);
-            const overallAverage = studentsData.length > 0 ? 
-                (studentsData.reduce((sum, student) => sum + parseFloat(student.averageScore), 0) / studentsData.length).toFixed(1) : 0;
-            const highestAverage = studentsData.length > 0 ? 
-                Math.max(...studentsData.map(s => parseFloat(s.averageScore))).toFixed(1) : 0;
-
-            statsGrid.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-value">${totalStudents}</div>
-                    <div class="stat-label">Students Selected</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${totalQuizzes}</div>
-                    <div class="stat-label">Total Quizzes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${overallAverage}%</div>
-                    <div class="stat-label">Overall Average</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${highestAverage}%</div>
-                    <div class="stat-label">Highest Average</div>
-                </div>
-            `;
-            
-            statsContainer.style.display = 'block';
-        }
-
-        function displayBarChart(studentsData, topic) {
-            const ctx = document.getElementById('barChart').getContext('2d');
-            
-            if (barChart) {
-                barChart.destroy();
-            }
-
-            const labels = studentsData.map(student => student.username);
-            const averageScores = studentsData.map(student => parseFloat(student.averageScore));
-            const quizCounts = studentsData.map(student => student.totalQuizzes);
-
-            barChart = new Chart(ctx, {
+            subjectChartInstance = new Chart(canvas.getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: 'Average Score (%)',
-                        data: averageScores,
-                        backgroundColor: 'rgba(52, 152, 219, 0.8)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
-                        borderWidth: 2
-                    }, {
-                        label: 'Number of Quizzes',
-                        data: quizCounts,
-                        backgroundColor: 'rgba(155, 89, 182, 0.8)',
-                        borderColor: 'rgba(155, 89, 182, 1)',
-                        borderWidth: 2,
-                        yAxisID: 'y1'
+                        data: averages,
+                        backgroundColor: labels.map((_, i) => palette[i % palette.length]),
+                        borderRadius: 8,
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Average Score (%)'
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `Subject Average: ${ctx.parsed.y}%`
                             }
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Quizzes'
-                            },
-                            grid: {
-                                drawOnChartArea: false,
-                            },
                         }
                     },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: topic === 'all' ? 'All Subjects Combined' : `Subject: ${topic}`
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: val => val + '%' },
+                            grid: { color: '#f1f5f9' }
                         },
-                        legend: {
-                            display: true
-                        }
+                        x: { grid: { display: false } }
                     }
                 }
             });
-
-            document.getElementById('barChartContainer').style.display = 'block';
         }
 
-        function displayLineChart(studentsData) {
-            const ctx = document.getElementById('lineChart').getContext('2d');
-            
-            if (lineChart) {
-                lineChart.destroy();
-            }
+        function renderQuizActivity(perf) {
+            const canvas = document.getElementById('quizActivityChart');
+            if (!canvas) return;
+            if (activityChartInstance) activityChartInstance.destroy();
 
-            // Create datasets for each student showing their individual quiz scores over time
-            const datasets = studentsData.map((student, index) => {
-                const colors = [
-                    'rgba(52, 152, 219, 1)',
-                    'rgba(231, 76, 60, 1)',
-                    'rgba(46, 204, 113, 1)',
-                    'rgba(155, 89, 182, 1)',
-                    'rgba(241, 196, 15, 1)',
-                    'rgba(230, 126, 34, 1)'
-                ];
-                
-                return {
-                    label: student.username,
-                    data: student.scores.map((score, quizIndex) => ({ x: quizIndex + 1, y: score })),
-                    borderColor: colors[index % colors.length],
-                    backgroundColor: colors[index % colors.length].replace('1)', '0.1)'),
-                    fill: false,
-                    tension: 0.1
-                };
-            });
+            const labels = (perf && perf.labels && perf.labels.length > 0) ? perf.labels : ['No Data'];
+            const attempts = (perf && perf.attemptsCount && perf.attemptsCount.length > 0) ? perf.attemptsCount : [0];
+            const completed = (perf && perf.completedCount && perf.completedCount.length > 0) ? perf.completedCount : [0];
 
-            lineChart = new Chart(ctx, {
-                type: 'line',
+            activityChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
                 data: {
-                    datasets: datasets
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Quiz Attempts',
+                            data: attempts,
+                            backgroundColor: 'rgba(67, 97, 238, 0.85)',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Completed Quizzes',
+                            data: completed,
+                            backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                            borderRadius: 6
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
                     scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            title: {
-                                display: true,
-                                text: 'Quiz Number'
-                            },
-                            ticks: {
-                                stepSize: 1
-                            }
-                        },
                         y: {
                             beginAtZero: true,
-                            max: 10,
-                            title: {
-                                display: true,
-                                text: 'Quiz Score'
-                            }
-                        }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Individual Quiz Scores Over Time'
-                        }
+                            ticks: { stepSize: 1 },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: { grid: { display: false } }
                     }
                 }
             });
-
-            document.getElementById('lineChartContainer').style.display = 'block';
         }
 
-        function clearSelection() {
-            $('#studentSearch').val(null).trigger('change');
-            $('#topicFilter').val('all');
-            
-            // Hide charts
-            document.getElementById('statsContainer').style.display = 'none';
-            document.getElementById('barChartContainer').style.display = 'none';
-            document.getElementById('lineChartContainer').style.display = 'none';
-            document.getElementById('noDataMessage').style.display = 'block';
-            
-            // Destroy existing charts
-            if (barChart) {
-                barChart.destroy();
-                barChart = null;
+        function renderScoreDistribution(dist) {
+            const canvas = document.getElementById('distributionDoughnutChart');
+            if (!canvas) return;
+            if (distChartInstance) distChartInstance.destroy();
+
+            const labels = Object.keys(dist || {});
+            const counts = Object.values(dist || {});
+
+            distChartInstance = new Chart(canvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                        borderWidth: 0,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.label}: ${ctx.parsed} student attempt(s)`
+                            }
+                        }
+                    },
+                    cutout: '68%'
+                }
+            });
+        }
+
+        function renderEnrollmentStats(stats) {
+            // Course Doughnut
+            const courseCanvas = document.getElementById('courseDistributionChart');
+            if (courseCanvas && stats && stats.courses) {
+                if (courseChartInstance) courseChartInstance.destroy();
+                courseChartInstance = new Chart(courseCanvas.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: stats.courses.labels,
+                        datasets: [{
+                            data: stats.courses.counts,
+                            backgroundColor: ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4', '#ec4899', '#8b5cf6'],
+                            borderWidth: 0,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Students by Course / Department' },
+                            legend: { position: 'bottom', labels: { boxWidth: 10 } }
+                        },
+                        cutout: '65%'
+                    }
+                });
             }
-            if (lineChart) {
-                lineChart.destroy();
-                lineChart = null;
+
+            // Year Bar
+            const yearCanvas = document.getElementById('yearDistributionChart');
+            if (yearCanvas && stats && stats.years) {
+                if (yearChartInstance) yearChartInstance.destroy();
+                yearChartInstance = new Chart(yearCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: stats.years.labels,
+                        datasets: [{
+                            label: 'Enrolled Count',
+                            data: stats.years.counts,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Students by Academic Year' },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
             }
         }
+
+        async function fetchStudentsComparison(topic) {
+            try {
+                const params = new URLSearchParams({ topic: topic || 'all' });
+                const res = await fetch(`/admin/api/students?${params}`);
+                const data = await res.json();
+                studentsListCache = data || [];
+                renderStudentsTable(studentsListCache);
+            } catch (err) {
+                console.error('Error fetching students comparison:', err);
+            }
+        }
+
+        function renderStudentsTable(students) {
+            const tbody = document.getElementById('studentCompBody');
+            if (!students || students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No student records found matching the active filter.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = students.map(s => {
+                const avgNum = parseFloat(s.averageScore) || 0;
+                let statusBadge = '<span style="background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 0.8rem;">Mastery (80%+)</span>';
+                if (avgNum < 40) {
+                    statusBadge = '<span style="background: #fee2e2; color: #dc2626; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 0.8rem;">Needs Focus (&lt;40%)</span>';
+                } else if (avgNum < 60) {
+                    statusBadge = '<span style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 0.8rem;">Developing (40-59%)</span>';
+                } else if (avgNum < 80) {
+                    statusBadge = '<span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 0.8rem;">Proficient (60-79%)</span>';
+                }
+
+                return `
+                    <tr>
+                        <td style="font-weight: 700;">
+                            <i class="fas fa-circle-user text-primary" style="margin-right: 6px;"></i> ${s.username}
+                        </td>
+                        <td>${s.educationLevel}</td>
+                        <td><strong>${s.totalQuizzes}</strong> assessment(s)</td>
+                        <td style="font-weight: 800; color: var(--text-main);">${s.averageScore}%</td>
+                        <td>${s.highestScore}%</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterStudentTable(term) {
+            const clean = (term || '').toLowerCase().trim();
+            if (!clean) {
+                renderStudentsTable(studentsListCache);
+                return;
+            }
+            const filtered = studentsListCache.filter(s => s.username.toLowerCase().includes(clean));
+            renderStudentsTable(filtered);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAdminAnalytics();
+        });
     </script>
 </body>
 </html>

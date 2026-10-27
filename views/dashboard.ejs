@@ -822,26 +822,45 @@
             </section>
 
             <!-- Visual Performance Analytics Row (Chart.js) -->
-            <section class="analytics-row">
+            <section class="analytics-row" style="margin-bottom: 1.5rem;">
                 <!-- Performance Trendline -->
                 <div class="chart-box">
                     <div class="box-header">
-                        <div class="box-title"><i class="fas fa-wave-square"></i> Score Progression Trajectory</div>
-                        <span style="font-size: 0.82rem; color: var(--gray-400); font-weight: 500;">Chronological curve</span>
+                        <div class="box-title"><i class="fas fa-chart-line"></i> Learning Performance Over Time</div>
+                        <span style="font-size: 0.82rem; color: var(--gray-400); font-weight: 500;">Chronological Quiz Score (%)</span>
                     </div>
                     <div class="chart-canvas-wrap">
                         <canvas id="progressionChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Topic Mastery Distribution -->
+                <!-- Subject-Wise Average Performance Bar Chart -->
                 <div class="chart-box">
                     <div class="box-header">
-                        <div class="box-title"><i class="fas fa-pie-chart"></i> Subject Distribution</div>
+                        <div class="box-title"><i class="fas fa-chart-bar"></i> Subject-Wise Performance</div>
+                        <span style="font-size: 0.82rem; color: var(--gray-400); font-weight: 500;">Average score % by subject</span>
                     </div>
                     <div class="chart-canvas-wrap">
-                        <canvas id="distributionChart"></canvas>
+                        <canvas id="subjectBarChart"></canvas>
                     </div>
+                </div>
+            </section>
+
+            <!-- Quiz Activity Timeline -->
+            <section class="chart-box" style="margin-bottom: 2rem;">
+                <div class="box-header" style="flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div class="box-title"><i class="fas fa-calendar-check"></i> Quiz Activity Timeline</div>
+                        <span style="font-size: 0.82rem; color: var(--gray-400); font-weight: 500;">Completed quiz assessments over calendar dates</span>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="btn btn-outline btn-sm act-filter-btn active" onclick="filterActivityChart('all', this)">All Time</button>
+                        <button type="button" class="btn btn-outline btn-sm act-filter-btn" onclick="filterActivityChart('30d', this)">Last 30 Days</button>
+                        <button type="button" class="btn btn-outline btn-sm act-filter-btn" onclick="filterActivityChart('7d', this)">Last 7 Days</button>
+                    </div>
+                </div>
+                <div class="chart-canvas-wrap" style="min-height: 220px;">
+                    <canvas id="activityChart"></canvas>
                 </div>
             </section>
 
@@ -992,26 +1011,130 @@
     </div>
 
     <script>
-        // Data payload for charts
+        // Real MongoDB Data payload for student analytics charts
         <% if (hasQuizzes) { %>
-            const quizLabels = <%- JSON.stringify(user.quizzes.map((q, i) => `${q.topic} (#${i + 1})`)) %>;
-            const quizScores = <%- JSON.stringify(user.quizzes.map(q => {
-                const correct = q.results.filter(r => r.isCorrect).length;
-                return Math.round((correct / q.results.length) * 100);
+            const rawQuizzes = <%- JSON.stringify(user.quizzes.map((q, i) => {
+                const total = q.results && q.results.length > 0 ? q.results.length : 5;
+                const correct = (q.results || []).filter(r => r.isCorrect).length;
+                const pct = Math.round((correct / total) * 100);
+                const d = q.date ? new Date(q.date) : new Date();
+                return {
+                    id: i + 1,
+                    topic: q.topic || 'General',
+                    score: pct,
+                    dateStr: d.toISOString().split('T')[0],
+                    displayDate: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                };
             })) %>;
 
-            const topicCounts = {};
-            <%- JSON.stringify(user.quizzes.map(q => q.topic)) %>.forEach(t => {
-                topicCounts[t] = (topicCounts[t] || 0) + 1;
+            const quizLabels = rawQuizzes.map(q => `${q.topic} (${q.displayDate})`);
+            const quizScores = rawQuizzes.map(q => q.score);
+
+            // Compute actual Subject-Wise average scores
+            const subjectMap = {};
+            rawQuizzes.forEach(q => {
+                if (!subjectMap[q.topic]) subjectMap[q.topic] = { sum: 0, count: 0 };
+                subjectMap[q.topic].sum += q.score;
+                subjectMap[q.topic].count++;
             });
-            const topicLabels = Object.keys(topicCounts);
-            const topicData = Object.values(topicCounts);
+            const subjectLabels = Object.keys(subjectMap);
+            const subjectAverages = subjectLabels.map(s => Math.round(subjectMap[s].sum / subjectMap[s].count));
+
         <% } else { %>
+            const rawQuizzes = [];
             const quizLabels = [];
             const quizScores = [];
-            const topicLabels = [];
-            const topicData = [];
+            const subjectLabels = [];
+            const subjectAverages = [];
         <% } %>
+
+        let activityChartInstance = null;
+
+        function renderActivityChart(filter) {
+            const canvas = document.getElementById('activityChart');
+            if (!canvas || rawQuizzes.length === 0) return;
+
+            const now = new Date();
+            let filtered = rawQuizzes;
+
+            if (filter === '7d') {
+                const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filtered = rawQuizzes.filter(q => new Date(q.dateStr) >= cutoff);
+            } else if (filter === '30d') {
+                const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                filtered = rawQuizzes.filter(q => new Date(q.dateStr) >= cutoff);
+            }
+
+            // Aggregate counts by date
+            const dateCounts = {};
+            filtered.forEach(q => {
+                dateCounts[q.dateStr] = (dateCounts[q.dateStr] || 0) + 1;
+            });
+
+            const labels = Object.keys(dateCounts).sort();
+            const counts = labels.map(d => dateCounts[d]);
+
+            if (activityChartInstance) {
+                activityChartInstance.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.02)');
+
+            activityChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Quizzes In Window'],
+                    datasets: [{
+                        label: 'Completed Quizzes',
+                        data: counts.length > 0 ? counts : [0],
+                        borderColor: '#10b981',
+                        backgroundColor: gradient,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#10b981',
+                        pointBorderWidth: 2.5,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Outfit', size: 12 },
+                            bodyFont: { family: 'Inter', size: 11 },
+                            callbacks: {
+                                label: (ctx) => `Completed: ${ctx.parsed.y} assessment(s)`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: '#64748b' },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            ticks: { color: '#64748b' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function filterActivityChart(filter, btn) {
+            document.querySelectorAll('.act-filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderActivityChart(filter);
+        }
 
         // Collapsible Accordion Logic
         function toggleSection(index, type) {
@@ -1064,7 +1187,6 @@
             exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving';
             exportBtn.disabled = true;
 
-            // Temporarily expand all bodies for export
             const bodies = card.querySelectorAll('.collapsible-body');
             bodies.forEach(b => b.classList.add('show'));
 
@@ -1115,14 +1237,13 @@
 
         // Initialize Interactive Analytics Charts
         document.addEventListener('DOMContentLoaded', () => {
-            // Mobile Menu Toggle
             const toggle = document.getElementById('mobileToggle');
             const links = document.getElementById('navLinks');
             if (toggle && links) {
                 toggle.addEventListener('click', () => links.classList.toggle('show'));
             }
 
-            // Progression Spline Chart
+            // 1. Learning Performance Over Time (Line Chart)
             const progressionCtx = document.getElementById('progressionChart');
             if (progressionCtx && quizScores.length > 0) {
                 new Chart(progressionCtx, {
@@ -1171,6 +1292,57 @@
                                 grid: { color: '#f1f5f9' }
                             },
                             x: {
+                                grid: { display: false },
+                                ticks: { maxRotation: 45, minRotation: 0 }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Subject-Wise Average Performance (Bar Chart)
+            const subjectCtx = document.getElementById('subjectBarChart');
+            if (subjectCtx && subjectLabels.length > 0) {
+                const palette = ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4', '#ec4899'];
+                new Chart(subjectCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: subjectLabels,
+                        datasets: [{
+                            label: 'Average Score (%)',
+                            data: subjectAverages,
+                            backgroundColor: subjectLabels.map((_, i) => palette[i % palette.length]),
+                            borderRadius: 8,
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                titleFont: { family: 'Outfit', size: 13 },
+                                bodyFont: { family: 'Inter', size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: (ctx) => `Average Score: ${ctx.parsed.y}%`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20,
+                                    callback: (val) => val + '%'
+                                },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
                                 grid: { display: false }
                             }
                         }
@@ -1178,36 +1350,8 @@
                 });
             }
 
-            // Subject Distribution Doughnut Chart
-            const distributionCtx = document.getElementById('distributionChart');
-            if (distributionCtx && topicLabels.length > 0) {
-                new Chart(distributionCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: topicLabels,
-                        datasets: [{
-                            data: topicData,
-                            backgroundColor: ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4'],
-                            borderWidth: 0,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 12,
-                                    font: { family: 'Inter', size: 12 }
-                                }
-                            }
-                        },
-                        cutout: '72%'
-                    }
-                });
-            }
+            // 3. Quiz Activity Timeline (Line/Area Chart)
+            renderActivityChart('all');
         });
     </script>
     <%- include('includes/footer') %>
