@@ -1,408 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progress Dashboard | LearnSmart</title>
-
+    <%- include('includes/head') %>
+    <title>Progress & Scores Hub | LearnSmart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-light: #e8edff;
-            --secondary: #7209b7;
-            --success: #06d6a0;
-            --warning: #ffd166;
-            --danger: #ef476f;
-            --dark: #1e1e2e;
-            --light: #f8f9ff;
-            --gray-100: #f3f4f8;
-            --gray-200: #e2e5ec;
-            --gray-300: #c5cbd7;
-            --gray-600: #6b7280;
-            --gray-800: #374151;
-            --gray-900: #1f2937;
-            --card-shadow: 0 10px 20px rgba(135, 138, 171, 0.1);
-            --hover-shadow: 0 15px 30px rgba(135, 138, 171, 0.2);
-            --border-radius: 16px;
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-            color: var(--gray-800);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* Navigation - Consistent with other pages */
-        .navbar {
-            background: white;
-            box-shadow: 0 4px 12px rgba(135, 138, 171, 0.12);
-            padding: 0.8rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .topic-pills-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-        .navbar-brand {
-            display: flex; align-items: center; gap: 12px; text-decoration: none;
-        }
-        .logo {
-            width: 40px; height: 40px; background: var(--primary); border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 20px; flex-shrink: 0;
-        }
-        .brand-text {
-            font-size: 22px; font-weight: 700; color: var(--dark);
-        }
-        .navbar-nav {
-            display: flex; align-items: center; gap: 8px;
-        }
-        .nav-link {
-            padding: 10px 16px; border-radius: 10px; text-decoration: none;
-            color: var(--gray-800); font-weight: 500; transition: all 0.3s ease;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: var(--primary-light); color: var(--primary);
-        }
-        .nav-link.active { font-weight: 600; }
-        .nav-link i { font-size: 18px; }
-        .navbar-actions {
-            display: flex; align-items: center; gap: 12px;
-        }
-        .btn {
-            padding: 10px 20px; border-radius: 10px; font-weight: 500;
-            cursor: pointer; transition: all 0.3s ease; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px; border: none; font-size: 14px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #3550d4; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3); }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: #e53665; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239, 71, 111, 0.3); }
-        .mobile-toggle { display: none; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--dark); }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2.5rem 2rem;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        .header h1 {
-            font-size: clamp(2.25rem, 4vw, 3rem);
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-        .header p {
-            color: var(--gray-600);
-            font-size: 1.125rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Topic Navigation */
-        .topic-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        .topic-btn {
+        .topic-pill-btn {
             background: white;
-            border: 1px solid var(--gray-200);
-            color: var(--gray-800);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 18px;
+            border-radius: var(--radius-full);
             cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
+            transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92rem;
             font-weight: 600;
-            box-shadow: var(--card-shadow);
+            box-shadow: var(--shadow-xs);
         }
-        .topic-btn:hover {
+
+        .topic-pill-btn:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: var(--hover-shadow);
+            color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-1px);
         }
-        .topic-btn.active {
+
+        .topic-pill-btn.active {
             background: var(--primary);
-            border-color: var(--primary);
             color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
         }
-        .topic-btn-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
+
+        .topic-pill-badge {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .topic-pill-btn.active .topic-pill-badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        .stats-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card-kpi {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: var(--transition-fast);
+        }
+
+        .stat-card-kpi:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+
+        .stat-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-        }
-        .topic-btn-subtitle {
-            font-size: 0.9rem;
-            font-weight: 400;
-            opacity: 0.7;
+            font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
-        /* Statistics Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+        .stat-icon-wrap.primary { background: var(--primary-light); color: var(--primary); }
+        .stat-icon-wrap.success { background: var(--success-light); color: var(--success); }
+        .stat-icon-wrap.warning { background: var(--warning-light); color: var(--warning); }
+        .stat-icon-wrap.secondary { background: var(--secondary-light); color: var(--secondary); }
+
+        .stat-info-wrap .stat-num {
+            font-family: var(--font-heading);
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
         }
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--gray-200);
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
+
+        .stat-info-wrap .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 2px;
         }
-        .stat-header {
+
+        .chart-box {
+            position: relative;
+            height: 380px;
+            width: 100%;
+        }
+
+        .chart-btn-group {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-        .stat-icon {
-            width: 48px; height: 48px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: white;
-        }
-        .stat-icon.attempts { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .stat-icon.best { background: linear-gradient(135deg, var(--success), #059669); }
-        .stat-icon.average { background: linear-gradient(135deg, var(--warning), #d97706); }
-        .stat-icon.improvement { background: linear-gradient(135deg, var(--secondary), #6d28d9); }
-
-        .stat-value {
-            font-size: 2.25rem; font-weight: 700; color: var(--gray-900);
-            line-height: 1; margin-bottom: 0.25rem;
-        }
-        .stat-label {
-            color: var(--gray-600); font-size: 0.9rem; font-weight: 500;
-        }
-
-        /* Chart Section */
-        .chart-section {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--gray-200);
-            box-shadow: var(--card-shadow);
-        }
-        .chart-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
-        }
-        .chart-title {
-            font-size: 1.5rem; font-weight: 600; color: var(--dark);
-        }
-        .chart-controls {
-            display: flex; gap: 0.5rem; flex-wrap: wrap;
-        }
-        .chart-control-btn {
-            background: var(--gray-100); border: 1px solid var(--gray-200);
-            color: var(--gray-800); padding: 0.5rem 1rem; border-radius: 8px;
-            cursor: pointer; transition: var(--transition); font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .chart-control-btn:hover {
-            background: var(--gray-200); border-color: var(--gray-300);
-        }
-        .chart-control-btn.active {
-            background: var(--primary); border-color: var(--primary);
-            color: white; box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
-        }
-        .chart-container {
-            position: relative; height: 400px; width: 100%;
-        }
-
-        /* No Data State */
-        .no-data {
-            text-align: center; padding: 4rem 2rem; background: white;
-            border-radius: var(--border-radius); border: 2px dashed var(--gray-200);
-        }
-        .no-data-icon { font-size: 4rem; color: var(--gray-300); margin-bottom: 1.5rem; }
-        .no-data h2 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--dark); }
-        .no-data p { color: var(--gray-600); font-size: 1.1rem; }
-
-        /* Toast notification */
-        .toast {
-            position: fixed; bottom: 20px; right: 20px; background: var(--dark);
-            color: white; padding: 12px 20px; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 10000;
-            display: flex; align-items: center; gap: 10px;
-            opacity: 0; transform: translateY(20px); transition: all 0.3s ease;
-        }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        .toast.warning { background: var(--warning); }
-        .toast.info { background: var(--primary); }
-
-        /* Animations */
-        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
-        .slide-up { animation: slideUp 0.6s ease-out forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        <% if (testScores && testScores.length > 0) { %>
-            <% testScores.forEach((_, index) => { %>
-                .topic-btn:nth-child(<%= index + 1 %>) { animation-delay: <%= index * 0.05 %>s; }
-            <% }) %>
-        <% } %>
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .navbar-nav, .navbar-actions { display: none; }
-            .mobile-toggle { display: block; }
-            .navbar-nav.active {
-                display: flex; position: absolute; top: 100%; left: 0; right: 0;
-                background: white; flex-direction: column; padding: 1rem;
-                box-shadow: 0 10px 20px rgba(135, 138, 171, 0.15);
-                border-top: 1px solid var(--gray-200);
-            }
-        }
-        @media (max-width: 768px) {
-            .container { padding: 2rem 1rem; }
-            .chart-header { flex-direction: column; align-items: flex-start; }
-            .chart-container { height: 300px; }
+            gap: 6px;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/" class="navbar-brand">
-            <div class="logo">LS</div>
-            <span class="brand-text">LearnSmart</span>
-        </a>
-        <div class="navbar-nav" id="navbarNavDesktop">
-            <a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="/progress" class="nav-link active"><i class="fas fa-chart-line"></i> Progress</a>
-            <a href="/students" class="nav-link"><i class="fas fa-user-graduate"></i> Students</a>
-            <a href="/notes" class="nav-link"><i class="fas fa-sticky-note"></i> Notes</a>
-            <a href="/todo" class="nav-link"><i class="fas fa-tasks"></i> To-Do</a>
-        </div>
-        <div class="navbar-actions">
-            <a href="/logout" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-        <button class="mobile-toggle" id="mobileToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-    </nav>
-     <div class="navbar-nav" id="navbarNavMobile" style="display:none;">
-            <a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="/progress" class="nav-link active"><i class="fas fa-chart-line"></i> Progress</a>
-            <a href="/students" class="nav-link"><i class="fas fa-user-graduate"></i> Students</a>
-            <a href="/notes" class="nav-link"><i class="fas fa-sticky-note"></i> Notes</a>
-            <a href="/todo" class="nav-link"><i class="fas fa-tasks"></i> To-Do</a>
-            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </div>
 
-    <div class="container">
-        <header class="header fade-in">
-            <h1>Your Progress Hub</h1>
-            <p>Track your learning journey and see your improvement over time.</p>
+    <%- include('includes/navbar', { currentPage: 'progress' }) %>
+
+    <main class="ls-page-wrap">
+        <!-- Hero Header -->
+        <header class="ls-hero">
+            <div>
+                <div class="ls-pill-tag"><i class="fas fa-chart-line"></i> Performance Analytics</div>
+                <h1>Your Learning Progress Hub</h1>
+                <p>Track test assessment trends, monitor score improvements, and visualize your mastery over time.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="/quiz" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
+                    <i class="fas fa-bolt"></i> Take New Quiz
+                </a>
+                <a href="/dashboard" class="btn btn-outline" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white;">
+                    <i class="fas fa-gauge-high"></i> Dashboard
+                </a>
+            </div>
         </header>
 
         <% if (testScores && testScores.length > 0) { %>
-            <section class="topic-navigation">
-                <div class="topic-buttons" id="topicButtons">
-                    <% testScores.forEach((topicData, index) => { %>
-                        <button class="topic-btn slide-up" id="btn-<%= topicData.topic %>" onclick="showChart('<%= topicData.topic %>')">
-                            <div class="topic-btn-title">
-                                <i class="fas fa-atom"></i>
-                                <span><%= topicData.topic %></span>
-                            </div>
-                            <div class="topic-btn-subtitle">
-                                <%= topicData.scores.length %> attempt<%= topicData.scores.length !== 1 ? 's' : '' %>
-                            </div>
-                        </button>
-                    <% }) %>
-                </div>
-            </section>
+            <!-- Subject Selection Pills -->
+            <div class="topic-pills-row" id="topicButtons">
+                <span style="font-weight: 700; color: var(--text-main); font-size: 0.92rem; margin-right: 4px;">
+                    <i class="fas fa-book text-primary"></i> Subjects:
+                </span>
+                <% testScores.forEach((topicData, index) => { %>
+                    <button class="topic-pill-btn <%= index === 0 ? 'active' : '' %>" id="btn-<%= topicData.topic %>" onclick="showChart('<%= topicData.topic %>')">
+                        <i class="fas fa-code"></i>
+                        <span><%= topicData.topic %></span>
+                        <span class="topic-pill-badge"><%= topicData.scores.length %> <%= topicData.scores.length === 1 ? 'test' : 'tests' %></span>
+                    </button>
+                <% }) %>
+            </div>
 
-            <section class="stats-grid" id="statsContainer" style="display: none;">
-                <div class="stat-card">
-                    <div class="stat-header"><div class="stat-icon attempts"><i class="fas fa-list-check"></i></div></div>
-                    <div class="stat-value" id="totalAttempts">0</div>
-                    <div class="stat-label">Total Attempts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header"><div class="stat-icon best"><i class="fas fa-trophy"></i></div></div>
-                    <div class="stat-value" id="bestScore">0</div>
-                    <div class="stat-label">Best Score</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header"><div class="stat-icon average"><i class="fas fa-calculator"></i></div></div>
-                    <div class="stat-value" id="avgScore">0</div>
-                    <div class="stat-label">Average Score</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header"><div class="stat-icon improvement"><i class="fas fa-chart-line"></i></div></div>
-                    <div class="stat-value" id="improvement">0</div>
-                    <div class="stat-label">Improvement</div>
-                </div>
-            </section>
-
-            <section class="chart-section" id="chartSection" style="display: none;">
-                <div class="chart-header">
-                    <h2 class="chart-title" id="chartTitle">Select a topic to see your progress</h2>
-                    <div class="chart-controls">
-                        <button class="chart-control-btn active" onclick="toggleChartType(this, 'line')"><i class="fas fa-chart-line"></i> Line</button>
-                        <button class="chart-control-btn" onclick="toggleChartType(this, 'bar')"><i class="fas fa-chart-bar"></i> Bar</button>
-                        <button class="chart-control-btn" onclick="exportChart()"><i class="fas fa-download"></i> Export</button>
+            <!-- 4-Metric Balanced KPI Grid -->
+            <section class="stats-grid-4" id="statsContainer">
+                <div class="stat-card-kpi">
+                    <div class="stat-icon-wrap primary">
+                        <i class="fas fa-list-check"></i>
+                    </div>
+                    <div class="stat-info-wrap">
+                        <div class="stat-num" id="totalAttempts">0</div>
+                        <div class="stat-label">Total Assessments</div>
                     </div>
                 </div>
-                <div class="chart-container">
+
+                <div class="stat-card-kpi">
+                    <div class="stat-icon-wrap success">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-info-wrap">
+                        <div class="stat-num" id="bestScore">0</div>
+                        <div class="stat-label">Highest Score</div>
+                    </div>
+                </div>
+
+                <div class="stat-card-kpi">
+                    <div class="stat-icon-wrap warning">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="stat-info-wrap">
+                        <div class="stat-num" id="avgScore">0</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                </div>
+
+                <div class="stat-card-kpi">
+                    <div class="stat-icon-wrap secondary">
+                        <i class="fas fa-arrow-trend-up"></i>
+                    </div>
+                    <div class="stat-info-wrap">
+                        <div class="stat-num" id="improvement">0</div>
+                        <div class="stat-label">Net Score Trajectory</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chart Card -->
+            <section class="ls-card mb-4" id="chartSection">
+                <div class="ls-card-header">
+                    <div>
+                        <h2 class="ls-card-title" id="chartTitle">
+                            <i class="fas fa-chart-area text-primary"></i> Assessment Score Trajectory
+                        </h2>
+                        <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: var(--text-muted);">
+                            Chronological history of your quiz performance
+                        </p>
+                    </div>
+
+                    <div class="chart-btn-group">
+                        <button class="btn btn-outline btn-sm" id="btnLine" onclick="toggleChartType(this, 'line')">
+                            <i class="fas fa-chart-line"></i> Line
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="btnBar" onclick="toggleChartType(this, 'bar')">
+                            <i class="fas fa-chart-bar"></i> Bar
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="exportChart()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chart-box">
                     <canvas id="scoreChart"></canvas>
                 </div>
             </section>
 
         <% } else { %>
-            <div class="no-data fade-in">
-                <div class="no-data-icon"><i class="fas fa-layer-group"></i></div>
-                <h2>No Progress Data Available</h2>
-                <p>Complete some quizzes to start tracking your performance and growth.</p>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-chart-simple"></i>
+                </div>
+                <h2 class="empty-state-title">No Assessment Progress Data Yet</h2>
+                <p class="empty-state-desc">You haven't completed any quizzes yet. Complete your first practice assessment to track performance analytics, score growth, and customized learning insights.</p>
+                <a href="/quiz" class="btn btn-primary">
+                    <i class="fas fa-bolt"></i> Start a Practice Assessment
+                </a>
             </div>
         <% } %>
-    </div>
-    
-    <div id="toast" class="toast">
-        <i id="toast-icon" class="fas fa-info-circle"></i>
-        <span id="toast-message"></span>
-    </div>
+    </main>
+
+    <%- include('includes/footer') %>
 
     <script>
-        const testScoresData = <%- JSON.stringify(testScores) %>;
-        let chartInstance;
+        const testScoresData = <%- JSON.stringify(testScores || []) %>;
+        let chartInstance = null;
         let currentChartType = 'line';
         let currentTopic = '';
 
@@ -429,16 +290,8 @@
                 improvementEl.style.color = 'var(--danger)';
             } else {
                 improvementEl.textContent = '0';
-                improvementEl.style.color = 'var(--gray-600)';
+                improvementEl.style.color = 'var(--text-muted)';
             }
-
-            const statsContainer = document.getElementById('statsContainer');
-            statsContainer.style.display = 'grid';
-            statsContainer.querySelectorAll('.stat-card').forEach(card => {
-                card.classList.remove('slide-up');
-                void card.offsetWidth; // Trigger reflow to restart animation
-                card.classList.add('slide-up');
-            });
         }
 
         function createChart(topic, type) {
@@ -451,28 +304,28 @@
 
             if (chartInstance) chartInstance.destroy();
 
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(67, 97, 238, 0.5)');
-            gradient.addColorStop(1, 'rgba(67, 97, 238, 0)');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+            gradient.addColorStop(0, 'rgba(67, 97, 238, 0.28)');
+            gradient.addColorStop(1, 'rgba(67, 97, 238, 0.01)');
 
             chartInstance = new Chart(ctx, {
                 type: type,
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: `${topic} Scores`,
+                        label: `${topic} Assessment Score`,
                         data: scores,
-                        borderColor: "var(--primary)",
-                        backgroundColor: type === 'line' ? gradient : 'rgba(67, 97, 238, 0.7)',
+                        borderColor: '#4361ee',
+                        backgroundColor: type === 'line' ? gradient : '#4361ee',
                         fill: type === 'line',
-                        tension: 0.4,
-                        pointRadius: 5,
+                        tension: 0.35,
+                        pointRadius: 6,
                         pointHoverRadius: 8,
-                        pointBackgroundColor: "var(--primary)",
-                        pointBorderColor: "#ffffff",
-                        pointBorderWidth: 2,
-                        borderWidth: 2.5,
-                        borderRadius: type === 'bar' ? 6 : 0,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#4361ee',
+                        pointBorderWidth: 2.5,
+                        borderWidth: 3,
+                        borderRadius: type === 'bar' ? 8 : 0,
                     }]
                 },
                 options: {
@@ -482,24 +335,33 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(30, 41, 59, 0.9)',
-                            titleFont: { size: 14, weight: 'bold', family: 'Inter' },
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 13, family: 'Outfit', weight: '700' },
                             bodyFont: { size: 12, family: 'Inter' },
                             padding: 12,
                             cornerRadius: 8,
                             displayColors: false,
+                            callbacks: {
+                                label: (ctx) => `Score: ${ctx.parsed.y} points`
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             max: Math.max(10, Math.max(...scores) + 2),
-                            grid: { color: 'rgba(226, 232, 240, 0.7)' },
-                            ticks: { color: 'var(--gray-600)' }
+                            grid: { color: '#f1f5f9' },
+                            ticks: { 
+                                color: '#64748b',
+                                font: { family: 'Inter' }
+                            }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { color: 'var(--gray-600)' }
+                            ticks: { 
+                                color: '#64748b',
+                                font: { family: 'Inter' }
+                            }
                         }
                     }
                 }
@@ -508,22 +370,22 @@
 
         function showChart(topic) {
             currentTopic = topic;
-            document.querySelectorAll('.topic-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${topic}`).classList.add('active');
+            document.querySelectorAll('.topic-pill-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`btn-${topic}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
             updateStats(topic);
-            document.getElementById('chartTitle').textContent = `${topic} Progress Chart`;
-            const chartSection = document.getElementById('chartSection');
-            chartSection.style.display = 'block';
-            chartSection.classList.remove('slide-up');
-            void chartSection.offsetWidth;
-            chartSection.classList.add('slide-up');
+            const titleEl = document.getElementById('chartTitle');
+            if (titleEl) {
+                titleEl.innerHTML = `<i class="fas fa-chart-area text-primary"></i> ${topic} Score Progression`;
+            }
             createChart(topic, currentChartType);
         }
 
         function toggleChartType(button, type) {
             currentChartType = type;
-            document.querySelectorAll('.chart-control-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
+            document.querySelectorAll('.chart-btn-group .btn').forEach(btn => btn.classList.remove('btn-primary'));
+            button.classList.add('btn-primary');
             if (currentTopic) {
                 createChart(currentTopic, type);
             }
@@ -538,33 +400,15 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                showToast('Chart exported successfully!', 'success');
-            } else {
-                showToast('Please select a topic to export its chart.', 'warning');
             }
         }
 
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
-            
-            toastMessage.textContent = message;
-            toast.className = 'toast'; // Reset
-            toast.classList.add(type, 'show');
-            
-            const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-            toastIcon.className = `fas ${icons[type]}`;
-            
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        document.getElementById('mobileToggle').addEventListener('click', function() {
-            const nav = document.getElementById('navbarNavMobile');
-            nav.style.display = nav.style.display === 'none' ? 'flex' : 'none';
-            nav.classList.toggle('active');
+        // Initialize automatically with the first topic on page load!
+        document.addEventListener('DOMContentLoaded', function() {
+            if (testScoresData.length > 0) {
+                showChart(testScoresData[0].topic);
+            }
         });
-
     </script>
 </body>
 </html>

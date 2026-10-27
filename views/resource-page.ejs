@@ -2,617 +2,975 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>📘 Personalized Learning Plan: <%= topic %></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <title>Personalized Learning Roadmap: <%= topic %> | LearnSmart</title>
+
+  <!-- Google Fonts & Font Awesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/learnsmart-theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
   <style>
-    /* Global Styles */
     :root {
-      --primary-color: #5b6df5;
-      --primary-color-dark: #4a56d4;
-      --secondary-color: #10b981;
-      --accent-color: #f59e0b;
-      --text-color: #2d3748;
-      --text-color-light: #4a5568;
-      --bg-color: #f8fafc;
-      --card-bg-color: #ffffff;
+      --primary: #4361ee;
+      --primary-light: #e8edff;
+      --primary-dark: #3144c9;
+      --secondary: #7209b7;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --dark: #0f172a;
+      --slate-800: #1e293b;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-page: #f8fafc;
+      --card-bg: #ffffff;
       --border-color: #e2e8f0;
-      --nav-bg: #ffffff;
-      --nav-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      --link-color: #3b82f6;
-      --link-hover: #2563eb;
-      --success-color: #10b981;
-      --warning-color: #f59e0b;
-      --error-color: #ef4444;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.07);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 12px 25px -4px rgb(0 0 0 / 0.09), 0 4px 10px -2px rgb(0 0 0 / 0.04);
+      --shadow-xl: 0 20px 35px -5px rgb(67 97 238 / 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-heading: 'Outfit', sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+      --gradient-brand: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+      --gradient-surface: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
     }
 
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.7;
-      padding-top: 0;
+      font-family: var(--font-body);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.65;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Navbar Styles */
+    /* Navbar */
     .navbar {
-      background: var(--nav-bg);
-      box-shadow: var(--nav-shadow);
-      padding: 1rem 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
+      padding: 0.9rem 1.5rem;
     }
-
-    .container {
+    .nav-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .nav-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--primary-color);
-      text-decoration: none;
-      font-family: 'Montserrat', sans-serif;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
     }
-
-    .logo i {
-      font-size: 1.3rem;
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--gradient-brand);
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
     }
-
     .nav-links {
       display: flex;
-      gap: 1.5rem;
       align-items: center;
+      gap: 1.25rem;
     }
-
     .nav-links a {
       text-decoration: none;
-      color: var(--text-color);
-      transition: all 0.3s ease;
+      color: var(--text-muted);
       font-weight: 500;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
     }
-
     .nav-links a:hover {
-      color: var(--primary-color);
+      color: var(--primary);
+      background: var(--primary-light);
     }
-
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--text-color);
-    }
-
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
       text-decoration: none;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      font-size: 0.95rem;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
     }
-
     .btn-primary {
-      background: var(--primary-color);
-      color: white;
+      background: var(--primary);
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
     }
-
     .btn-primary:hover {
-      background: var(--primary-color-dark);
+      background: var(--primary-dark);
       transform: translateY(-1px);
     }
-
     .btn-outline {
-      border: 2px solid var(--primary-color);
-      color: var(--primary-color);
-      background: transparent;
+      border-color: var(--border-color);
+      color: var(--text-main) !important;
+      background: white;
     }
-
     .btn-outline:hover {
-      background: rgba(91, 109, 245, 0.1);
+      border-color: var(--primary);
+      color: var(--primary) !important;
+      background: var(--primary-light);
     }
 
-    /* Learning Plan Content Styles */
-    .content-container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 50px;
-      background-color: var(--card-bg-color);
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      border: 1px solid var(--border-color);
+    /* Main Container */
+    .main-wrap {
+      max-width: 1140px;
+      margin: 2.5rem auto 4rem auto;
+      padding: 0 1.5rem;
+      width: 100%;
     }
 
-    h1 {
-      font-family: 'Montserrat', sans-serif;
-      text-align: center;
-      color: var(--primary-color);
-      font-size: 2.8rem;
-      margin: 0 0 15px 0;
+    /* Hero Header */
+    .hero-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      margin-bottom: 2rem;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(114, 9, 183, 0.35) 0%, rgba(67, 97, 238, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: 30%;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(67, 97, 238, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      z-index: 2;
+    }
+    .topic-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #93c5fd;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .status-needs-work {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .status-progressing {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .status-mastered {
+      background: rgba(16, 185, 129, 0.2);
+      color: #a7f3d0;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 2.4rem;
+      font-weight: 800;
       line-height: 1.2;
+      margin-bottom: 0.75rem;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      max-width: 720px;
+      position: relative;
+      z-index: 2;
     }
 
-    .topic-display {
-      text-align: center;
-      color: var(--text-color-light);
-      font-size: 1.1rem;
-      margin-bottom: 40px;
+    /* Executive Score & KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 880px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-gauge-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 2rem 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-    }
-
-    .topic-display strong {
-      color: var(--text-color);
-      font-weight: 700;
-      background: rgba(91, 109, 245, 0.1);
-      padding: 8px 16px;
-      border-radius: 50px;
-      font-size: 1.2rem;
-    }
-
-    .score-display {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      background: rgba(16, 185, 129, 0.1);
-      padding: 8px 16px;
-      border-radius: 50px;
-      color: var(--success-color);
-      font-weight: 600;
-    }
-
-    .section {
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .section:first-of-type {
-      border-top: none;
-      padding-top: 0;
-      margin-top: 0;
-    }
-
-    .section h2 {
-      font-family: 'Montserrat', sans-serif;
-      color: var(--primary-color);
-      margin-bottom: 20px;
-      font-size: 1.8rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .section h2 i {
-      font-size: 1.5rem;
-      color: var(--accent-color);
-    }
-
-    .section p {
-      font-size: 1.05rem;
-      color: var(--text-color);
-      line-height: 1.8;
-      margin-bottom: 20px;
-      white-space: pre-line;
-    }
-
-    /* Enhanced Link Styling */
-    .section p a {
-      color: var(--link-color);
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.2s ease;
+      justify-content: center;
+      text-align: center;
       position: relative;
-      padding: 2px 4px;
-      border-radius: 4px;
+    }
+    .gauge-circle {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin-bottom: 1.25rem;
+    }
+    .gauge-circle svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    .gauge-circle circle {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
+    .gauge-bg {
+      stroke: #f1f5f9;
+    }
+    .gauge-fill {
+      stroke: var(--primary);
+      transition: stroke-dashoffset 1.5s ease;
+    }
+    .gauge-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .gauge-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .gauge-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
     }
 
-    .section p a:hover {
-      color: var(--link-hover);
-      background: rgba(59, 130, 246, 0.1);
+    .metrics-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
     }
-
-    .section p a::after {
-      content: "↗";
-      font-size: 0.8em;
-      margin-left: 2px;
-      opacity: 0.7;
+    @media (max-width: 600px) {
+      .metrics-col {
+        grid-template-columns: 1fr;
+      }
     }
-
-    /* Link Cards */
-    .link-card {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 15px;
-      border-radius: 10px;
-      background: var(--bg-color);
+    .metric-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
       border: 1px solid var(--border-color);
-      margin-bottom: 15px;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: var(--text-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
     }
-
-    .link-card:hover {
+    .metric-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      border-color: var(--primary-color);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
     }
-
-    .link-card-icon {
-      flex-shrink: 0;
-      width: 40px;
-      height: 40px;
+    .metric-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(91, 109, 245, 0.1);
-      border-radius: 8px;
-      color: var(--primary-color);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .icon-blue { background: #eff6ff; color: #3b82f6; }
+    .icon-green { background: #ecfdf5; color: #10b981; }
+    .icon-rose { background: #fff1f2; color: #f43f5e; }
+    .metric-num {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .metric-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Section Headers */
+    .section-title-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #eef2f6;
+    }
+    .section-heading {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-heading i {
+      color: var(--primary);
       font-size: 1.2rem;
     }
+    .section-tag {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-    .link-card-content {
+    /* 4-Step Learning Roadmap Timeline */
+    .roadmap-track {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2.5rem;
+    }
+    .timeline-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      position: relative;
+    }
+    @media (max-width: 900px) {
+      .timeline-steps {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+    .timeline-step {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .step-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .timeline-step.active .step-badge {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 0 0 5px rgba(67, 97, 238, 0.2);
+    }
+    .step-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Video Resources Cards Grid */
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .resource-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .resource-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: #cbd5e1;
+    }
+    .resource-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+    .card-type-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .icon-yt {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    .icon-doc {
+      background: #e0f2fe;
+      color: #0284c7;
+    }
+    .card-meta-wrap {
       flex: 1;
     }
-
-    .link-card-title {
-      font-weight: 600;
+    .card-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 4px;
       margin-bottom: 4px;
-      color: var(--primary-color);
     }
-
-    .link-card-url {
-      font-size: 0.85rem;
-      color: var(--text-color-light);
-      word-break: break-all;
+    .badge-video { background: #fee2e2; color: #b91c1c; }
+    .badge-article { background: #e0f2fe; color: #0369a1; }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
     }
-
-    /* Problem Boxes */
-    .problem-box {
-      background: rgba(245, 158, 11, 0.05);
-      border-left: 4px solid var(--accent-color);
-      padding: 15px;
-      border-radius: 0 8px 8px 0;
-      margin: 15px 0;
-    }
-
-    .problem-box-title {
+    .card-action-btn {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
       font-weight: 600;
-      color: var(--accent-color);
-      margin-bottom: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .resource-card:hover .card-action-btn {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Structured AI Insights Markdown Container */
+    .study-markdown-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 2.25rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+    .study-markdown-content h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 1.5rem 0 0.75rem 0;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    .study-markdown-content h3:first-child {
+      margin-top: 0;
+    }
+    .study-markdown-content p {
+      margin-bottom: 1rem;
+      color: #334155;
+    }
+    .study-markdown-content ul {
+      margin-bottom: 1.25rem;
+      padding-left: 1.5rem;
+    }
+    .study-markdown-content li {
+      margin-bottom: 0.5rem;
+      color: #334155;
+    }
+    .study-markdown-content strong {
+      color: #0f172a;
+    }
 
-    /* Button Container */
-    .btn-container {
-      text-align: center;
-      margin-top: 50px;
-      padding-top: 30px;
-      border-top: 1px solid var(--border-color);
+    /* Question Performance Accordion */
+    .quiz-review-wrap {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2.5rem;
+    }
+    .review-list {
       display: flex;
-      justify-content: center;
-      gap: 15px;
+      flex-direction: column;
+      gap: 1rem;
     }
-
-    .btn-plan {
-      display: inline-flex;
+    .review-item {
+      padding: 1.25rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: #fafafa;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .review-item.is-correct {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .review-item.is-wrong {
+      background: #fff1f2;
+      border-color: #fecdd3;
+    }
+    .review-indicator {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
       align-items: center;
-      gap: 10px;
-      background-color: var(--primary-color);
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+    .is-correct .review-indicator {
+      background: #10b981;
       color: white;
-      padding: 14px 28px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.1rem;
+    }
+    .is-wrong .review-indicator {
+      background: #f43f5e;
+      color: white;
+    }
+    .review-content {
+      flex: 1;
+    }
+    .review-q-text {
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.15);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      margin-bottom: 6px;
+    }
+    .review-answers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-size: 0.88rem;
+    }
+    .ans-selected {
+      color: var(--text-muted);
+    }
+    .ans-correct {
+      color: #15803d;
+      font-weight: 600;
     }
 
-    .btn-plan:hover {
-      background-color: var(--primary-color-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.25);
+    /* Action Dock */
+    .action-dock {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: 1.75rem 2rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .dock-left h4 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .dock-left p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .dock-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
     }
 
-    .btn-plan-secondary {
-      background: white;
-      color: var(--primary-color);
-      border: 2px solid var(--primary-color);
-    }
-
-    .btn-plan-secondary:hover {
-      background: rgba(91, 109, 245, 0.1);
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-      .mobile-menu-btn {
-        display: block;
+    /* Print Styles */
+    @media print {
+      .navbar, .dock-buttons, .hero-top .btn {
+        display: none !important;
       }
-      
-      .nav-links {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: var(--nav-bg);
-        flex-direction: column;
-        gap: 0;
-        padding: 1rem 0;
-        box-shadow: var(--nav-shadow);
-        display: none;
+      .main-wrap {
+        margin: 0;
+        padding: 0;
       }
-      
-      .nav-links.active {
-        display: flex;
+      .hero-banner {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        color: #000;
+        background: #fff;
       }
-      
-      .nav-links a {
-        padding: 1rem;
-        width: 100%;
-        text-align: center;
-      }
-      
-      .nav-links .btn {
-        margin: 0.5rem auto;
-        display: block;
-        width: 80%;
-        text-align: center;
-      }
-      
-      .content-container {
-        padding: 30px;
-      }
-      
-      h1 {
-        font-size: 2.2rem;
-      }
-      
-      .section h2 {
-        font-size: 1.5rem;
-      }
-
-      .btn-container {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .btn-plan {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.8rem;
-      }
-      
-      .section h2 {
-        font-size: 1.3rem;
-      }
-      
-      .content-container {
-        padding: 25px 20px;
-        margin: 20px 0;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-      }
-      
-      .btn-plan {
-        padding: 12px 24px;
-        font-size: 1rem;
-      }
-
-      .topic-display strong {
-        font-size: 1rem;
+      .hero-subtitle {
+        color: #444;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="container nav-container">
-      <a href="/" class="logo"><i class="fas fa-brain"></i> LearnSmart</a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="nav-links" id="navLinks">
-        <a href="/students">Students</a>
-        <a href="/notes">Notes</a>
-        <a href="/todo">To-Do</a>
-        <% if (currentUser) { %>
-          <a href="/dashboard" class="btn btn-primary"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-          <a href="/logout" class="btn btn-outline">Logout</a>
+
+  <%- include('includes/navbar', { currentPage: 'quiz' }) %>
+
+  <main class="main-wrap">
+
+    <!-- Hero Header -->
+    <header class="hero-banner">
+      <div class="hero-top">
+        <span class="topic-pill">
+          <i class="fas fa-bolt"></i> <%= topic %> Specialization
+        </span>
+        <% if (percentage >= 80) { %>
+          <span class="status-badge status-mastered"><i class="fas fa-check-double"></i> Advanced Mastery Track</span>
+        <% } else if (percentage >= 50) { %>
+          <span class="status-badge status-progressing"><i class="fas fa-chart-line"></i> Solid Core — Intermediate Track</span>
         <% } else { %>
-          <a href="/login" class="btn btn-outline">Login</a>
+          <span class="status-badge status-needs-work"><i class="fas fa-bullseye"></i> Foundations Practice Recommended</span>
         <% } %>
+      </div>
+
+      <h1 class="hero-title">Personalized Learning Roadmap & Study Plan</h1>
+      <p class="hero-subtitle">
+        Intelligent diagnostic recommendations and curated multi-modal resources generated dynamically for <strong><%= topic %></strong>.
+      </p>
+    </header>
+
+    <!-- Executive KPI Grid & Gauge -->
+    <section class="kpi-grid">
+      <!-- Donut Dial Card -->
+      <div class="kpi-gauge-card">
+        <div class="gauge-circle">
+          <svg viewBox="0 0 100 100">
+            <circle class="gauge-bg" cx="50" cy="50" r="42"></circle>
+            <% 
+              const radius = 42;
+              const circumference = 2 * Math.PI * radius;
+              const offset = circumference - (percentage / 100) * circumference;
+            %>
+            <circle class="gauge-fill" cx="50" cy="50" r="42" 
+                    stroke-dasharray="<%= circumference %>" 
+                    stroke-dashoffset="<%= offset %>"></circle>
+          </svg>
+          <div class="gauge-text"><%= percentage %>%</div>
+        </div>
+        <div class="gauge-label">Assessment Accuracy</div>
+        <div class="gauge-sub">Based on <%= total %> diagnostic questions</div>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="metrics-col">
+        <div class="metric-card">
+          <div class="metric-icon icon-blue"><i class="fas fa-list-check"></i></div>
+          <div>
+            <div class="metric-num"><%= total %></div>
+            <div class="metric-title">Questions Tested</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon icon-green"><i class="fas fa-check-circle"></i></div>
+          <div>
+            <div class="metric-num"><%= score %></div>
+            <div class="metric-title">Correct Answers</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon icon-rose"><i class="fas fa-lightbulb"></i></div>
+          <div>
+            <div class="metric-num"><%= total - score %></div>
+            <div class="metric-title">Concepts To Solidify</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-Step Interactive Learning Roadmap Timeline -->
+    <section class="roadmap-track">
+      <div class="section-title-wrap">
+        <h2 class="section-heading"><i class="fas fa-route"></i> Your Strategic Learning Milestones</h2>
+        <span class="section-tag">Target completion: 4-6 days</span>
+      </div>
+      <div class="timeline-steps">
+        <div class="timeline-step <%= percentage < 50 ? 'active' : '' %>">
+          <div class="step-badge">1</div>
+          <div class="step-title">Diagnostic Analysis</div>
+          <div class="step-desc">Inspect missed questions, identify syntax or memory misconceptions in <%= topic %>.</div>
+        </div>
+
+        <div class="timeline-step <%= percentage >= 50 && percentage < 80 ? 'active' : '' %>">
+          <div class="step-badge">2</div>
+          <div class="step-title">Video Deep-Dives</div>
+          <div class="step-desc">Watch targeted masterclasses covering core paradigms, memory models, and standard libraries.</div>
+        </div>
+
+        <div class="timeline-step <%= percentage >= 80 ? 'active' : '' %>">
+          <div class="step-badge">3</div>
+          <div class="step-title">Hands-on Code Labs</div>
+          <div class="step-desc">Solve 3 practical code challenges and implement working clean implementations.</div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-badge">4</div>
+          <div class="step-title">Mastery Retake</div>
+          <div class="step-desc">Retake the assessment to validate your understanding and log improvement on your Dashboard.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Personalized Insights & Study Guide -->
+    <section class="study-markdown-card">
+      <div class="section-title-wrap">
+        <h2 class="section-heading"><i class="fas fa-compass"></i> Personalized Curriculum & Remediation Guide</h2>
+        <span class="section-tag">AI Calibrated</span>
+      </div>
+      <div class="study-markdown-content" id="markdownContainer"></div>
+    </section>
+
+    <!-- Curated Video Masterclasses -->
+    <% if (videos && videos.length > 0) { %>
+      <section style="margin-bottom: 2.5rem;">
+        <div class="section-title-wrap">
+          <h2 class="section-heading"><i class="fab fa-youtube" style="color: #ef4444;"></i> Recommended Video Masterclasses</h2>
+          <span class="section-tag">Interactive video lessons</span>
+        </div>
+        <div class="resources-grid">
+          <% videos.forEach(v => { %>
+            <div class="resource-card">
+              <div>
+                <div class="resource-top">
+                  <div class="card-type-icon icon-yt"><i class="fab fa-youtube"></i></div>
+                  <div class="card-meta-wrap">
+                    <span class="card-badge badge-video">Video Course</span>
+                    <h3 class="card-title"><%= v.title %></h3>
+                  </div>
+                </div>
+              </div>
+              <a href="<%= v.url %>" target="_blank" rel="noopener noreferrer" class="card-action-btn">
+                <span>Watch Video Tutorial</span>
+                <i class="fas fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <!-- Curated Documentation & Reading Guides -->
+    <% if (articles && articles.length > 0) { %>
+      <section style="margin-bottom: 2.5rem;">
+        <div class="section-title-wrap">
+          <h2 class="section-heading"><i class="fas fa-book-bookmark" style="color: #0284c7;"></i> Official Documentation & References</h2>
+          <span class="section-tag">Standard documentation & tutorials</span>
+        </div>
+        <div class="resources-grid">
+          <% articles.forEach(a => { %>
+            <div class="resource-card">
+              <div>
+                <div class="resource-top">
+                  <div class="card-type-icon icon-doc"><i class="fas fa-file-lines"></i></div>
+                  <div class="card-meta-wrap">
+                    <span class="card-badge badge-article">Documentation</span>
+                    <h3 class="card-title"><%= a.title %></h3>
+                  </div>
+                </div>
+              </div>
+              <a href="<%= a.url %>" target="_blank" rel="noopener noreferrer" class="card-action-btn">
+                <span>Read Official Guide</span>
+                <i class="fas fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <!-- Question Diagnostic Review (If results available) -->
+    <% if (quizResults && quizResults.length > 0) { %>
+      <section class="quiz-review-wrap">
+        <div class="section-title-wrap">
+          <h2 class="section-heading"><i class="fas fa-clipboard-check"></i> Diagnostic Assessment Breakdown</h2>
+          <span class="section-tag"><%= score %> of <%= total %> correct</span>
+        </div>
+        <div class="review-list">
+          <% quizResults.forEach(r => { %>
+            <div class="review-item <%= r.isCorrect ? 'is-correct' : 'is-wrong' %>">
+              <div class="review-indicator">
+                <i class="fas <%= r.isCorrect ? 'fa-check' : 'fa-xmark' %>"></i>
+              </div>
+              <div class="review-content">
+                <div class="review-q-text">Q<%= r.questionNumber %>: <%= r.question %></div>
+                <div class="review-answers">
+                  <div class="ans-selected">
+                    Your Answer: <strong><%= r.yourAnswer || 'No answer selected' %></strong>
+                  </div>
+                  <% if (!r.isCorrect) { %>
+                    <div class="ans-correct">
+                      Correct Key: <strong><%= r.correctAnswer %></strong>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <!-- Action Dock -->
+    <div class="action-dock">
+      <div class="dock-left">
+        <h4>Ready to level up your mastery?</h4>
+        <p>Retake this assessment anytime or head back to your analytics dashboard.</p>
+      </div>
+      <div class="dock-buttons">
+        <a href="/quiz" class="btn btn-primary">
+          <i class="fas fa-rotate-right"></i> Take Another Quiz
+        </a>
+        <a href="/dashboard" class="btn btn-outline">
+          <i class="fas fa-gauge-high"></i> Dashboard
+        </a>
+        <button onclick="window.print()" class="btn btn-outline">
+          <i class="fas fa-print"></i> Print / Save PDF
+        </button>
       </div>
     </div>
-  </nav>
 
-  <!-- Learning Plan Content -->
-  <div class="container">
-    <main class="content-container" role="main">
-      <h1>📘 Personalized Learning Plan</h1>
-      <div class="topic-display">
-        <span>Topic: <strong><%= topic.toUpperCase() %></strong></span>
-        <% if (typeof percentageScore !== 'undefined') { %>
-          <div class="score-display">
-            <i class="fas fa-chart-line"></i>
-            <span>Quiz Score: <%= percentageScore %>%</span>
-          </div>
-        <% } %>
-      </div>
-
-      <%
-        // Process the resource content
-        const urlRegex = /(https?:\/\/[^\s"'\(\)<>]+)/g;
-        const sections = resource.split(/\*\*(.*?)\*\*/g);
-        
-        // Function to detect YouTube links
-        const isYouTubeLink = (url) => {
-          return url.includes('youtube.com') || url.includes('youtu.be');
-        };
-        
-        // Function to extract domain from URL
-        const getDomain = (url) => {
-          try {
-            const domain = new URL(url).hostname.replace('www.', '');
-            return domain.split('.')[0];
-          } catch {
-            return 'resource';
-          }
-        };
-        
-        // Function to get icon for domain
-        const getDomainIcon = (url) => {
-          if (isYouTubeLink(url)) return 'fab fa-youtube';
-          if (url.includes('github.com')) return 'fab fa-github';
-          if (url.includes('medium.com')) return 'fab fa-medium';
-          if (url.includes('wikipedia.org')) return 'fab fa-wikipedia-w';
-          return 'fas fa-external-link-alt';
-        };
-      %>
-
-      <% for (let i = 1; i < sections.length; i += 2) { %>
-        <% const title = sections[i].trim(); %>
-        <% let content = sections[i+1] ? sections[i+1].trim() : ''; %>
-
-        <% if (title && content) { %>
-          <section class="section">
-            <h2>
-              <% if (title.includes('Performance')) { %>
-                <i class="fas fa-chart-pie"></i>
-              <% } else if (title.includes('Mistakes')) { %>
-                <i class="fas fa-exclamation-triangle"></i>
-              <% } else if (title.includes('Resources')) { %>
-                <i class="fas fa-book-open"></i>
-              <% } else if (title.includes('Practice')) { %>
-                <i class="fas fa-pencil-alt"></i>
-              <% } else if (title.includes('Next')) { %>
-                <i class="fas fa-arrow-right"></i>
-              <% } else { %>
-                <i class="fas fa-star"></i>
-              <% } %>
-              <%= title %>
-            </h2>
-            
-            <% 
-              // Convert URLs to link cards
-              const urlMatches = content.match(urlRegex) || [];
-              const uniqueUrls = [...new Set(urlMatches)];
-              
-              uniqueUrls.forEach(url => {
-                const domain = getDomain(url);
-                const icon = getDomainIcon(url);
-                const title = domain.charAt(0).toUpperCase() + domain.slice(1) + ' Resource';
-                
-                const linkCard = `
-                  <a href="${url}" target="_blank" rel="noopener noreferrer" class="link-card">
-                    <div class="link-card-icon">
-                      <i class="${icon}"></i>
-                    </div>
-                    <div class="link-card-content">
-                      <div class="link-card-title">${title}</div>
-                      <div class="link-card-url">${url}</div>
-                    </div>
-                  </a>
-                `;
-                
-                content = content.replace(url, linkCard);
-              });
-              
-              // Convert problem statements to boxes
-              content = content.replace(/🔹\s*\*\*(.*?)\*\*:\s*(.*?)(?=\n🔹|\n\n|$)/gs, (match, problemTitle, problemContent) => {
-                return `
-                  <div class="problem-box">
-                    <div class="problem-box-title">
-                      <i class="fas fa-question-circle"></i>
-                      ${problemTitle}
-                    </div>
-                    <div>${problemContent}</div>
-                  </div>
-                `;
-              });
-            %>
-            
-            <p><%- content %></p>
-          </section>
-        <% } %>
-      <% } %>
-
-      <div class="btn-container">
-        <a href="/quiz" class="btn-plan"><i class="fas fa-redo"></i> Take Another Quiz</a>
-        <% if (currentUser) { %>
-          <a href="/dashboard" class="btn-plan btn-plan-secondary"><i class="fas fa-tachometer-alt"></i> Back to Dashboard</a>
-        <% } %>
-      </div>
-    </main>
-  </div>
+  </main>
 
   <script>
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.getElementById('navLinks');
-    
-    mobileMenuBtn.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-    });
-    
-    // Close menu when clicking on a link (for mobile)
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) {
-          navLinks.classList.remove('active');
-        }
-      });
-    });
-
-    // Add link preview functionality
+    // Clean, robust markdown parsing for study guide
     document.addEventListener('DOMContentLoaded', () => {
-      // This would be where you'd add link preview API calls if you wanted
-      // For now we're just using the enhanced styling
+      const rawMarkdown = `<%- JSON.stringify(resource || "") %>`;
+      try {
+        const cleanText = JSON.parse(rawMarkdown);
+        if (cleanText && window.marked) {
+          document.getElementById('markdownContainer').innerHTML = marked.parse(cleanText);
+        } else {
+          document.getElementById('markdownContainer').innerText = cleanText;
+        }
+      } catch (e) {
+        console.warn("Markdown parse issue:", e);
+        document.getElementById('markdownContainer').innerText = `<%- resource %>`;
+      }
     });
   </script>
+  <%- include('includes/footer') %>
 </body>
 </html>

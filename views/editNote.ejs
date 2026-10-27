@@ -1,189 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <%- include('includes/head') %>
   <title>Edit Note | LearnSmart</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <style>
-    /* Navbar Styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .navbar {
-      background: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 1rem 0;
-      position: relative;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .nav-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #2c3e50;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: #2c3e50;
-      transition: color 0.3s ease;
-    }
-
-    .nav-links a:hover {
-      color: #3498db;
-    }
-
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #2c3e50;
-    }
-
-    .cta-button {
-      display: inline-block;
-      padding: 0.8rem 2rem;
-      background: #3498db;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: background 0.3s ease;
-    }
-
-    .cta-button:hover {
-      background: #2980b9;
-    }
-
-    .nav-links .login-button {
-      text-decoration: none;
-      border: 2px solid #2c3e50;
-      border-radius: 5px;
-      padding: 8px 15px;
-      display: inline-block;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-      .mobile-menu-btn {
-        display: block;
-      }
-      
-      .nav-links {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: #fff;
-        flex-direction: column;
-        gap: 0;
-        padding: 1rem 0;
-        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-        display: none;
-      }
-      
-      .nav-links.active {
-        display: flex;
-      }
-      
-      .nav-links a {
-        padding: 1rem;
-        width: 100%;
-        text-align: center;
-      }
-      
-      .nav-links .cta-button,
-      .nav-links .login-button {
-        margin: 0.5rem auto;
-        display: block;
-        width: 80%;
-        text-align: center;
-      }
-    }
-  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
-  <!-- Responsive Navbar -->
-  <nav class="navbar">
-    <div class="container nav-container">
-      <a href="/" class="logo">LearnSmart</a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="nav-links" id="navLinks">
-        <a href="/notes">Notes</a>
-        <a href="/todo">To-Do</a>
-        <% if (currentUser) { %>
-          <a href="dashboard" class="cta-button">Dashboard</a>
-          <a href="/logout" class="login-button">Logout</a>
-        <% } else { %>
-          <a href="/login" class="login-button">Login</a>
-        <% } %>
+<body>
+
+  <%- include('includes/navbar', { currentPage: 'notes' }) %>
+
+  <main class="ls-page-wrap-narrow">
+    <div style="margin-bottom: 1.5rem;">
+      <a href="/notes" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to Notes
+      </a>
+    </div>
+
+    <div class="ls-card">
+      <div class="ls-card-header">
+        <h2 class="ls-card-title">
+          <i class="fas fa-pen-to-square text-primary"></i> Edit Study Note
+        </h2>
+        <span class="badge badge-primary"><i class="fas fa-sync"></i> Editing note #<%= index + 1 %></span>
       </div>
+
+      <form action="/notes/edit/<%= index %>" method="POST">
+        <div class="form-group">
+          <label class="form-label" for="editNoteTitle">Note Title</label>
+          <input 
+            type="text" 
+            id="editNoteTitle"
+            name="title" 
+            value="<%= note.title %>" 
+            required 
+            class="form-control" 
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editNoteContent">Note Content</label>
+          <textarea 
+            id="editNoteContent"
+            name="content" 
+            required 
+            class="form-control"
+            rows="6"
+          ><%= note.content %></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+          <a href="/notes" class="btn btn-outline">Cancel</a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-floppy-disk"></i> Save Changes
+          </button>
+        </div>
+      </form>
     </div>
-  </nav>
+  </main>
 
-  <!-- Edit Note Form -->
-  <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-    <h1 class="text-2xl font-bold mb-6 text-indigo-600 text-center">✏️ Edit Note</h1>
+  <%- include('includes/footer') %>
 
-    <form action="/notes/edit/<%= index %>" method="POST" class="space-y-4">
-      <input type="text" name="title" value="<%= note.title %>" required 
-             class="border p-2 w-full rounded focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
-      <textarea name="content" required 
-                class="border p-2 w-full rounded h-24 focus:ring-2 focus:ring-indigo-400 focus:border-transparent"><%= note.content %></textarea>
-      <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors">
-        💾 Save Changes
-      </button>
-    </form>
-
-    <div class="mt-4 text-center">
-      <a href="/notes" class="text-indigo-600 hover:underline">← Back to Notes</a>
-    </div>
-  </div>
-
-  <script>
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.getElementById('navLinks');
-    
-    mobileMenuBtn.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-    });
-    
-    // Close menu when clicking on a link (for mobile)
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) {
-          navLinks.classList.remove('active');
-        }
-      });
-    });
-  </script>
 </body>
 </html>

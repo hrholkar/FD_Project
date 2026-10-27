@@ -29,33 +29,62 @@ export default function App() {
 
   return (
     <div className="sms-app">
-      {/* Top Navbar */}
-      <header className="sms-navbar">
-        <div className="sms-brand">
-          <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div className="sms-logo-icon">
-              LS
+      {/* Unified LearnSmart Shared Navigation Bar */}
+      <nav className="ls-navbar">
+        <div className="ls-nav-container">
+          <a href="/" className="ls-brand">
+            <div className="ls-brand-icon">
+              <i className="fa-solid fa-brain"></i>
             </div>
-            <div>
-              <h1 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--dark)' }}>LearnSmart</h1>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Student Management System</span>
-            </div>
+            <span>LearnSmart</span>
           </a>
-        </div>
 
-        <div className="sms-nav-actions">
-          <nav style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <a href="/dashboard" className="btn-link-home"><i className="fa-solid fa-chart-bar"></i> Dashboard</a>
-            <a href="/notes" className="btn-link-home"><i className="fa-solid fa-sticky-note"></i> Notes</a>
-            <a href="/todo" className="btn-link-home"><i className="fa-solid fa-tasks"></i> To-Do</a>
-            <a href="/quiz" className="btn-link-home"><i className="fa-solid fa-brain"></i> Quiz</a>
-            <a href="/" className="btn-link-home" style={{ background: '#f1f5f9', fontWeight: 'bold' }}><i className="fa-solid fa-house"></i> Home</a>
-          </nav>
-          <span className="badge-redux">
-            <i className="fa-solid fa-bolt"></i> Redux Active
-          </span>
+          <ul className="ls-nav-menu" id="lsNavMenu">
+            <li>
+              <a href="/dashboard" className="ls-nav-link">
+                <i className="fa-solid fa-gauge-high"></i> Dashboard
+              </a>
+            </li>
+            <li>
+              <a href="/progress" className="ls-nav-link">
+                <i className="fa-solid fa-chart-line"></i> Progress
+              </a>
+            </li>
+            <li>
+              <a href="/students" className="ls-nav-link active">
+                <i className="fa-solid fa-user-graduate"></i> Students
+              </a>
+            </li>
+            <li>
+              <a href="/notes" className="ls-nav-link">
+                <i className="fa-solid fa-book-open"></i> Notes
+              </a>
+            </li>
+            <li>
+              <a href="/todo" className="ls-nav-link">
+                <i className="fa-solid fa-list-check"></i> To-Do
+              </a>
+            </li>
+            <li>
+              <a href="/quiz" className="ls-nav-link">
+                <i className="fa-solid fa-bolt"></i> Quiz
+              </a>
+            </li>
+          </ul>
+
+          <div className="ls-nav-actions">
+            <span className="badge-redux" title="Real-time Redux state synced with MongoDB">
+              <i className="fa-solid fa-circle-dot" style={{ color: '#10b981' }}></i> Redux Active
+            </span>
+            <a href="/quiz" className="btn btn-primary btn-sm">
+              <i className="fa-solid fa-plus"></i> New Quiz
+            </a>
+            <a href="/logout" className="btn btn-outline btn-sm">
+              <i className="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+          </div>
         </div>
-      </header>
+      </nav>
 
       {/* Main Container */}
       <main className="sms-container">
@@ -127,8 +156,10 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="sms-footer">
-        &copy; {new Date().getFullYear()} LearnSmart &bull; Student Management System &bull; Powered by React, Redux & MongoDB
+      <footer className="ls-footer">
+        <div className="ls-container">
+          <p>&copy; {new Date().getFullYear()} LearnSmart &bull; AI-Powered Adaptive Learning & Student Management Platform</p>
+        </div>
       </footer>
     </div>
   );

@@ -108,6 +108,20 @@ const topicResources = [
         { title: "C Language - GeeksforGeeks", url: "https://www.geeksforgeeks.org/c-programming-language/" },
         { title: "C Programming - W3Schools", url: "https://www.w3schools.com/c/" }
       ]
+    },
+    {
+      topic: "C++",
+      videos: [
+        { title: "C++ Full Course for Beginners - FreeCodeCamp", url: "https://www.youtube.com/watch?v=vLnPwxZdW4Y" },
+        { title: "C++ Programming Tutorial Series - The Cherno", url: "https://www.youtube.com/watch?v=18c3MTX0PK0&list=PLlrATfBNZ98dudnM48yfGUldqGD0S4Gb9" },
+        { title: "Object-Oriented Programming in C++", url: "https://www.youtube.com/watch?v=wN0x9eZLix4" }
+      ],
+      articles: [
+        { title: "C++ Programming Language - GeeksforGeeks", url: "https://www.geeksforgeeks.org/c-plus-plus/" },
+        { title: "Learn C++ - Comprehensive Tutorials (LearnCpp.com)", url: "https://www.learncpp.com/" },
+        { title: "C++ Language Reference - CppReference", url: "https://en.cppreference.com/w/cpp" },
+        { title: "C++ Tutorial - W3Schools", url: "https://www.w3schools.com/cpp/" }
+      ]
     }
   ];
   module.exports = topicResources;  

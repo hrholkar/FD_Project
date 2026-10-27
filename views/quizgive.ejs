@@ -6,6 +6,7 @@
     <title><%= topic %> Quiz | LearnSmart</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="/css/learnsmart-theme.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -265,25 +266,7 @@
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="container nav-container">
-            <a href="/" class="logo">LearnSmart</a>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="nav-links" id="navLinks">
-                <a href="/students">Students</a>
-                <a href="/notes">Notes</a>
-                <a href="/todo">To-Do</a>
-                <% if (currentUser) { %>
-                    <a href="/dashboard" class="btn btn-primary">Dashboard</a>
-                    <a href="/logout" class="btn btn-outline">Logout</a>
-                <% } else { %>
-                    <a href="/login" class="btn btn-outline">Login</a>
-                <% } %>
-            </div>
-        </div>
-    </nav>
+    <%- include('includes/navbar', { currentPage: 'quiz' }) %>
 
     <div class="quiz-container">
         <div class="quiz-header">
@@ -374,6 +357,6 @@
             });
         });
     </script>
-
+    <%- include('includes/footer') %>
 </body>
 </html>

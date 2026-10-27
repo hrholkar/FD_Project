@@ -1,407 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>📝 To-Do List | LearnSmart</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    /* Custom Styles */
-    :root {
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --primary-light: #e0e7ff;
-      --secondary: #10b981;
-      --text: #1f2937;
-      --text-light: #6b7280;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --border: #e5e7eb;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg);
-      min-height: 100vh;
-    }
-
-    /* Navbar Styles */
-    .navbar {
-      background: var(--primary);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-      height: 4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      color: white;
-      font-weight: 600;
-      font-size: 1.25rem;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    .nav-link {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 0;
-      position: relative;
-      transition: opacity 0.2s ease;
-    }
-
-    .nav-link:hover {
-      opacity: 0.9;
-    }
-
-    .nav-link.active {
-      font-weight: 600;
-    }
-
-    .nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: white;
-    }
-
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    /* Main Content */
-    .todo-container {
-      max-width: 32rem;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    .todo-card {
-      background: var(--card);
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      padding: 2rem;
-      border: 1px solid var(--border);
-    }
-
-    .todo-title {
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 1.5rem;
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    /* Form Styles */
-    .todo-form {
-      display: flex;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .todo-input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-    }
-
-    .todo-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-light);
-    }
-
-    .add-btn {
-      background: var(--primary);
-      color: white;
-      padding: 0 1.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .add-btn:hover {
-      background: var(--primary-dark);
-    }
-
-    /* List Styles */
-    .todo-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .todo-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      background: var(--bg);
-      border-radius: 0.5rem;
-      transition: all 0.2s ease;
-    }
-
-    .todo-item:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .todo-text {
-      flex: 1;
-      margin-right: 1rem;
-      word-break: break-word;
-    }
-
-    .todo-text.completed {
-      text-decoration: line-through;
-      color: var(--text-light);
-    }
-
-    .todo-actions {
-      display: flex;
-      gap: 0.75rem;
-    }
-
-    .todo-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.1rem;
-      transition: transform 0.2s ease;
-    }
-
-    .todo-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .complete-btn {
-      color: var(--secondary);
-    }
-
-    .delete-btn {
-      color: #ef4444;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 1.5rem;
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .back-link:hover {
-      color: var(--primary-dark);
-      text-decoration: underline;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-      .mobile-menu-btn {
-        display: block;
-      }
-
-      .nav-links {
-        position: fixed;
-        top: 4rem;
-        left: 0;
-        width: 100%;
-        background: var(--primary-dark);
-        flex-direction: column;
-        gap: 0;
-        padding: 1rem 0;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        display: none;
-      }
-
-      .nav-links.active {
-        display: flex;
-      }
-
-      .nav-link {
-        padding: 0.75rem 1.5rem;
-        width: 100%;
-      }
-
-      .nav-link.active::after {
-        display: none;
-      }
-
-      .todo-card {
-        padding: 1.5rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .todo-form {
-        flex-direction: column;
-      }
-
-      .add-btn {
-        padding: 0.75rem;
-      }
-    }
-  </style>
+  <%- include('includes/head') %>
+  <title>Study To-Do List | LearnSmart</title>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="/" class="logo">
-        <i class="fas fa-brain"></i> LearnSmart
-      </a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="nav-links" id="navLinks">
-        <a href="/dashboard" class="nav-link">
-          <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-        <a href="/students" class="nav-link">
-          <i class="fas fa-user-graduate"></i> Students
-        </a>
-        <a href="/notes" class="nav-link">
-          <i class="fas fa-sticky-note"></i> Notes
-        </a>
-        <a href="/todo" class="nav-link active">
-          <i class="fas fa-tasks"></i> To-Do
-        </a>
+
+  <%- include('includes/navbar', { currentPage: 'todo' }) %>
+
+  <main class="ls-page-wrap-narrow">
+    <!-- Hero Banner -->
+    <div class="ls-hero">
+      <div>
+        <div class="ls-pill-tag"><i class="fas fa-list-check"></i> Task Tracker</div>
+        <h1>Study Tasks & Milestones</h1>
+        <p>Keep track of revision goals, assignment deadlines, and quiz prep milestones.</p>
+      </div>
+      <div>
+        <span class="badge" style="background: rgba(255,255,255,0.15); color: white; padding: 8px 16px; font-size: 0.9rem;">
+          <i class="fas fa-check-double"></i> <%= todos.filter(t => t.completed).length %> of <%= todos.length %> Completed
+        </span>
       </div>
     </div>
-  </nav>
 
-  <!-- Main Content -->
-  <div class="todo-container">
-    <div class="todo-card">
-      <h1 class="todo-title">
-        <i class="fas fa-tasks"></i> Your To-Do List
-      </h1>
+    <!-- Main To-Do Card -->
+    <div class="ls-card">
+      <div class="ls-card-header">
+        <h2 class="ls-card-title">
+          <i class="fas fa-calendar-check text-primary"></i> Daily Task List
+        </h2>
+        <span class="badge badge-primary"><i class="fas fa-clock"></i> In Progress</span>
+      </div>
 
       <!-- Add Task Form -->
-      <form action="/todo/add" method="GET" class="todo-form">
+      <form action="/todo/add" method="GET" style="display: flex; gap: 10px; margin-bottom: 2rem;">
         <input 
           type="text" 
           name="task" 
-          placeholder="What needs to be done?" 
+          placeholder="What do you need to study or complete next?" 
           required
-          class="todo-input"
-        >
-        <button type="submit" class="add-btn">
-          <i class="fas fa-plus"></i> Add
+          class="form-control"
+          style="flex: 1;"
+        />
+        <button type="submit" class="btn btn-primary" style="flex-shrink: 0;">
+          <i class="fas fa-plus"></i> Add Task
         </button>
       </form>
 
-      <!-- To-Do List -->
-      <ul class="todo-list">
-        <% if (todos.length === 0) { %>
-          <li class="text-center text-gray-500 py-4">
-            No tasks yet. Add one above!
-          </li>
-        <% } else { %>
+      <!-- Task List -->
+      <% if (!todos || todos.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <h3 class="empty-state-title">All Caught Up!</h3>
+          <p class="empty-state-desc">You don't have any study tasks queued right now. Add a task above to schedule your revision.</p>
+        </div>
+      <% } else { %>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
           <% todos.forEach((todo, index) => { %>
-            <li class="todo-item">
-              <span class="todo-text <%= todo.completed ? 'completed' : '' %>">
-                <%= todo.task %>
-              </span>
-              <div class="todo-actions">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: <%= todo.completed ? '#f8fafc' : 'white' %>; border: 1px solid <%= todo.completed ? '#e2e8f0' : '#cbd5e1' %>; border-radius: var(--radius-sm); transition: var(--transition-fast); box-shadow: var(--shadow-xs);">
+              <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: <%= todo.completed ? 'var(--success-light)' : 'var(--primary-light)' %>; color: <%= todo.completed ? 'var(--success)' : 'var(--primary)' %>; font-size: 0.85rem; flex-shrink: 0;">
+                  <i class="fas <%= todo.completed ? 'fa-check' : 'fa-circle-dot' %>"></i>
+                </div>
+                <span style="font-size: 0.98rem; font-weight: <%= todo.completed ? '400' : '600' %>; color: <%= todo.completed ? 'var(--text-light)' : 'var(--text-main)' %>; text-decoration: <%= todo.completed ? 'line-through' : 'none' %>; word-break: break-word;">
+                  <%= todo.task %>
+                </span>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                 <% if (!todo.completed) { %>
-                  <a 
-                    href="/todo/complete?index=<%= index %>" 
-                    class="todo-btn complete-btn"
-                    aria-label="Complete task"
-                  >
-                    <i class="fas fa-check"></i>
+                  <a href="/todo/complete?index=<%= index %>" class="btn btn-outline btn-sm" style="color: var(--success) !important; border-color: #a7f3d0;" title="Mark Complete">
+                    <i class="fas fa-check"></i> Done
                   </a>
+                <% } else { %>
+                  <span class="badge badge-success"><i class="fas fa-check"></i> Completed</span>
                 <% } %>
-                <a 
-                  href="/todo/delete?index=<%= index %>" 
-                  class="todo-btn delete-btn"
-                  aria-label="Delete task"
-                >
-                  <i class="fas fa-trash-alt"></i>
+                <a href="/todo/delete?index=<%= index %>" class="btn btn-outline btn-sm" style="color: var(--danger) !important; border-color: #fecaca;" title="Delete Task" onclick="return confirm('Delete this task?');">
+                  <i class="fas fa-trash-can"></i>
                 </a>
               </div>
-            </li>
+            </div>
           <% }); %>
-        <% } %>
-      </ul>
+        </div>
+      <% } %>
 
-      <!-- Back Link -->
-      <div class="text-center">
-        <a href="/dashboard" class="back-link">
-          <i class="fas fa-arrow-left"></i> Back to Dashboard
+      <!-- Back Navigation -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <a href="/dashboard" class="btn btn-outline btn-sm">
+          <i class="fas fa-arrow-left"></i> Return to Dashboard
+        </a>
+        <a href="/quiz" class="btn btn-primary btn-sm">
+          <i class="fas fa-bolt"></i> Practice Quiz
         </a>
       </div>
     </div>
-  </div>
+  </main>
 
-  <script>
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.getElementById('navLinks');
-    
-    mobileMenuBtn.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-      mobileMenuBtn.setAttribute(
-        'aria-expanded', 
-        navLinks.classList.contains('active')
-      );
-    });
-    
-    // Close menu when clicking on a link (for mobile)
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) {
-          navLinks.classList.remove('active');
-          mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        }
-      });
-    });
+  <%- include('includes/footer') %>
 
-    // Close menu when clicking outside (for mobile)
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 && 
-          navLinks.classList.contains('active') &&
-          !e.target.closest('.nav-container')) {
-        navLinks.classList.remove('active');
-        mobileMenuBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-  </script>
 </body>
 </html>

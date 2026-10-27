@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personalized Learning | LearnSmart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/learnsmart-theme.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -277,29 +278,28 @@
         @media (max-width: 480px) {
             .form-section { padding: 1.5rem; }
         }
+
+        .topic-badge {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .topic-badge:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container nav-container">
-            <a href="/" class="logo">LearnSmart</a>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="nav-links" id="navLinks">
-                <a href="/students">Students</a>
-                <a href="/notes">Notes</a>
-                <a href="/todo">To-Do</a>
-                <% if (currentUser) { %>
-                  <a href="/dashboard">Dashboard</a>
-                  <a href="/logout" class="btn btn-outline">Logout</a>
-                <% } else { %>
-                  <a href="/login" class="btn btn-outline">Login</a>
-                  <a href="/signup" class="btn btn-primary">Sign Up</a>
-                <% } %>
-            </div>
-        </div>
-    </nav>
+    <%- include('includes/navbar', { currentPage: 'quiz' }) %>
 
     <main class="quizmaker-container">
         <div class="quizmaker-card">
@@ -313,7 +313,15 @@
                         <div class="input-wrapper">
                             <i class="fas fa-search input-icon"></i>
                             <input type="text" name="topic" id="topicInput" class="form-control" 
-                                   placeholder="e.g., Python, Algebra, History..." required />
+                                   placeholder="e.g., C++, Python, Algebra, Data Structures..." required />
+                        </div>
+                        <div class="topic-suggestions" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="font-size: 0.85rem; color: var(--text-secondary); width: 100%; margin-bottom: 2px;">Quick select:</span>
+                            <button type="button" class="topic-badge" onclick="setTopic('C++')">⚡ C++</button>
+                            <button type="button" class="topic-badge" onclick="setTopic('C++ OOP')">🏛️ C++ OOP</button>
+                            <button type="button" class="topic-badge" onclick="setTopic('Data Structures')">📦 Data Structures</button>
+                            <button type="button" class="topic-badge" onclick="setTopic('Python')">🐍 Python</button>
+                            <button type="button" class="topic-badge" onclick="setTopic('Java')">☕ Java</button>
                         </div>
                     </div>
                     
@@ -331,6 +339,12 @@
     </main>
 
     <script>
+        function setTopic(name) {
+            const input = document.getElementById('topicInput');
+            input.value = name;
+            input.focus();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // Mobile menu toggle
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -356,5 +370,6 @@
             });
         });
     </script>
+    <%- include('includes/footer') %>
 </body>
 </html>

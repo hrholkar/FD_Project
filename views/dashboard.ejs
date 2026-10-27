@@ -3,62 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | LearnSmart</title>
+    <title>Academic Dashboard | LearnSmart</title>
 
+    <!-- PDF & Rendering Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
+    <!-- Google Fonts & Font Awesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Bootstrap 4 Responsive Grid for Statistics Cards & Layout -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="/css/learnsmart-theme.css">
 
     <style>
         :root {
             --primary: #4361ee;
-            --primary-light: #e8edff;
-            --primary-dark: #3550d4;
+            --primary-light: #eef2ff;
+            --primary-dark: #3144c9;
             --secondary: #7209b7;
-            --secondary-light: #f3e8ff;
-            --success: #06d6a0;
+            --secondary-light: #f5f3ff;
+            --success: #10b981;
             --success-light: #ecfdf5;
-            --warning: #ffd166;
-            --warning-light: #fffbeb;
-            --danger: #ef476f;
-            --danger-light: #fef2f2;
-            --dark: #1e1e2e;
-            --light: #f8f9ff;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --dark: #0f172a;
+            --slate-800: #1e293b;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-600: #475569;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
             
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --gradient-bg: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --shadow-hover: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.09);
+            --shadow-xl: 0 20px 35px -5px rgb(67 97 238 / 0.12);
             
-            --border-radius: 16px;
-            --border-radius-lg: 24px;
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            --font-body: 'Inter', -apple-system, sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -67,1239 +68,1148 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: var(--font-family);
+            font-family: var(--font-body);
             background: var(--gradient-bg);
             color: var(--gray-800);
-            line-height: 1.6;
+            line-height: 1.65;
             min-height: 100vh;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Enhanced Navigation */
+        /* Modern Executive Navbar */
         .navbar {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--gray-100);
-            padding: 1rem 1.5rem;
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0.85rem 1.75rem;
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+        .nav-container {
+            max-width: 1240px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: var(--transition);
         }
-
-        .navbar.scrolled {
-            box-shadow: var(--shadow-lg);
-            background: rgba(255, 255, 255, 0.98);
-        }
-
-        .navbar-brand {
+        .logo-wrap {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none;
-            transition: var(--transition);
+            color: var(--primary);
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 800;
         }
-
-        .navbar-brand:hover {
-            transform: translateY(-1px);
-        }
-
-        .logo {
-            width: 44px;
-            height: 44px;
+        .logo-badge {
+            width: 36px;
+            height: 36px;
             background: var(--gradient-primary);
-            border-radius: 12px;
+            color: white;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: 800;
-            font-size: 20px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
         }
-
-        .logo:hover {
-            transform: rotate(5deg) scale(1.05);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .brand-text {
-            font-size: 24px;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .navbar-nav {
+        .nav-links {
             display: flex;
             align-items: center;
-            gap: 8px;
-            position: relative;
+            gap: 0.5rem;
         }
-
-        .nav-link {
-            padding: 12px 18px;
-            border-radius: 12px;
+        .nav-link-item {
             text-decoration: none;
-            color: var(--gray-700);
+            color: var(--gray-600);
             font-weight: 500;
+            font-size: 0.92rem;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
+            gap: 7px;
         }
-
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-primary);
-            transition: var(--transition);
-            z-index: -1;
+        .nav-link-item:hover {
+            color: var(--primary);
+            background: var(--primary-light);
         }
-
-        .nav-link:hover::before,
-        .nav-link.active::before {
-            left: 0;
+        .nav-link-item.active {
+            color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 700;
         }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .nav-link i {
-            font-size: 18px;
-        }
-
-        .navbar-actions {
+        .nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
-
         .btn {
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            border: none;
-            font-size: 14px;
-            position: relative;
-            overflow: hidden;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid transparent;
         }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transition: all 0.6s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
         .btn-primary {
-            background: var(--gradient-primary);
+            background: var(--primary);
             color: white;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
         }
-
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-xl);
+            background: var(--primary-dark);
+            transform: translateY(-1px);
         }
-
-        .btn-danger {
-            background: var(--gradient-secondary);
-            color: white;
-            box-shadow: var(--shadow-md);
+        .btn-outline {
+            border-color: var(--gray-300);
+            color: var(--gray-800);
+            background: white;
         }
-
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-xl);
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
         }
-
         .mobile-toggle {
             display: none;
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 1.3rem;
+            color: var(--gray-800);
             cursor: pointer;
-            color: var(--gray-700);
-            padding: 8px;
-            border-radius: 8px;
-            transition: var(--transition);
         }
 
-        .mobile-toggle:hover {
-            background: var(--gray-100);
+        /* Dashboard Container */
+        .dashboard-wrap {
+            max-width: 1240px;
+            margin: 2rem auto 4rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
         }
 
-        /* Enhanced Dashboard Content */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 32px 24px;
-        }
-
-        .dashboard-header {
+        /* Executive Hero Banner */
+        .dashboard-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
-            padding: 24px 0;
-            animation: fadeInUp 0.6s ease;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
-
-        .header-content h1 {
-            font-size: 32px;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .header-content p {
-            color: var(--gray-600);
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        /* Enhanced Statistics Cards */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: var(--border-radius-lg);
-            padding: 28px;
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--gray-100);
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .stat-card::before {
+        .dashboard-hero::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
+            top: -60px;
+            right: -60px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(114, 9, 183, 0.35) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero-left {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+        .hero-user-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 5px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #93c5fd;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: #cbd5e1;
+        }
+        .hero-actions {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Real-Time Search & Quick Filter Bar */
+        .search-filter-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .search-input-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+        }
+        .search-input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+        .search-input {
             width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, transparent 70%);
+            padding: 10px 14px 10px 40px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-300);
+            font-size: 0.92rem;
+            outline: none;
             transition: var(--transition);
-            transform: scale(0);
         }
-
-        .stat-card:hover::before {
-            transform: scale(1);
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
         }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
+        .quick-topic-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .quick-topic-pills span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+        .topic-filter-btn {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .topic-filter-btn:hover, .topic-filter-btn.active {
+            background: var(--primary);
+            color: white;
             border-color: var(--primary);
         }
 
-        .stat-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
+        /* 4-Column Balanced KPI Metrics Grid */
+        .stats-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 1024px) {
+            .stats-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .stats-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .kpi-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+        .kpi-icon-wrap {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 20px;
-            font-size: 28px;
-            transition: var(--transition);
-            position: relative;
-            z-index: 1;
+            font-size: 1.4rem;
+            flex-shrink: 0;
         }
+        .kpi-blue { background: #eff6ff; color: #3b82f6; }
+        .kpi-purple { background: #faf5ff; color: #8b5cf6; }
+        .kpi-green { background: #ecfdf5; color: #10b981; }
+        .kpi-amber { background: #fffbeb; color: #f59e0b; }
 
-        .stat-card:hover .stat-icon {
-            transform: scale(1.1) rotate(5deg);
+        .kpi-details {
+            flex: 1;
         }
-
-        .stat-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-content h3 {
-            font-size: 28px;
+        .kpi-value {
+            font-family: var(--font-heading);
+            font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 6px;
             color: var(--gray-900);
+            line-height: 1.1;
+            margin-bottom: 4px;
         }
-
-        .stat-content p {
+        .kpi-label {
+            font-size: 0.86rem;
+            font-weight: 600;
             color: var(--gray-600);
-            font-size: 14px;
-            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
-        /* Enhanced Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-            gap: 28px;
-        }
-
-        /* Charts Container */
-        .charts-container {
+        /* Analytics Visual Charts Grid */
+        .analytics-row {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 28px;
-            margin-bottom: 40px;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
-
-        .chart-card {
+        @media (max-width: 960px) {
+            .analytics-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .chart-box {
             background: white;
-            border-radius: var(--border-radius-lg);
-            padding: 28px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            border: 1px solid var(--gray-100);
-            animation: fadeInUp 0.6s ease;
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
         }
-
-        .chart-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .chart-header {
+        .box-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-100);
         }
-
-        .chart-title {
-            font-size: 18px;
+        .box-title {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .chart-export-btn {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .chart-export-btn:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        .chart-container.small {
-            height: 300px;
-        }
-
-        /* Enhanced Quiz Cards */
-        .card {
-            background: white;
-            border-radius: var(--border-radius-lg);
-            padding: 28px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-            border: 1px solid var(--gray-100);
-            height: fit-content;
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-primary);
-            transition: var(--transition);
-        }
-
-        .card:hover::before {
-            left: 0;
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--primary);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-900);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .quiz-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .quiz-info-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--gray-600);
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 12px;
-            background: var(--gray-50);
-            border-radius: 8px;
+        }
+        .box-title i {
+            color: var(--primary);
+        }
+        .chart-canvas-wrap {
+            position: relative;
+            flex: 1;
+            min-height: 250px;
         }
 
-        .quiz-score {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 16px;
-            color: white;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* Enhanced Collapsible Sections */
-        .collapsible-header {
+        /* Section Heading */
+        .section-header-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-            color: var(--primary-dark);
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
             font-weight: 700;
-            cursor: pointer;
-            padding: 12px 16px;
-            background: var(--primary-light);
-            border-radius: 12px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-        
-        .collapsible-header:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .collapsible-content.expanded {
-            max-height: 2000px; /* Adjust as needed */
-        }
-        
-        .question-item {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: var(--gray-50);
-            border-radius: 12px;
-            border-left: 4px solid transparent;
-            transition: var(--transition);
-        }
-        
-        .question-item:hover {
-            background: var(--gray-100);
-            border-left-color: var(--primary);
-        }
-        
-        .question-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .question-text {
-            font-weight: 600;
-            margin-bottom: 12px;
             color: var(--gray-900);
-            line-height: 1.5;
-        }
-
-        .answer-row {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 6px;
-            font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: var(--transition);
         }
 
-        .answer-row.correct {
-            background: var(--success-light);
-            color: var(--success);
-            font-weight: 600;
+        /* Assessment Cards Feed */
+        .quizzes-feed {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
-
-        .answer-row.incorrect {
-            background: var(--danger-light);
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        /* Enhanced AI Resource */
-        .ai-resource {
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--secondary-light) 100%);
-            border-radius: 16px;
-            padding: 24px;
-            margin-top: 24px;
-            position: relative;
-            border: 1px solid var(--gray-200);
-            transition: var(--transition);
-        }
-
-        .ai-resource:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .ai-resource-header {
-            color: var(--secondary);
-        }
-
-        .ai-resource-header:hover {
-            background: var(--secondary);
-            color: white;
-        }
-        
-        .ai-content {
+        .quiz-card {
             background: white;
-            border-radius: 12px;
-            padding: 0 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
         }
-
-        .ai-content.expanded {
-            padding: 20px;
-            margin-top: -8px; /* Smooth transition */
+        .quiz-card:hover {
             box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+        .quiz-card-head {
+            padding: 1.5rem 1.75rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .quiz-subject-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .subject-badge-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .quiz-topic-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+        .quiz-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            flex-wrap: wrap;
+        }
+        .quiz-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .ai-content p { margin-bottom: 16px; }
-        .ai-content h4 { color: var(--primary); margin: 20px 0 12px; font-weight: 700; }
-        .ai-content h5 { color: var(--secondary); margin: 16px 0 8px; font-weight: 600; }
-        .ai-content ul, .ai-content ol { margin-left: 24px; margin-bottom: 16px; }
-        .ai-content li { margin-bottom: 8px; }
+        .quiz-score-badge {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-green { background: var(--gradient-success); }
+        .badge-amber { background: var(--gradient-warning); }
+        .badge-rose { background: var(--gradient-danger); }
 
-        .toggle-icon {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 18px;
+        .quiz-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .toggle-icon.expanded {
+        /* Collapsible Section Toggles */
+        .collapsible-bar {
+            padding: 1rem 1.75rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--gray-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: var(--gray-800);
+        }
+        .collapsible-bar:hover {
+            background: #f1f5f9;
+        }
+        .collapsible-bar i.chevron {
+            transition: transform 0.3s ease;
+        }
+        .collapsible-bar.expanded i.chevron {
             transform: rotate(180deg);
         }
 
-        /* Enhanced Export Button */
-        .export-btn {
-            background: var(--gradient-success);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .export-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .export-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* No Quizzes State */
-        .no-quizzes {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 80px 40px;
+        .collapsible-body {
+            display: none;
+            padding: 1.5rem 1.75rem;
             background: white;
-            border: 2px dashed var(--gray-300);
-            border-radius: var(--border-radius-lg);
-            animation: fadeInUp 0.6s ease;
+            border-top: 1px solid var(--gray-200);
+        }
+        .collapsible-body.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
         }
 
-        .no-quizzes i {
-            font-size: 64px;
-            color: var(--gray-400);
-            margin-bottom: 24px;
-            animation: pulse 2s infinite;
+        /* Question Review Items */
+        .q-review-item {
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            background: #fafafa;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 0.75rem;
         }
+        .q-review-item:last-child {
+            margin-bottom: 0;
+        }
+        .q-text {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--gray-900);
+        }
+        .q-ans-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.88rem;
+        }
+        .ans-user.correct { color: #16a34a; font-weight: 600; }
+        .ans-user.incorrect { color: #dc2626; font-weight: 600; }
+        .ans-correct { color: #15803d; font-weight: 600; }
 
-        .no-quizzes h3 {
-            font-size: 24px;
-            color: var(--gray-800);
-            margin-bottom: 16px;
+        /* AI Roadmap Content Box */
+        .ai-roadmap-box {
+            padding: 1.5rem;
+            background: #f8faff;
+            border: 1px solid #e0e7ff;
+            border-radius: var(--radius-sm);
+            line-height: 1.7;
+            font-size: 0.93rem;
+            color: #334155;
+        }
+        .ai-roadmap-box h3 {
+            font-size: 1.15rem;
             font-weight: 700;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--gray-900);
+        }
+        .ai-roadmap-box h3:first-child {
+            margin-top: 0;
+        }
+        .ai-roadmap-box ul {
+            padding-left: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .ai-roadmap-box li {
+            margin-bottom: 0.35rem;
         }
 
-        .no-quizzes p {
+        /* Empty State */
+        .empty-dashboard-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 4rem 2rem;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+        .empty-icon {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+        }
+        .empty-title {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .empty-desc {
             color: var(--gray-600);
-            max-width: 500px;
-            margin: 0 auto 32px;
-            font-size: 16px;
-            line-height: 1.6;
+            max-width: 540px;
+            margin: 0 auto 1.5rem auto;
+            font-size: 1rem;
         }
 
-        /* Enhanced Toast */
-        .toast {
+        /* Toast Notification */
+        .toast-bubble {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: var(--gray-900);
+            background: #1e293b;
             color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
             box-shadow: var(--shadow-xl);
-            z-index: 10000;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 9999;
+            transform: translateY(100px);
             opacity: 0;
-            transform: translateY(100px) scale(0.8);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: 400px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .toast.show {
+        .toast-bubble.visible {
+            transform: translateY(0);
             opacity: 1;
-            transform: translateY(0) scale(1);
         }
 
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        .toast.info { background: var(--primary); }
-
-        /* Loading Spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Animations */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .charts-container { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 992px) {
-            .navbar-nav {
-                display: none; position: absolute; top: 100%; left: 0; right: 0;
-                background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
-                flex-direction: column; padding: 24px; box-shadow: var(--shadow-xl);
-                border-top: 1px solid var(--gray-200); border-radius: 0 0 20px 20px;
-                animation: slideInLeft 0.3s ease;
+        /* Responsive Mobile Drawer */
+        @media (max-width: 860px) {
+            .mobile-toggle {
+                display: block;
             }
-            .navbar-nav.active { display: flex; }
-            .nav-link { width: 100%; justify-content: center; padding: 16px 24px; border-radius: 12px; margin-bottom: 8px; }
-            .mobile-toggle { display: block; }
-            .navbar-actions { display: none; }
-            .stats-container { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-        }
-
-        @media (max-width: 768px) {
-            .container { padding: 24px 16px; }
-            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 20px; text-align: left; }
-            .header-content h1 { font-size: 28px; }
-            .header-actions { width: 100%; }
-            .stats-container { grid-template-columns: 1fr; gap: 16px; }
-            .dashboard-grid { grid-template-columns: 1fr; gap: 20px; }
-            .card, .stat-card, .chart-card { padding: 20px; }
-            .card-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-            .quiz-info { flex-direction: column; gap: 12px; }
-            .chart-container { height: 250px; }
-            .chart-container.small { height: 250px; }
-        }
-
-        @media (max-width: 576px) {
-            .navbar { padding: 1rem; }
-            .brand-text { font-size: 20px; }
-            .logo { width: 40px; height: 40px; font-size: 18px; }
-            .header-actions { flex-direction: column; gap: 12px; }
-            .header-actions .btn { width: 100%; justify-content: center; }
-            .stat-card { padding: 16px; }
-            .stat-icon { width: 56px; height: 56px; font-size: 24px; margin-right: 16px; }
-            .stat-content h3 { font-size: 24px; }
-            .quiz-info-item { font-size: 13px; }
-            .no-quizzes { padding: 60px 20px; }
-            .no-quizzes i { font-size: 48px; }
-            .toast { bottom: 16px; right: 16px; left: 16px; max-width: none; }
-        }
-        
-        /* Print styles */
-        @media print {
-            .navbar, .header-actions, .export-btn, .toast, .chart-export-btn { display: none !important; }
-            .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow-lg);
+                display: none;
+                border-bottom: 1px solid var(--gray-200);
+            }
+            .nav-links.show {
+                display: flex;
+            }
+            .nav-link-item {
+                width: 100%;
+            }
+            .hero-title {
+                font-size: 1.75rem;
+            }
         }
     </style>
 </head>
-
 <body>
-    <nav class="navbar" id="navbar">
-        <a href="/" class="navbar-brand">
-            <div class="logo">LS</div>
-            <span class="brand-text">LearnSmart</span>
-        </a>
-        
-        <button class="mobile-toggle" id="mobileToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="navbar-nav" id="navbarNav">
-            <a href="/dashboard" class="nav-link active"><i class="fas fa-chart-bar"></i> Dashboard</a>
-            <a href="/progress" class="nav-link"><i class="fas fa-chart-line"></i> Progress</a>
-            <a href="/students" class="nav-link"><i class="fas fa-user-graduate"></i> Students</a>
-            <a href="/notes" class="nav-link"><i class="fas fa-sticky-note"></i> Notes</a>
-            <a href="/todo" class="nav-link"><i class="fas fa-tasks"></i> To-Do</a>
-        </div>
-        
-        <div class="navbar-actions">
-            <a href="/quiz" class="btn btn-primary"><i class="fas fa-plus"></i> New Quiz</a>
-            <a href="/logout" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </nav>
 
-    <div class="container">
-        <header class="dashboard-header">
-            <div class="header-content">
-                <h1>Your Learning Dashboard</h1>
-                <p>Track your progress with intelligent analytics and AI-powered insights</p>
+    <%- include('includes/navbar', { currentPage: 'dashboard' }) %>
+
+    <!-- Main Dashboard Container -->
+    <main class="dashboard-wrap">
+
+        <!-- Executive Hero Welcome Header -->
+        <header class="dashboard-hero">
+            <div class="hero-left">
+                <div class="hero-user-tag">
+                    <i class="fas fa-graduation-cap"></i> <%= user.educationLevel || 'Undergraduate Level' %>
+                </div>
+                <h1 class="hero-title">Welcome back, <%= user.username %> 👋</h1>
+                <p class="hero-subtitle">
+                    Here is your real-time academic progression, assessment history, and tailored AI learning diagnostics.
+                </p>
             </div>
-            <div class="header-actions">
-                <button class="btn btn-primary" onclick="refreshData()">
-                    <i class="fas fa-sync"></i> Refresh Data
+            <div class="hero-actions">
+                <a href="/quiz" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
+                    <i class="fas fa-bolt"></i> Start Quiz
+                </a>
+                <button onclick="refreshDashboard()" class="btn btn-outline" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white;">
+                    <i class="fas fa-arrows-rotate"></i> Refresh
                 </button>
             </div>
         </header>
 
-        <!-- Mobile Touch Quick Filter (Responsive Touch Toolbar) -->
-        <div class="mobile-study-toolbar d-md-none mb-3" id="mobileTouchToolbar">
-            <div style="background: white; border-radius: 12px; padding: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: 700; color: var(--gray-800); font-size: 13px;"><i class="fas fa-mobile-screen me-2 text-primary"></i> Mobile Quick Search</span>
-                    <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-600); cursor: pointer; margin: 0;">
-                        <span>Focus View</span>
-                        <input type="checkbox" id="mobileFocusToggle" onchange="toggleFocusMode(this)" />
-                    </label>
+        <% 
+            const hasQuizzes = user && user.quizzes && user.quizzes.length > 0;
+            let totalQuestions = 0;
+            let totalCorrect = 0;
+            let maxScore = 0;
+            let uniqueTopics = [];
+
+            if (hasQuizzes) {
+                user.quizzes.forEach(quiz => {
+                    totalQuestions += quiz.results.length;
+                    const correctCount = quiz.results.filter(q => q.isCorrect).length;
+                    totalCorrect += correctCount;
+                    const score = Math.round((correctCount / quiz.results.length) * 100);
+                    if (score > maxScore) maxScore = score;
+                });
+                uniqueTopics = [...new Set(user.quizzes.map(q => q.topic))];
+            }
+            const overallAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+        %>
+
+        <% if (hasQuizzes) { %>
+            <!-- 4-Column Balanced KPI Metric Cards Grid -->
+            <section class="stats-grid-4">
+                <!-- Card 1: Overall Accuracy -->
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrap kpi-blue">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <div class="kpi-value"><%= overallAccuracy %>%</div>
+                        <div class="kpi-label">Overall Accuracy</div>
+                    </div>
                 </div>
-                <input type="text" id="mobileTopicFilter" placeholder="Filter quiz topics..." onkeyup="filterQuizCards(this.value)" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--gray-300); font-size: 13px; outline: none;" />
+
+                <!-- Card 2: Topics Explored -->
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrap kpi-purple">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <div class="kpi-value"><%= uniqueTopics.length %></div>
+                        <div class="kpi-label">Topics Explored</div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Assessments Completed -->
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrap kpi-green">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <div class="kpi-value"><%= user.quizzes.length %></div>
+                        <div class="kpi-label">Quizzes Completed</div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Top Score -->
+                <div class="kpi-card">
+                    <div class="kpi-icon-wrap kpi-amber">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <div class="kpi-value"><%= maxScore %>%</div>
+                        <div class="kpi-label">Peak Score Record</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visual Performance Analytics Row (Chart.js) -->
+            <section class="analytics-row">
+                <!-- Performance Trendline -->
+                <div class="chart-box">
+                    <div class="box-header">
+                        <div class="box-title"><i class="fas fa-wave-square"></i> Score Progression Trajectory</div>
+                        <span style="font-size: 0.82rem; color: var(--gray-400); font-weight: 500;">Chronological curve</span>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="progressionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Topic Mastery Distribution -->
+                <div class="chart-box">
+                    <div class="box-header">
+                        <div class="box-title"><i class="fas fa-pie-chart"></i> Subject Distribution</div>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topic Search & Filter Bar -->
+            <div class="search-filter-card">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="topicSearch" class="search-input" placeholder="Search assessments by topic (e.g., C++, Python)..." onkeyup="filterAssessments(this.value)">
+                </div>
+                <div class="quick-topic-pills">
+                    <span>Quick filter:</span>
+                    <button class="topic-filter-btn active" onclick="applyTopicFilter('all', this)">All</button>
+                    <% uniqueTopics.forEach(t => { %>
+                        <button class="topic-filter-btn" onclick="applyTopicFilter('<%= t %>', this)"><%= t %></button>
+                    <% }) %>
+                </div>
             </div>
-        </div>
 
-        <% if (user.quizzes.length > 0) { %>
-            <!-- Bootstrap 4 Responsive Statistics Cards Grid -->
-            <div class="stats-container row">
-                <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                    <div class="stat-card h-100" style="animation-delay: 0.1s;">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0.2) 100%); color: var(--primary);">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-content">
-                            <%
-                                let totalQuestions = 0;
-                                let correctAnswers = 0;
-                                user.quizzes.forEach(quiz => {
-                                    totalQuestions += quiz.results.length;
-                                    quiz.results.forEach(q => {
-                                        if (q.isCorrect) correctAnswers++;
-                                    });
-                                });
-                                const overallScore = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-                            %>
-                            <h3><%= overallScore %>%</h3>
-                            <p>Overall Score</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                    <div class="stat-card h-100" style="animation-delay: 0.2s;">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, rgba(114, 9, 183, 0.1) 0%, rgba(114, 9, 183, 0.2) 100%); color: var(--secondary);">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <div class="stat-content">
-                            <%
-                                const uniqueTopics = [...new Set(user.quizzes.map(q => q.topic))];
-                            %>
-                            <h3><%= uniqueTopics.length %></h3>
-                            <p>Topics Covered</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                    <div class="stat-card h-100" style="animation-delay: 0.3s;">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, rgba(6, 214, 160, 0.1) 0%, rgba(6, 214, 160, 0.2) 100%); color: var(--success);">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3><%= user.quizzes.length %></h3>
-                            <p>Quizzes Completed</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                    <div class="stat-card h-100" style="animation-delay: 0.4s;">
-                        <div class="stat-icon" style="background: linear-gradient(135deg, rgba(255, 209, 102, 0.1) 0%, rgba(255, 209, 102, 0.2) 100%); color: var(--warning);">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-content">
-                            <%
-                                let maxScore = 0;
-                                user.quizzes.forEach(quiz => {
-                                    let correctCount = quiz.results.filter(q => q.isCorrect).length;
-                                    const score = Math.round((correctCount / quiz.results.length) * 100);
-                                    if (score > maxScore) maxScore = score;
-                                });
-                            %>
-                            <h3><%= maxScore %>%</h3>
-                            <p>Best Score</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Recent Assessments & Diagnostic Feed -->
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fas fa-clock-rotate-left"></i> Assessment History & Diagnostics</h2>
+                <span style="font-size: 0.88rem; color: var(--gray-600);"><%= user.quizzes.length %> Total Records</span>
             </div>
 
-            
-        <% } %>
-
-        <div class="dashboard-grid">
-            <% if (!user || user.quizzes.length === 0) { %>
-                <div class="no-quizzes">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h3>Ready to Start Learning?</h3>
-                    <p>Complete your first quiz to unlock detailed analytics, performance insights, and AI-generated learning resources tailored just for you.</p>
-                    <a href="/quiz" class="btn btn-primary">
-                        <i class="fas fa-play-circle"></i> Take Your First Quiz
-                    </a>
-                </div>
-            <% } else { %>
+            <div class="quizzes-feed" id="quizzesFeed">
                 <% user.quizzes.slice().reverse().forEach((quiz, index) => { 
                     const reversedIndex = user.quizzes.length - 1 - index;
                     const matchingResource = user.resources.find(r => r.topic === quiz.topic); 
                     
-                    let correctCount = quiz.results.filter(q => q.isCorrect).length;
+                    const correctCount = quiz.results.filter(q => q.isCorrect).length;
                     const score = Math.round((correctCount / quiz.results.length) * 100);
                     
-                    let scoreGradient = 'var(--gradient-success)';
-                    if (score < 50) scoreGradient = 'var(--gradient-secondary)';
-                    else if (score < 75) scoreGradient = 'linear-gradient(135deg, #ffd166 0%, #f77f00 100%)';
+                    let badgeClass = 'badge-green';
+                    if (score < 50) badgeClass = 'badge-rose';
+                    else if (score < 75) badgeClass = 'badge-amber';
                 %>
-                    <div class="card" id="quiz-card-<%= reversedIndex %>" style="animation-delay: <%= 0.1 + (index * 0.1) %>s;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-book-open" style="color: var(--primary);"></i> 
-                                <%= quiz.topic %>
-                            </h3>
-                            <button class="export-btn" onclick="exportQuizToPDF('<%= reversedIndex %>')">
-                                <i class="fas fa-download"></i> Export Report
-                            </button>
-                        </div>
-                        
-                        <div class="quiz-info">
-                            <div class="quiz-info-item">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span><%= new Date(quiz.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></span>
+                    <article class="quiz-card" id="quiz-card-<%= reversedIndex %>" data-topic="<%= quiz.topic.toLowerCase() %>">
+                        <!-- Head -->
+                        <div class="quiz-card-head">
+                            <div class="quiz-subject-wrap">
+                                <div class="subject-badge-icon">
+                                    <i class="fas fa-laptop-code"></i>
+                                </div>
+                                <div>
+                                    <h3 class="quiz-topic-title"><%= quiz.topic %></h3>
+                                    <div class="quiz-meta-row">
+                                        <div class="quiz-meta-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span><%= new Date(quiz.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                                        </div>
+                                        <div class="quiz-meta-item">
+                                            <i class="fas fa-list-check"></i>
+                                            <span><%= quiz.results.length %> Questions</span>
+                                        </div>
+                                        <div class="quiz-meta-item">
+                                            <i class="fas fa-circle-check"></i>
+                                            <span><%= correctCount %> Correct</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="quiz-info-item">
-                                <i class="fas fa-question-circle"></i>
-                                <span><%= quiz.results.length %> Questions</span>
-                            </div>
-                            <div class="quiz-info-item">
-                                <i class="fas fa-clock"></i>
-                                <span><%= new Date(quiz.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span>
-                            </div>
-                            <div class="quiz-info-item">
-                                <i class="fas fa-chart-line"></i>
-                                <span>Score: <span class="quiz-score" style="background: <%= scoreGradient %>;"><%= score %>%</span></span>
+
+                            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                                <div class="quiz-score-badge <%= badgeClass %>">
+                                    <%= score %>%
+                                </div>
+                                <div class="quiz-card-actions">
+                                    <!-- Direct Link to Learning Roadmap -->
+                                    <form action="/generate-resource" method="POST" style="margin: 0; display: inline;">
+                                        <input type="hidden" name="topic" value="<%= quiz.topic %>">
+                                        <input type="hidden" name="quizResults" value='<%= JSON.stringify(quiz.results) %>'>
+                                        <button type="submit" class="btn btn-outline" style="font-size: 0.85rem; padding: 6px 12px;">
+                                            <i class="fas fa-compass"></i> Study Plan
+                                        </button>
+                                    </form>
+
+                                    <!-- PDF Export -->
+                                    <button class="btn btn-outline export-btn" onclick="exportQuizPDF('<%= reversedIndex %>')" style="font-size: 0.85rem; padding: 6px 12px;">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="collapsible-header" onclick="toggleCollapsible('<%= reversedIndex %>', 'questions')">
-                            <span><i class="fas fa-list-ol"></i> Quiz Results</span>
-                            <i class="fas fa-chevron-down toggle-icon" id="toggle-icon-questions-<%= reversedIndex %>"></i>
+                        <!-- Collapsible 1: Question Breakdown -->
+                        <div class="collapsible-bar" onclick="toggleSection('<%= reversedIndex %>', 'questions')">
+                            <span><i class="fas fa-list-ol"></i> Question Breakdown (<%= correctCount %>/<%= quiz.results.length %> Correct)</span>
+                            <i class="fas fa-chevron-down chevron" id="chev-questions-<%= reversedIndex %>"></i>
                         </div>
-                        <div class="collapsible-content" id="content-questions-<%= reversedIndex %>">
-                            <div class="questions-container" style="padding-top: 20px;">
-                                <% quiz.results.forEach((q, qIndex) => { %>
-                                    <div class="question-item">
-                                        <div class="question-text">
-                                            <i class="fas fa-question" style="color: var(--primary); margin-right: 8px;"></i>
-                                            Q<%= qIndex + 1 %>: <%= q.question || "No question available" %>
-                                        </div>
-                                        <div class="answer-row correct">
-                                            <i class="fas fa-check-circle"></i>
-                                            <span><strong>Correct:</strong> <%= q.correctAnswer || "N/A" %></span>
-                                        </div>
-                                        <div class="answer-row <%= q.isCorrect ? 'correct' : 'incorrect' %>">
+                        <div class="collapsible-body" id="body-questions-<%= reversedIndex %>">
+                            <% quiz.results.forEach((q, qIndex) => { %>
+                                <div class="q-review-item">
+                                    <div class="q-text">
+                                        <span style="color: var(--primary); margin-right: 6px;">Q<%= qIndex + 1 %>:</span>
+                                        <%= q.question || "Diagnostic Question" %>
+                                    </div>
+                                    <div class="q-ans-flex">
+                                        <div class="ans-user <%= q.isCorrect ? 'correct' : 'incorrect' %>">
                                             <i class="fas <%= q.isCorrect ? 'fa-check-circle' : 'fa-times-circle' %>"></i>
-                                            <span><strong>Your Answer:</strong> <%= q.yourAnswer || "N/A" %></span>
+                                            Your Answer: <span><%= q.yourAnswer || 'N/A' %></span>
                                         </div>
+                                        <% if (!q.isCorrect) { %>
+                                            <div class="ans-correct">
+                                                <i class="fas fa-check-double"></i>
+                                                Correct Answer: <span><%= q.correctAnswer || 'N/A' %></span>
+                                            </div>
+                                        <% } %>
                                     </div>
-                                <% }) %>
-                            </div>
+                                </div>
+                            <% }) %>
                         </div>
-                        
-                        <% if (matchingResource) { %>
-                            <div class="ai-resource">
-                                <div class="collapsible-header ai-resource-header" onclick="toggleCollapsible('<%= reversedIndex %>', 'ai')">
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <i class="fas fa-robot"></i>
-                                        <span>AI Learning Resource</span>
-                                        <span style="background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">GENERATED</span>
-                                    </div>
-                                    <i class="fas fa-chevron-down toggle-icon" id="toggle-icon-ai-<%= reversedIndex %>"></i>
-                                </div>
-                                <div class="collapsible-content ai-content" id="content-ai-<%= reversedIndex %>">
-                                    <%= matchingResource.content %>
-                                </div>
+
+                        <!-- Collapsible 2: Study Guide Preview -->
+                        <% if (matchingResource && matchingResource.content) { %>
+                            <div class="collapsible-bar" onclick="toggleSection('<%= reversedIndex %>', 'ai')">
+                                <span><i class="fas fa-robot" style="color: var(--primary);"></i> AI Diagnostic Roadmap & Study Recommendations</span>
+                                <i class="fas fa-chevron-down chevron" id="chev-ai-<%= reversedIndex %>"></i>
                             </div>
-                        <% } else { %>
-                            <div class="ai-resource">
-                                <div class="collapsible-header ai-resource-header" style="cursor: default;">
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <i class="fas fa-robot"></i>
-                                        <span>AI Learning Resource</span>
-                                        <span style="background: var(--warning); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">PENDING</span>
-                                    </div>
-                                </div>
-                                <p style="color: var(--gray-600); font-style: italic; margin: 16px 0 0 0; padding: 16px; background: white; border-radius: 8px;">
-                                    <i class="fas fa-magic" style="margin-right: 8px; color: var(--primary);"></i>
-                                    AI resource is being generated for this topic. Check back soon for personalized learning materials!
-                                </p>
+                            <div class="collapsible-body" id="body-ai-<%= reversedIndex %>">
+                                <div class="ai-roadmap-box" id="ai-box-<%= reversedIndex %>"></div>
+                                <div style="display: none;" id="raw-ai-<%= reversedIndex %>"><%= matchingResource.content %></div>
                             </div>
                         <% } %>
-                    </div>
+                    </article>
                 <% }) %>
-            <% } %>
-        </div>
-    </div>
+            </div>
 
-    <div id="toast" class="toast">
+        <% } else { %>
+            <!-- Premium Empty State -->
+            <div class="empty-dashboard-card">
+                <div class="empty-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h2 class="empty-title">Your Learning Journey Starts Here</h2>
+                <p class="empty-desc">
+                    Complete your first quiz to unlock performance curves, subject mastery analytics, and tailored AI study guides.
+                </p>
+                <a href="/quiz" class="btn btn-primary" style="padding: 12px 28px; font-size: 1rem;">
+                    <i class="fas fa-bolt"></i> Take Your First Quiz
+                </a>
+            </div>
+        <% } %>
+
+    </main>
+
+    <!-- Toast Notification Bubble -->
+    <div id="toastBubble" class="toast-bubble">
         <i class="fas fa-info-circle"></i>
-        <span id="toast-message"></span>
+        <span id="toastText">Notification</span>
     </div>
 
     <script>
-        // Global variables for charts
-        let performanceChart, topicChart;
+        // Data payload for charts
+        <% if (hasQuizzes) { %>
+            const quizLabels = <%- JSON.stringify(user.quizzes.map((q, i) => `${q.topic} (#${i + 1})`)) %>;
+            const quizScores = <%- JSON.stringify(user.quizzes.map(q => {
+                const correct = q.results.filter(r => r.isCorrect).length;
+                return Math.round((correct / q.results.length) * 100);
+            })) %>;
 
-        // Toggle collapsible sections
-        function toggleCollapsible(index, type) {
-            const contentElement = document.getElementById(`content-${type}-${index}`);
-            const toggleIcon = document.getElementById(`toggle-icon-${type}-${index}`);
-            
-            contentElement.classList.toggle('expanded');
-            toggleIcon.classList.toggle('expanded');
+            const topicCounts = {};
+            <%- JSON.stringify(user.quizzes.map(q => q.topic)) %>.forEach(t => {
+                topicCounts[t] = (topicCounts[t] || 0) + 1;
+            });
+            const topicLabels = Object.keys(topicCounts);
+            const topicData = Object.values(topicCounts);
+        <% } else { %>
+            const quizLabels = [];
+            const quizScores = [];
+            const topicLabels = [];
+            const topicData = [];
+        <% } %>
+
+        // Collapsible Accordion Logic
+        function toggleSection(index, type) {
+            const body = document.getElementById(`body-${type}-${index}`);
+            const chev = document.getElementById(`chev-${type}-${index}`);
+            if (body && chev) {
+                const isOpen = body.classList.contains('show');
+                body.classList.toggle('show');
+                chev.parentElement.classList.toggle('expanded');
+                
+                // Parse markdown when expanded
+                if (!isOpen && type === 'ai') {
+                    const raw = document.getElementById(`raw-ai-${index}`);
+                    const target = document.getElementById(`ai-box-${index}`);
+                    if (raw && target && window.marked && !target.dataset.parsed) {
+                        target.innerHTML = marked.parse(raw.textContent.trim());
+                        target.dataset.parsed = 'true';
+                    }
+                }
+            }
         }
 
-        // Enhanced PDF export with better formatting
-        function exportQuizToPDF(quizIndex) {
-            showToast('Preparing your comprehensive PDF report...', 'info');
+        // Live Topic Search Filter
+        function filterAssessments(query) {
+            const term = (query || '').toLowerCase().trim();
+            const cards = document.querySelectorAll('#quizzesFeed .quiz-card');
+            cards.forEach(card => {
+                const topic = card.getAttribute('data-topic') || '';
+                card.style.display = (term === '' || topic.includes(term)) ? '' : 'none';
+            });
+        }
+
+        function applyTopicFilter(topic, btn) {
+            document.querySelectorAll('.topic-filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
             
+            const term = topic === 'all' ? '' : topic.toLowerCase();
+            document.getElementById('topicSearch').value = term;
+            filterAssessments(term);
+        }
+
+        // PDF Exporter
+        function exportQuizPDF(quizIndex) {
+            showToast('Generating comprehensive PDF report...', 'info');
             const card = document.getElementById(`quiz-card-${quizIndex}`);
-            const exportButton = card.querySelector('.export-btn');
-            
-            const originalButtonText = exportButton.innerHTML;
-            exportButton.innerHTML = `<div class="spinner"></div> Exporting`;
-            exportButton.disabled = true;
-            
-            // Expand all collapsible sections for export
-            const collapsibleContents = card.querySelectorAll('.collapsible-content');
-            const toggleIcons = card.querySelectorAll('.toggle-icon');
-            
-            collapsibleContents.forEach(content => content.classList.add('expanded'));
-            toggleIcons.forEach(icon => icon.classList.add('expanded'));
-            
-            // Wait for animations to complete before capturing
+            if (!card) return;
+
+            const exportBtn = card.querySelector('.export-btn');
+            const originalText = exportBtn.innerHTML;
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving';
+            exportBtn.disabled = true;
+
+            // Temporarily expand all bodies for export
+            const bodies = card.querySelectorAll('.collapsible-body');
+            bodies.forEach(b => b.classList.add('show'));
+
             setTimeout(() => {
                 html2canvas(card, {
-                    scale: 2.5, // Increased scale for better quality
+                    scale: 2,
                     useCORS: true,
-                    logging: false,
-                    scrollY: -window.scrollY,
-                    backgroundColor: '#ffffff',
-                    onclone: (clonedDoc) => {
-                        const clonedCard = clonedDoc.getElementById(`quiz-card-${quizIndex}`);
-                        if (clonedCard) {
-                            clonedCard.style.transform = 'none';
-                            clonedCard.style.boxShadow = 'none';
-                            clonedCard.style.animation = 'none';
-                        }
-                    }
+                    backgroundColor: '#ffffff'
                 }).then(canvas => {
                     const { jsPDF } = window.jspdf;
                     const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = 210; // A4 width in mm
-                    const pageHeight = 297; // A4 height in mm
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let heightLeft = imgHeight;
-                    
                     const pdf = new jsPDF('p', 'mm', 'a4');
-                    let position = 0;
+                    const imgWidth = 210;
+                    const pageHeight = 297;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
                     
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                    
-                    while (heightLeft > 0) {
-                        position = heightLeft - imgHeight;
-                        pdf.addPage();
-                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                        heightLeft -= pageHeight;
-                    }
-                    
-                    // Add footer to all pages
-                    const totalPages = pdf.internal.getNumberOfPages();
-                    for (let i = 1; i <= totalPages; i++) {
-                        pdf.setPage(i);
-                        pdf.setFontSize(10);
-                        pdf.setTextColor(150, 150, 150);
-                        pdf.text(`Page ${i} of ${totalPages}`, imgWidth - 30, pageHeight - 10);
-                        pdf.text('Generated by LearnSmart Dashboard', 20, pageHeight - 10);
-                    }
-                    
-                    // Save the PDF
-                    const topic = card.querySelector('.card-title').textContent.replace(/[^\w\s]/gi, '').trim();
-                    const safeTopic = topic.replace(/\s+/g, '_').toLowerCase();
-                    const timestamp = new Date().toISOString().split('T')[0];
-                    pdf.save(`LearnSmart_Report_${safeTopic}_${timestamp}.pdf`);
-                    
-                    // Collapse sections after export
-                    collapsibleContents.forEach(content => content.classList.remove('expanded'));
-                    toggleIcons.forEach(icon => icon.classList.remove('expanded'));
-                    
-                    exportButton.innerHTML = originalButtonText;
-                    exportButton.disabled = false;
-                    showToast('PDF report exported successfully!', 'success');
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                    pdf.save(`LearnSmart_Report_${quizIndex}.pdf`);
+
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                    bodies.forEach(b => b.classList.remove('show'));
+                    showToast('PDF exported successfully!', 'success');
                 }).catch(err => {
-                    console.error('Error generating PDF:', err);
-                    exportButton.innerHTML = originalButtonText;
-                    exportButton.disabled = false;
-                    showToast('Failed to export PDF. Please try again.', 'error');
+                    console.error('PDF error:', err);
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                    bodies.forEach(b => b.classList.remove('show'));
+                    showToast('Failed to export PDF.', 'error');
                 });
-            }, 500); // Timeout allows animations to finish
+            }, 300);
         }
 
-        // Enhanced toast notification with better UX
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            
-            toast.className = 'toast';
-            toastMessage.textContent = message;
-            toast.classList.add(type, 'show');
-            
-            const delay = Math.max(3000, message.length * 50);
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, delay);
-        }
-
-        // Enhanced refresh data with loading state
-        function refreshData() {
-            const refreshBtn = document.querySelector('[onclick="refreshData()"]');
-            const originalText = refreshBtn.innerHTML;
-            
-            refreshBtn.innerHTML = '<div class="spinner"></div> Refreshing';
-            refreshBtn.disabled = true;
-            
-            showToast('Refreshing your learning data...', 'info');
-            
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        }
-
-        // Navbar scroll effect
-        function handleNavbarScroll() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+        function showToast(msg) {
+            const toast = document.getElementById('toastBubble');
+            const text = document.getElementById('toastText');
+            if (toast && text) {
+                text.textContent = msg;
+                toast.classList.add('visible');
+                setTimeout(() => toast.classList.remove('visible'), 3000);
             }
         }
 
-        // Mobile menu toggle with enhanced animations
-        function setupMobileMenu() {
-            const mobileToggle = document.getElementById('mobileToggle');
-            const navbarNav = document.getElementById('navbarNav');
-            
-            mobileToggle.addEventListener('click', function() {
-                navbarNav.classList.toggle('active');
-                
-                const icon = this.querySelector('i');
-                if (navbarNav.classList.contains('active')) {
-                    icon.className = 'fas fa-times';
-                } else {
-                    icon.className = 'fas fa-bars';
-                }
-            });
+        function refreshDashboard() {
+            showToast('Refreshing learning analytics...');
+            setTimeout(() => window.location.reload(), 800);
         }
 
-        // Run all initialization scripts on DOM content loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Format all AI content elements with Marked.js
-            const aiContentElements = document.querySelectorAll('.ai-content');
-            aiContentElements.forEach(element => {
-                if (element.textContent.trim()) {
-                    element.innerHTML = marked.parse(element.textContent.trim());
-                }
-            });
+        // Initialize Interactive Analytics Charts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const toggle = document.getElementById('mobileToggle');
+            const links = document.getElementById('navLinks');
+            if (toggle && links) {
+                toggle.addEventListener('click', () => links.classList.toggle('show'));
+            }
 
-            // Initialize charts
-            initCharts();
+            // Progression Spline Chart
+            const progressionCtx = document.getElementById('progressionChart');
+            if (progressionCtx && quizScores.length > 0) {
+                new Chart(progressionCtx, {
+                    type: 'line',
+                    data: {
+                        labels: quizLabels,
+                        datasets: [{
+                            label: 'Assessment Score (%)',
+                            data: quizScores,
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.35,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#4361ee',
+                            pointBorderWidth: 3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                titleFont: { family: 'Outfit', size: 13 },
+                                bodyFont: { family: 'Inter', size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: (ctx) => `Score: ${ctx.parsed.y}%`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20,
+                                    callback: (val) => val + '%'
+                                },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
 
-            // Setup mobile navigation
-            setupMobileMenu();
-
-            // Attach scroll listener for navbar effect
-            window.addEventListener('scroll', handleNavbarScroll);
-
-            // Mobile Touch Swipe Gesture Support
-            let touchStartX = 0;
-            const nav = document.getElementById('navbarNav');
-            document.addEventListener('touchstart', function(e) {
-                touchStartX = e.touches[0].clientX;
-            }, { passive: true });
-            document.addEventListener('touchend', function(e) {
-                const diffX = e.changedTouches[0].clientX - touchStartX;
-                if (diffX > 75 && touchStartX < 50 && nav && !nav.classList.contains('active')) {
-                    nav.classList.add('active');
-                } else if (diffX < -75 && nav && nav.classList.contains('active')) {
-                    nav.classList.remove('active');
-                }
-            }, { passive: true });
+            // Subject Distribution Doughnut Chart
+            const distributionCtx = document.getElementById('distributionChart');
+            if (distributionCtx && topicLabels.length > 0) {
+                new Chart(distributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: topicLabels,
+                        datasets: [{
+                            data: topicData,
+                            backgroundColor: ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4'],
+                            borderWidth: 0,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: { family: 'Inter', size: 12 }
+                                }
+                            }
+                        },
+                        cutout: '72%'
+                    }
+                });
+            }
         });
-
-        // Mobile Quick Search & Focus View Functions
-        function filterQuizCards(query) {
-            const term = (query || '').toLowerCase().trim();
-            const cards = document.querySelectorAll('.dashboard-grid .card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = (term === '' || text.includes(term)) ? '' : 'none';
-            });
-        }
-
-        function toggleFocusMode(checkbox) {
-            const charts = document.querySelector('.charts-container');
-            if (charts) {
-                charts.style.display = checkbox.checked ? 'none' : 'grid';
-            }
-        }
     </script>
+    <%- include('includes/footer') %>
 </body>
 </html>

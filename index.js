@@ -81,49 +81,41 @@ main();
 
 // Google Generative AI Setup
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-let genAI = null;
-let model = null;
-if (apiKey && apiKey !== "your_gemini_api_key_here") {
+
+// Dynamic Gemini API key resolver (checks .env and environment on each call)
+function getActiveApiKey() {
   try {
-    genAI = new GoogleGenerativeAI(apiKey);
-    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  } catch (err) {
-    console.error("Error configuring Gemini AI:", err);
-  }
+    require("dotenv").config();
+  } catch (_) {}
+  const rawApiKey = process.env.api_Key || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GEMINI_KEY || process.env.API_KEY || "";
+  const key = typeof rawApiKey === "string" ? rawApiKey.trim().replace(/^["']|["']$/g, "") : "";
+  return (key && key !== "your_gemini_api_key_here") ? key : "";
 }
 
-// Generate AI Response with fallback
+// Generate AI Response with multi-model fallback
 async function run(promptMsg) {
-  try {
-    if (!genAI && apiKey && apiKey !== "your_gemini_api_key_here") {
-      try {
-        genAI = new GoogleGenerativeAI(apiKey);
-        model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      } catch (e) {
-        console.error("Failed to initialize genAI:", e);
-      }
-    }
-    if (!model) {
-      console.warn("Gemini API key is not configured.");
-      return null;
-    }
-    const result = await model.generateContent(promptMsg);
-    const response = await result.response;
-    return response.text();
-  } catch (e) {
-    console.error("Error in primary Gemini model:", e.message);
-    try {
-      if (genAI) {
-        const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = await fallbackModel.generateContent(promptMsg);
-        const response = await result.response;
-        return response.text();
-      }
-    } catch (fallbackErr) {
-      console.error("Fallback Gemini error:", fallbackErr.message);
-    }
+  const currentKey = getActiveApiKey();
+  if (!currentKey) {
     return null;
   }
+
+  const candidateModels = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
+  const client = new GoogleGenerativeAI(currentKey);
+
+  for (const modelName of candidateModels) {
+    try {
+      const activeModel = client.getGenerativeModel({ model: modelName });
+      const result = await activeModel.generateContent(promptMsg);
+      const response = await result.response;
+      const text = response.text();
+      if (text && text.trim().length > 0) {
+        return text;
+      }
+    } catch (err) {
+      console.warn(`Gemini model ${modelName} error:`, err.message);
+    }
+  }
+  return null;
 }
 
 // Safe JSON array extractor from LLM text responses
@@ -154,14 +146,9 @@ function extractJsonArray(rawText) {
 function generateFallbackQuiz(topic, educationLevel, difficulty) {
   const normTopic = (topic || "General").trim().toLowerCase();
 
-  if (normTopic.includes("c++") || normTopic.includes("cpp")) {
-    return [
-      {
-        question: "What is the primary programming paradigm introduced by C++ on top of C?",
-        options: ["Object-Oriented Programming (OOP)", "Purely Functional Programming", "Logic Programming only", "Assembly Machine Mapping"],
-        answer: "Object-Oriented Programming (OOP)",
-        explanation: "C++ was designed by Bjarne Stroustrup as 'C with Classes', extending C with OOP principles like classes, inheritance, and encapsulation."
-      },
+  // Multi-tiered C++ Test & Quiz Bank
+  if (normTopic.includes("c++") || normTopic.includes("cpp") || normTopic.includes("c plus plus")) {
+    const beginnerCpp = [
       {
         question: "Which header file is required for standard input and output streams (std::cout, std::cin) in C++?",
         options: ["<iostream>", "<stdio.h>", "<conio.h>", "<fstream>"],
@@ -169,10 +156,49 @@ function generateFallbackQuiz(topic, educationLevel, difficulty) {
         explanation: "<iostream> defines standard stream objects like cout, cin, and cerr."
       },
       {
+        question: "What is the primary difference between a struct and a class in C++?",
+        options: ["Members of a class are private by default, while members of a struct are public by default", "Classes cannot have member functions", "Structs cannot inherit other structs", "Classes are value types while structs are reference types"],
+        answer: "Members of a class are private by default, while members of a struct are public by default",
+        explanation: "In C++, the only technical difference between class and struct is default access specifier: private for class, public for struct."
+      },
+      {
         question: "Which operator is used to allocate memory dynamically on the heap in modern C++?",
         options: ["new", "malloc", "alloc", "create"],
         answer: "new",
         explanation: "The 'new' operator allocates heap memory and calls the object constructor, while 'delete' frees it."
+      },
+      {
+        question: "What does the scope resolution operator (::) do in C++?",
+        options: ["Qualifies identifiers belonging to a specific namespace or class scope", "Performs pointer dereferencing", "Compares equality between two objects", "Defines bitwise shifting"],
+        answer: "Qualifies identifiers belonging to a specific namespace or class scope",
+        explanation: "The '::' operator resolves names to their enclosing namespace or class, such as std::cout or MyClass::myMethod."
+      },
+      {
+        question: "How do you declare a reference variable 'ref' that aliases integer 'x' in C++?",
+        options: ["int& ref = x;", "int* ref = &x;", "ref<int> = x;", "int ref = &x;"],
+        answer: "int& ref = x;",
+        explanation: "An ampersand '&' following the type denotes a reference, which acts as a permanent alias to an existing variable."
+      },
+      {
+        question: "Which keyword is used to prevent modifications to a variable's value in C++?",
+        options: ["const", "final", "static", "readonly"],
+        answer: "const",
+        explanation: "'const' establishes compile-time immutability, preventing reassignment or mutation."
+      },
+      {
+        question: "Which operator is used to release dynamic single-object heap memory in C++?",
+        options: ["delete", "free", "release", "dispose"],
+        answer: "delete",
+        explanation: "In C++, heap objects created with 'new' must be deallocated with 'delete' (or 'delete[]' for arrays)."
+      }
+    ];
+
+    const intermediateCpp = [
+      {
+        question: "What is the primary programming paradigm introduced by C++ on top of C?",
+        options: ["Object-Oriented Programming (OOP)", "Purely Functional Programming", "Logic Programming only", "Assembly Machine Mapping"],
+        answer: "Object-Oriented Programming (OOP)",
+        explanation: "C++ was designed by Bjarne Stroustrup as 'C with Classes', extending C with OOP principles like classes, inheritance, and encapsulation."
       },
       {
         question: "What is the primary role of a class destructor (~ClassName()) in C++?",
@@ -185,8 +211,90 @@ function generateFallbackQuiz(topic, educationLevel, difficulty) {
         options: ["virtual", "inline", "static", "friend"],
         answer: "virtual",
         explanation: "Declaring a base class member function as 'virtual' enables dynamic binding and method overriding in derived classes."
+      },
+      {
+        question: "What defines a pure virtual function in a C++ abstract base class?",
+        options: ["virtual void func() = 0;", "pure virtual void func();", "abstract void func();", "virtual void func() {} = null;"],
+        answer: "virtual void func() = 0;",
+        explanation: "Syntax '= 0' marks a virtual function as pure, making the containing class abstract and requiring derived classes to implement it."
+      },
+      {
+        question: "Which access specifier allows class members to be accessed by derived classes but not outside the class hierarchy?",
+        options: ["protected", "private", "public", "internal"],
+        answer: "protected",
+        explanation: "'protected' members are accessible within the base class and any derived classes, but inaccessible to unrelated external code."
+      },
+      {
+        question: "What does the 'const' qualifier at the end of a member function declare (e.g., int getCount() const)?",
+        options: ["The function guarantees not to modify any non-mutable member variables of the object", "The function cannot return a value", "The function can only be called once", "The function return value is constant"],
+        answer: "The function guarantees not to modify any non-mutable member variables of the object",
+        explanation: "Const member functions do not alter object state, allowing them to be safely called on const instances."
+      },
+      {
+        question: "What happens when an exception is thrown in C++ and not caught inside any try-catch block?",
+        options: ["std::terminate() is called, terminating the process", "The program ignores the error and continues", "The operating system restarts the application", "The exception is converted into an exit code 0"],
+        answer: "std::terminate() is called, terminating the process",
+        explanation: "Uncaught exceptions trigger std::terminate (defaulting to std::abort), terminating the program abnormally."
       }
     ];
+
+    const advancedCpp = [
+      {
+        question: "Which smart pointer in Modern C++ (C++11+) provides exclusive, non-shareable ownership of dynamic heap objects?",
+        options: ["std::unique_ptr", "std::shared_ptr", "std::weak_ptr", "std::auto_ptr"],
+        answer: "std::unique_ptr",
+        explanation: "std::unique_ptr enforces exclusive ownership with zero runtime overhead; it cannot be copied, only moved."
+      },
+      {
+        question: "What core C++ idiom binds resource management (memory, file handles, mutex locks) to object lifetime?",
+        options: ["RAII (Resource Acquisition Is Initialization)", "CRTP (Curiously Recurring Template Pattern)", "PIMPL (Pointer to Implementation)", "SFINAE (Substitution Failure Is Not An Error)"],
+        answer: "RAII (Resource Acquisition Is Initialization)",
+        explanation: "RAII guarantees resources are acquired during construction and automatically released upon destruction (going out of scope)."
+      },
+      {
+        question: "Which STL container guarantees contiguous dynamic memory and fast random access via operator[]?",
+        options: ["std::vector", "std::list", "std::deque", "std::set"],
+        answer: "std::vector",
+        explanation: "std::vector stores elements contiguously in heap memory, providing O(1) random index access and cache friendliness."
+      },
+      {
+        question: "What is the purpose of std::move in C++11 and above?",
+        options: ["Casts an lvalue to an rvalue reference (T&&) to enable move semantics", "Physically copies bytes across memory locations", "Deletes the source object immediately", "Transfers thread execution priority"],
+        answer: "Casts an lvalue to an rvalue reference (T&&) to enable move semantics",
+        explanation: "std::move performs an unconditional static_cast to an rvalue reference, allowing cheap transfer of resources rather than deep copying."
+      },
+      {
+        question: "Which operator CANNOT be overloaded in C++?",
+        options: ["Scope resolution (::)", "Subscript ([])", "Function call (())", "Arrow (->)"],
+        answer: "Scope resolution (::)",
+        explanation: "C++ forbids overloading the scope resolution (::), member access (.), pointer-to-member (.*), and ternary conditional (?:) operators."
+      },
+      {
+        question: "What is the Rule of Five in Modern C++?",
+        options: ["If you define destructor, copy constructor, or copy assignment, you should also define move constructor and move assignment", "Every class must inherit up to 5 base classes", "Maximum 5 template parameters per class", "Only 5 threads may access a class instance"],
+        answer: "If you define destructor, copy constructor, or copy assignment, you should also define move constructor and move assignment",
+        explanation: "The Rule of Five dictates implementing all 5 special member functions (Destructor, Copy Ctor, Copy Assign, Move Ctor, Move Assign) for correct resource ownership."
+      },
+      {
+        question: "What is the worst-case time complexity of searching an element by key in std::map (Red-Black Tree)?",
+        options: ["O(log n)", "O(1)", "O(n)", "O(n log n)"],
+        answer: "O(log n)",
+        explanation: "std::map maintains a balanced self-adjusting Red-Black Tree, ensuring logarithmic O(log n) search, insertion, and deletion."
+      }
+    ];
+
+    let pool = [];
+    if (difficulty === "beginner" || difficulty === "easy") {
+      pool = [...beginnerCpp, ...intermediateCpp.slice(0, 3)];
+    } else if (difficulty === "advanced" || difficulty === "college-advanced") {
+      pool = [...advancedCpp, ...intermediateCpp.slice(2, 6)];
+    } else {
+      pool = [...beginnerCpp.slice(0, 2), ...intermediateCpp, ...advancedCpp.slice(0, 3)];
+    }
+
+    // Deterministically shuffle and select 5 questions
+    const shuffled = pool.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 5);
   }
 
   if (normTopic.includes("python")) {
@@ -476,7 +584,7 @@ Output ONLY raw JSON array. No markdown, no conversational text.`;
   }
 });
 
-app.post("/submit-quiz", (req, res) => {
+app.post("/submit-quiz", async (req, res) => {
   try {
     const topic = (req.body.topic || "General").trim();
     let correctAnswers = [];
@@ -504,6 +612,28 @@ app.post("/submit-quiz", (req, res) => {
         correctAnswer: correctAnswers[i],
         isCorrect,
       });
+    }
+
+    // Immediately record quiz attempt & test scores to user profile in MongoDB
+    if (req.user && req.user._id) {
+      try {
+        const user = await User.findById(req.user._id);
+        if (user) {
+          if (!user.quizzes) user.quizzes = [];
+          user.quizzes.push({ topic, results });
+
+          if (!user.testScores) user.testScores = [];
+          let topicScoreEntry = user.testScores.find((ts) => ts.topic.toLowerCase() === topic.toLowerCase());
+          if (topicScoreEntry) {
+            topicScoreEntry.scores.push(score);
+          } else {
+            user.testScores.push({ topic, scores: [score] });
+          }
+          await user.save();
+        }
+      } catch (saveErr) {
+        console.warn("Could not immediately record test score:", saveErr.message);
+      }
     }
 
     res.render("quiz-result.ejs", {
@@ -548,73 +678,73 @@ Generate a structured study roadmap with performance summary, weak areas, recomm
       console.warn("AI resource generation exception:", aiErr.message);
     }
 
-    if (!resource || resource.trim() === "" || resource.includes("Gemini AI is not configured")) {
-      const matched = topicResources.find(t => t.topic.toLowerCase() === topic.toLowerCase()) || topicResources[0];
-      const videoLinks = (matched?.videos || [
-        { title: `${topic} Complete Mastery Tutorial`, url: `https://www.youtube.com/results?search_query=${encodeURIComponent(topic + " tutorial")}` }
-      ]).map(v => `- ▶️ [**${v.title}**](${v.url})`).join("\n");
+    const norm = topic.toLowerCase();
+    let matched = topicResources.find(t => t.topic.toLowerCase() === norm);
+    if (!matched) {
+      if (norm.includes("c++") || norm.includes("cpp") || norm.includes("c plus plus")) {
+        matched = topicResources.find(t => t.topic === "C++");
+      } else if (norm.includes("c ") || norm === "c") {
+        matched = topicResources.find(t => t.topic === "C Programming");
+      } else if (norm.includes("python")) {
+        matched = topicResources.find(t => t.topic === "Python");
+      } else if (norm.includes("java")) {
+        matched = topicResources.find(t => t.topic === "Java");
+      } else {
+        matched = topicResources[0];
+      }
+    }
 
-      const articleLinks = (matched?.articles || [
-        { title: `${topic} Official Documentation & Guides`, url: `https://www.google.com/search?q=${encodeURIComponent(topic + " documentation")}` }
-      ]).map(a => `- 📖 [**${a.title}**](${a.url})`).join("\n");
+    const videos = matched?.videos || [
+      { title: `${topic} Complete Mastery Tutorial`, url: `https://www.youtube.com/results?search_query=${encodeURIComponent(topic + " tutorial")}` }
+    ];
+
+    const articles = matched?.articles || [
+      { title: `${topic} Official Documentation & Guides`, url: `https://www.google.com/search?q=${encodeURIComponent(topic + " documentation")}` }
+    ];
+
+    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+
+    if (!resource || resource.trim() === "" || resource.includes("Gemini AI is not configured")) {
+      const videoLinks = videos.map(v => `- ▶️ [**${v.title}**](${v.url})`).join("\n");
+      const articleLinks = articles.map(a => `- 📖 [**${a.title}**](${a.url})`).join("\n");
 
       resource = `
-✨ **Performance Summary** ✨  
-- 📊 **Total Questions**: ${total}  
-- ✅ **Correct Answers**: ${score}  
-- ❌ **Incorrect Answers**: ${total - score}  
-- 💡 **Key Observations**: Scored ${Math.round((score / total) * 100)}% on ${topic}. Focused practice will solidify core concepts.
+### 🎯 Focus & Improvement Areas
+- **Core Principles**: Review fundamental definitions, syntax, and memory models in **${topic}**.
+- **Practical Application**: Work through structured problem sets and coding exercises to build muscle memory.
+- **Modern Best Practices**: Master standard patterns, conventions, modern idioms, and error handling.
 
----
+### 🧠 Practice Problems & Exercises
+- **Problem 1 (Concept)**: Summarize the core architectural philosophy and memory model of ${topic}.
+- **Problem 2 (Implementation)**: Construct a minimal practical working example implementing ${topic} cleanly.
+- **Problem 3 (Debugging)**: Identify and resolve a common pitfall or memory hazard encountered in ${topic}.
 
-🎯 **Focus & Improvement Areas** 🎯  
-- 🔴 **Core Principles**: Review fundamental definitions and syntax in **${topic}**.  
-- 🔄 **Practical Application**: Work through structured problem sets and examples.  
-- ⚠️ **Best Practices**: Master standard patterns, conventions, and error handling.
-
----
-
-📚 **Recommended Learning Resources** 📚  
-
-📹 *Video Resources*:  
-${videoLinks}
-
-📄 *Articles & Tutorials*:  
-${articleLinks}
-
----
-
-🧠 **Practice Problems** 🧠  
-- 🔹 **Problem 1**: Summarize the core architectural philosophy of ${topic}.  
-- 🔹 **Problem 2**: Construct a minimal practical working example implementing ${topic}.  
-- 🔹 **Problem 3**: Identify and resolve a common pitfall encountered in ${topic}.
-
----
-
-🚀 **Next Steps** 🚀  
-- 🔄 Review the recommended video tutorials and articles above.  
-- 🚀 Retake the assessment on LearnSmart to measure your score progression.
+### 🚀 Recommended Next Steps
+- Review the curated video masterclasses and documentation guides below.
+- Spend 30 minutes practicing the code challenges.
+- Retake the assessment on LearnSmart to track your score progression.
 `;
     }
 
-    if (req.user) {
+    if (req.user && req.user._id) {
       const user = await User.findById(req.user._id);
       if (user) {
-        user.quizzes.push({ topic, results: quizResults });
+        if (!user.resources) user.resources = [];
         user.resources.push({ topic, content: resource });
-
-        if (!user.testScores) user.testScores = [];
-        let topicScoreEntry = user.testScores.find((ts) => ts.topic === topic);
-        if (topicScoreEntry) {
-          topicScoreEntry.scores.push(score);
-        } else {
-          user.testScores.push({ topic, scores: [score] });
-        }
         await user.save();
       }
     }
 
-    res.render("resource-page.ejs", { topic, resource });
+    res.render("resource-page.ejs", {
+      topic,
+      resource,
+      score,
+      total,
+      percentage,
+      quizResults,
+      videos,
+      articles
+    });
   } catch (e) {
     console.error("Error generating resource:", e);
     res.render("error.ejs", {
