@@ -141,7 +141,7 @@
     <%- include('includes/navbar', { currentPage: 'dashboard' }) %>
 
     <main class="dashboard-content-wrap">
-        <% 
+        <%
             const hasQuizzes = user && user.quizzes && user.quizzes.length > 0;
             let totalQuestions = 0;
             let totalCorrect = 0;
@@ -150,17 +150,19 @@
 
             if (hasQuizzes) {
                 user.quizzes.forEach(quiz => {
-                    totalQuestions += quiz.results.length;
-                    const correctCount = quiz.results.filter(q => q.isCorrect).length;
+                    const qCount = quiz.results ? quiz.results.length : (quiz.totalQuestions || 5);
+                    totalQuestions += qCount;
+                    const correctCount = quiz.results ? quiz.results.filter(q => q.isCorrect).length : (quiz.score || 0);
                     totalCorrect += correctCount;
-                    const score = Math.round((correctCount / quiz.results.length) * 100);
+                    const score = typeof quiz.percentage === 'number' ? quiz.percentage : (qCount > 0 ? Math.round((correctCount / qCount) * 100) : 0);
                     if (score > maxScore) maxScore = score;
                 });
                 uniqueTopics = [...new Set(user.quizzes.map(q => q.topic))];
             }
-            const overallAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 78;
-            const streakCount = user.streak || 12;
-            const totalQuizzes = hasQuizzes ? user.quizzes.length : 24;
+            const summary = (typeof analytics !== 'undefined' && analytics && analytics.summary) ? analytics.summary : null;
+            const overallAccuracy = summary ? summary.overallAccuracy : (totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0);
+            const streakCount = summary ? summary.streak : (user.streak || 0);
+            const totalQuizzes = summary ? summary.completedQuizzes : (hasQuizzes ? user.quizzes.length : 0);
         %>
 
         <!-- Signature Yellow-Grid Hero Banner (Exact Match to Reference Image 1 Top-Left) -->
@@ -270,78 +272,41 @@
                     <div class="ls-card-title">
                         <i class="fas fa-bars-progress" style="color: var(--ls-purple);"></i> Subject Performance
                     </div>
-                    <select class="form-select" style="width: auto; padding: 4px 10px; font-size: 0.82rem; font-weight: 700;">
-                        <option>All Subjects</option>
-                        <option>Computer Science</option>
-                        <option>Core Subjects</option>
-                    </select>
+                    <a href="/progress" style="font-size: 0.82rem; font-weight: 700; color: var(--ls-purple);">Detailed View</a>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 4px;">
-                    <!-- Data Structures -->
-                    <div>
-                        <div class="subject-progress-item" style="margin-bottom: 4px;">
-                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">
-                                <i class="fas fa-code" style="color: var(--ls-purple); margin-right: 6px;"></i> Data Structures
-                            </span>
-                            <span class="badge badge-purple">92%</span>
+                    <% 
+                        const studentSubjects = (typeof analytics !== 'undefined' && analytics && analytics.subjects) ? analytics.subjects : [];
+                        const subjectColors = ['var(--ls-purple)', 'var(--ls-blue)', 'var(--ls-green)', 'var(--ls-orange)', 'var(--ls-coral)'];
+                        const badgeClasses = ['badge-purple', 'badge-blue', 'badge-green', 'badge-warning', 'badge-danger'];
+                    %>
+                    <% if (studentSubjects.length > 0) { %>
+                        <% studentSubjects.slice(0, 5).forEach((sub, sIdx) => { 
+                            const color = subjectColors[sIdx % subjectColors.length];
+                            const badgeClass = badgeClasses[sIdx % badgeClasses.length];
+                        %>
+                            <div>
+                                <div class="subject-progress-item" style="margin-bottom: 4px;">
+                                    <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">
+                                        <i class="fas fa-book-bookmark" style="color: <%= color %>; margin-right: 6px;"></i> <%= sub.subject %>
+                                        <span style="font-size: 0.72rem; color: var(--ls-muted); font-weight: 600;">(<%= sub.attempts %> <%= sub.attempts === 1 ? 'attempt' : 'attempts' %>)</span>
+                                    </span>
+                                    <span class="badge <%= badgeClass %>"><%= sub.averageScore %>%</span>
+                                </div>
+                                <div class="subject-progress-bar-wrap">
+                                    <div class="subject-progress-fill" style="width: <%= sub.averageScore %>%; background-color: <%= color %>;"></div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div style="text-align: center; padding: 2.5rem 1rem; color: var(--ls-muted);">
+                            <i class="fas fa-chart-pie" style="font-size: 2.2rem; margin-bottom: 8px; opacity: 0.35;"></i>
+                            <p style="font-size: 0.9rem; font-weight: 700; margin: 0; color: var(--ls-black);">No Subject Data Yet</p>
+                            <p style="font-size: 0.8rem; margin: 4px 0 12px 0;">Take practice quizzes to build topic mastery tracking.</p>
+                            <a href="/quiz" class="btn btn-outline btn-sm">Take a Quiz</a>
                         </div>
-                        <div class="subject-progress-bar-wrap">
-                            <div class="subject-progress-fill" style="width: 92%; background-color: var(--ls-purple);"></div>
-                        </div>
-                    </div>
-
-                    <!-- Web Development -->
-                    <div>
-                        <div class="subject-progress-item" style="margin-bottom: 4px;">
-                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">
-                                <i class="fas fa-globe" style="color: var(--ls-blue); margin-right: 6px;"></i> Web Development
-                            </span>
-                            <span class="badge badge-blue">78%</span>
-                        </div>
-                        <div class="subject-progress-bar-wrap">
-                            <div class="subject-progress-fill" style="width: 78%; background-color: var(--ls-blue);"></div>
-                        </div>
-                    </div>
-
-                    <!-- DBMS -->
-                    <div>
-                        <div class="subject-progress-item" style="margin-bottom: 4px;">
-                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">
-                                <i class="fas fa-database" style="color: var(--ls-green); margin-right: 6px;"></i> DBMS
-                            </span>
-                            <span class="badge badge-green">70%</span>
-                        </div>
-                        <div class="subject-progress-bar-wrap">
-                            <div class="subject-progress-fill" style="width: 70%; background-color: var(--ls-green);"></div>
-                        </div>
-                    </div>
-
-                    <!-- Operating Systems -->
-                    <div>
-                        <div class="subject-progress-item" style="margin-bottom: 4px;">
-                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">
-                                <i class="fas fa-microchip" style="color: var(--ls-orange); margin-right: 6px;"></i> Operating Systems
-                            </span>
-                            <span class="badge badge-warning">65%</span>
-                        </div>
-                        <div class="subject-progress-bar-wrap">
-                            <div class="subject-progress-fill" style="width: 65%; background-color: var(--ls-orange);"></div>
-                        </div>
-                    </div>
-
-                    <!-- Computer Networks -->
-                    <div>
-                        <div class="subject-progress-item" style="margin-bottom: 4px;">
-                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">
-                                <i class="fas fa-network-wired" style="color: var(--ls-coral); margin-right: 6px;"></i> Computer Networks
-                            </span>
-                            <span class="badge badge-danger">88%</span>
-                        </div>
-                        <div class="subject-progress-bar-wrap">
-                            <div class="subject-progress-fill" style="width: 88%; background-color: var(--ls-coral);"></div>
-                        </div>
-                    </div>
+                    <% } %>
                 </div>
             </div>
 
@@ -356,35 +321,30 @@
                     </div>
 
                     <div style="display: flex; flex-direction: column;">
-                        <div class="activity-list-item">
-                            <div class="activity-icon" style="background: var(--ls-green-light); color: var(--ls-green);">
-                                <i class="fas fa-check"></i>
+                        <% 
+                            const recentActs = (typeof analytics !== 'undefined' && analytics && analytics.recentActivities) ? analytics.recentActivities : [];
+                        %>
+                        <% if (recentActs.length > 0) { %>
+                            <% recentActs.slice(0, 3).forEach(act => { %>
+                                <div class="activity-list-item">
+                                    <div class="activity-icon" style="background: <%= act.iconBg %>; color: <%= act.iconColor %>;">
+                                        <i class="fas <%= act.icon %>"></i>
+                                    </div>
+                                    <div style="min-width: 0; flex: 1;">
+                                        <div style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><%= act.title %></div>
+                                        <div style="font-size: 0.75rem; color: var(--ls-muted); font-weight: 600;">
+                                            <%= act.subtitle %> &bull; <%= new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div style="text-align: center; padding: 2.5rem 1rem; color: var(--ls-muted);">
+                                <i class="fas fa-clock-rotate-left" style="font-size: 2.2rem; margin-bottom: 8px; opacity: 0.35;"></i>
+                                <p style="font-size: 0.9rem; font-weight: 700; margin: 0; color: var(--ls-black);">No Recent Activity</p>
+                                <p style="font-size: 0.8rem; margin: 4px 0 0 0;">Quizzes taken and notes added will appear here.</p>
                             </div>
-                            <div>
-                                <div style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">Completed a quiz on Data Structures</div>
-                                <div style="font-size: 0.75rem; color: var(--ls-muted); font-weight: 600;">2 hours ago</div>
-                            </div>
-                        </div>
-
-                        <div class="activity-list-item">
-                            <div class="activity-icon" style="background: var(--ls-purple-light); color: var(--ls-purple);">
-                                <i class="fas fa-file-lines"></i>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">Added a new note on Operating Systems</div>
-                                <div style="font-size: 0.75rem; color: var(--ls-muted); font-weight: 600;">5 hours ago</div>
-                            </div>
-                        </div>
-
-                        <div class="activity-list-item">
-                            <div class="activity-icon" style="background: var(--ls-orange-light); color: var(--ls-orange);">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);">Practiced 5 interview questions</div>
-                                <div style="font-size: 0.75rem; color: var(--ls-muted); font-weight: 600;">1 day ago</div>
-                            </div>
-                        </div>
+                        <% } %>
                     </div>
                 </div>
 
@@ -472,6 +432,9 @@
                                     <span class="badge <%= badgeColorClass %>" style="font-size: 0.95rem; padding: 6px 12px;">
                                         <%= score %>%
                                     </span>
+                                    <a href="/quiz/review/<%= quiz.attemptId || (user.quizzes.length - 1 - reversedIndex) %>" class="btn btn-outline btn-sm">
+                                        <i class="fas fa-eye"></i> Review
+                                    </a>
                                     <form action="/generate-resource" method="POST" style="margin: 0; display: inline;">
                                         <input type="hidden" name="topic" value="<%= quiz.topic %>">
                                         <input type="hidden" name="quizResults" value='<%= JSON.stringify(quiz.results) %>'>
@@ -500,7 +463,7 @@
                                         <div style="font-size: 0.82rem; margin-bottom: 4px;">
                                             <span style="font-weight: 700;">Your Answer:</span> 
                                             <span style="color: <%= q.isCorrect ? 'var(--ls-green)' : 'var(--ls-coral)' %>; font-weight: 700;">
-                                                <%= q.userAnswer || 'None' %>
+                                                <%= q.yourAnswer || q.userAnswer || 'None' %>
                                             </span>
                                         </div>
                                         <% if (!q.isCorrect) { %>
@@ -569,23 +532,32 @@
             });
         }
 
-        // Initialize Study Progress Chart (Vivid Purple & Tangerine Orange Matching Design System)
+        // Initialize Study Progress Chart
         document.addEventListener('DOMContentLoaded', () => {
             const canvas = document.getElementById('progressionChart');
             if (!canvas) return;
 
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            const studyHours = [2.5, 3.8, 3.2, 4.5, 4.0, 5.5, 6.2];
-            const quizAccuracy = [65, 72, 70, 84, 78, 88, 92];
+            const chartData = <%- JSON.stringify((typeof analytics !== 'undefined' && analytics && analytics.performanceOverTime) ? analytics.performanceOverTime : []) %>;
+
+            let labels = [];
+            let scores = [];
+
+            if (chartData && chartData.length > 0) {
+                labels = chartData.map(c => {
+                    const d = new Date(c.date);
+                    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) || ('Quiz ' + c.attemptNumber);
+                });
+                scores = chartData.map(c => c.percentage);
+            }
 
             new Chart(canvas, {
                 type: 'line',
                 data: {
-                    labels: days,
+                    labels: labels.length > 0 ? labels : ['No Quizzes'],
                     datasets: [
                         {
-                            label: 'Study Time (hrs)',
-                            data: studyHours.map(h => h * 15), // Normalized for visual chart
+                            label: 'Quiz Score (%)',
+                            data: scores.length > 0 ? scores : [0],
                             borderColor: '#5B20FF',
                             backgroundColor: 'rgba(91, 32, 255, 0.08)',
                             borderWidth: 2.5,
@@ -593,19 +565,6 @@
                             fill: true,
                             pointBackgroundColor: '#FFFFFF',
                             pointBorderColor: '#5B20FF',
-                            pointBorderWidth: 2,
-                            pointRadius: 4
-                        },
-                        {
-                            label: 'Quiz Score (%)',
-                            data: quizAccuracy,
-                            borderColor: '#FF7628',
-                            backgroundColor: 'transparent',
-                            borderWidth: 2.5,
-                            borderDash: [4, 4],
-                            tension: 0.35,
-                            pointBackgroundColor: '#FFFFFF',
-                            pointBorderColor: '#FF7628',
                             pointBorderWidth: 2,
                             pointRadius: 4
                         }
@@ -621,7 +580,12 @@
                             titleFont: { family: 'Outfit', size: 12 },
                             bodyFont: { family: 'Inter', size: 12 },
                             padding: 8,
-                            cornerRadius: 6
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Score: ' + context.parsed.y + '%';
+                                }
+                            }
                         }
                     },
                     scales: {

@@ -8,7 +8,13 @@
     "dev": "nodemon index.js",
     "build": "node -e \"console.log('Build completed successfully')\"",
     "build:react": "npm --prefix practicals/react-student-management run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/security.test.js && node test/quiz-grading-security.test.js && node test/admin-analytics.test.js && node test/student-analytics.test.js && node test/admin-student-analytics.test.js",
+    "test:security": "node test/security.test.js",
+    "test:quiz": "node test/quiz-grading-security.test.js",
+    "test:admin": "node test/admin-analytics.test.js",
+    "test:student": "node test/student-analytics.test.js",
+    "test:admin-student": "node test/admin-student-analytics.test.js",
+    "create-admin": "node scripts/create-admin.js"
   },
   "keywords": [],
   "author": "",

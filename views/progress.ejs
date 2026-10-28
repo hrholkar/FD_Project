@@ -64,6 +64,47 @@
             background: rgba(255, 255, 255, 0.25);
             color: #FFFFFF;
         }
+
+        .history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .history-table th {
+            background: var(--ls-bg);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--ls-black);
+            border-bottom: 2px solid var(--ls-black);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-table td {
+            padding: 14px 16px;
+            border-bottom: 1.5px solid #EBEBEA;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .history-table tr:hover td {
+            background: #FAF9F6;
+        }
+
+        .weak-topic-card {
+            background: #FFF9F8;
+            border: 2px solid var(--ls-coral);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +112,15 @@
     <%- include('includes/navbar', { currentPage: 'progress' }) %>
 
     <main class="progress-content-wrap">
+        <% 
+            const summary = (typeof analytics !== 'undefined' && analytics && analytics.summary) ? analytics.summary : null;
+            const subjectsList = (typeof analytics !== 'undefined' && analytics && analytics.subjects) ? analytics.subjects : [];
+            const weakTopicsList = (typeof analytics !== 'undefined' && analytics && analytics.weakTopics) ? analytics.weakTopics : [];
+            const performanceHistory = (typeof analytics !== 'undefined' && analytics && analytics.performanceOverTime) ? analytics.performanceOverTime : [];
+            const totalQuizzesCount = summary ? summary.completedQuizzes : ((user && user.quizzes) ? user.quizzes.length : (testScores ? testScores.reduce((a, b) => a + b.scores.length, 0) : 0));
+            const hasQuizzes = totalQuizzesCount > 0;
+        %>
+
         <!-- Signature Yellow-Grid Hero Banner -->
         <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
             <div class="ls-hero-banner-content">
@@ -109,17 +159,22 @@
             </div>
         </header>
 
-        <% if (testScores && testScores.length > 0) { %>
+        <% if (hasQuizzes) { %>
             <!-- Subject Selection Pills -->
             <div class="topic-pills-row" id="topicButtons">
                 <span style="font-weight: 800; color: var(--ls-black); font-size: 0.95rem; margin-right: 4px;">
                     <i class="fas fa-book" style="color: var(--ls-purple);"></i> Subjects:
                 </span>
-                <% testScores.forEach((topicData, index) => { %>
-                    <button class="topic-pill-btn <%= index === 0 ? 'active' : '' %>" id="btn-<%= topicData.topic %>" onclick="showChart('<%= topicData.topic %>')">
+                <button class="topic-pill-btn active" id="btn-all" onclick="showChart('all')">
+                    <i class="fas fa-layer-group"></i>
+                    <span>All Subjects</span>
+                    <span class="topic-pill-badge"><%= totalQuizzesCount %> <%= totalQuizzesCount === 1 ? 'test' : 'tests' %></span>
+                </button>
+                <% subjectsList.forEach((sub) => { %>
+                    <button class="topic-pill-btn" id="btn-<%= sub.subject.replace(/\s+/g, '-').toLowerCase() %>" onclick="showChart('<%= sub.subject %>')">
                         <i class="fas fa-code"></i>
-                        <span><%= topicData.topic %></span>
-                        <span class="topic-pill-badge"><%= topicData.scores.length %> <%= topicData.scores.length === 1 ? 'test' : 'tests' %></span>
+                        <span><%= sub.subject %></span>
+                        <span class="topic-pill-badge"><%= sub.attempts %> <%= sub.attempts === 1 ? 'test' : 'tests' %></span>
                     </button>
                 <% }) %>
             </div>
@@ -131,7 +186,7 @@
                         <i class="fas fa-list-check"></i>
                     </div>
                     <div>
-                        <div class="ls-metric-value" id="totalAttempts">0</div>
+                        <div class="ls-metric-value" id="totalAttempts"><%= totalQuizzesCount %></div>
                         <div class="ls-metric-label">Total Assessments</div>
                     </div>
                 </div>
@@ -141,7 +196,7 @@
                         <i class="fas fa-trophy"></i>
                     </div>
                     <div>
-                        <div class="ls-metric-value" id="bestScore">0%</div>
+                        <div class="ls-metric-value" id="bestScore"><%= summary ? summary.highestScore : 0 %>%</div>
                         <div class="ls-metric-label">Highest Score</div>
                     </div>
                 </div>
@@ -151,7 +206,7 @@
                         <i class="fas fa-calculator"></i>
                     </div>
                     <div>
-                        <div class="ls-metric-value" id="avgScore">0%</div>
+                        <div class="ls-metric-value" id="avgScore"><%= summary ? summary.averageScore : 0 %>%</div>
                         <div class="ls-metric-label">Average Score</div>
                     </div>
                 </div>
@@ -161,13 +216,13 @@
                         <i class="fas fa-arrow-trend-up"></i>
                     </div>
                     <div>
-                        <div class="ls-metric-value" id="improvement">0%</div>
-                        <div class="ls-metric-label">Net Score Trajectory</div>
+                        <div class="ls-metric-value" id="latestScore"><%= summary ? summary.latestScore : 0 %>%</div>
+                        <div class="ls-metric-label">Latest Assessment</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Chart Card -->
+            <!-- Chart Card: Score Trajectory -->
             <section class="ls-card" style="margin-bottom: 2rem;" id="chartSection">
                 <div class="ls-card-header" style="flex-wrap: wrap; gap: 12px;">
                     <div>
@@ -175,7 +230,7 @@
                             <i class="fas fa-chart-area" style="color: var(--ls-purple);"></i> Assessment Score Trajectory
                         </h2>
                         <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: var(--ls-muted);">
-                            Chronological history of your quiz performance
+                            Chronological history of verified quiz scores over time
                         </p>
                     </div>
 
@@ -197,8 +252,9 @@
                 </div>
             </section>
 
-            <!-- Multi-Subject Performance & Activity Grid -->
+            <!-- Multi-Subject Performance & Real Activity Timeline Grid -->
             <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <!-- Subject-Wise Average -->
                 <div class="ls-card">
                     <div class="ls-card-header">
                         <h2 class="ls-card-title"><i class="fas fa-chart-column" style="color: var(--ls-purple);"></i> Subject-Wise Average</h2>
@@ -208,13 +264,168 @@
                     </div>
                 </div>
 
+                <!-- Real Quiz Activity Timeline -->
                 <div class="ls-card">
                     <div class="ls-card-header">
-                        <h2 class="ls-card-title"><i class="fas fa-calendar-check" style="color: var(--ls-green);"></i> Quiz Activity Timeline</h2>
+                        <h2 class="ls-card-title"><i class="fas fa-calendar-check" style="color: var(--ls-green);"></i> Quiz Activity Timeline (Past 7 Days)</h2>
                     </div>
                     <div style="height: 260px; position: relative;">
                         <canvas id="progressActivityChart"></canvas>
                     </div>
+                </div>
+            </section>
+
+            <!-- Weak-Topic Diagnostics Section -->
+            <section class="ls-card" style="margin-bottom: 2rem;">
+                <div class="ls-card-header">
+                    <div>
+                        <h2 class="ls-card-title">
+                            <i class="fas fa-crosshairs" style="color: var(--ls-coral);"></i> Weak-Topic Diagnostics & Mastery Needs
+                        </h2>
+                        <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: var(--ls-muted);">
+                            Rule-based mastery analysis: Topics with 2 or more attempts averaging under 65% are flagged for revision.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 6px;">
+                    <% if (weakTopicsList.length > 0) { %>
+                        <% weakTopicsList.forEach(wt => { %>
+                            <div class="weak-topic-card">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--ls-black); margin: 0;">
+                                            <%= wt.subject %>
+                                        </h3>
+                                        <span class="badge badge-danger">Needs Practice (<%= wt.averageScore %>%)</span>
+                                    </div>
+                                    <div style="font-size: 0.85rem; color: var(--ls-muted); font-weight: 600;">
+                                        Completed <%= wt.attempts %> attempts &bull; Highest Score: <%= wt.highestScore %>% &bull; Latest: <%= wt.latestScore %>%
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="/quiz" class="btn btn-purple btn-sm">
+                                        <i class="fas fa-rotate-right"></i> Practice <%= wt.subject %>
+                                    </a>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div style="background: #FAFFF8; border: 1.5px solid var(--ls-green); border-radius: var(--radius-sm); padding: 16px 20px; display: flex; align-items: center; gap: 14px;">
+                            <i class="fas fa-circle-check" style="color: var(--ls-green); font-size: 1.6rem; flex-shrink: 0;"></i>
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.95rem; color: var(--ls-black);">
+                                    Mastery On Track!
+                                </div>
+                                <div style="font-size: 0.85rem; color: #2B2B2B;">
+                                    None of your multi-attempt subjects fall below the 65% threshold. Keep up the consistent practice!
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <% 
+                        const limitedSubjects = subjectsList.filter(s => s.hasLimitedHistory);
+                    %>
+                    <% if (limitedSubjects.length > 0) { %>
+                        <div style="font-size: 0.82rem; color: var(--ls-muted); padding-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                            <i class="fas fa-circle-info" style="color: var(--ls-blue);"></i>
+                            <span><strong>Limited History:</strong> <%= limitedSubjects.map(s => s.subject + " (" + s.attempts + " attempt, " + s.averageScore + "%)").join(", ") %> need at least 2 attempts to confirm learning mastery.</span>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
+
+            <!-- Detailed Quiz History Table / Feed -->
+            <section class="ls-card" style="margin-bottom: 2rem;">
+                <div class="ls-card-header" style="flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h2 class="ls-card-title">
+                            <i class="fas fa-clock-rotate-left" style="color: var(--ls-purple);"></i> Detailed Assessment History
+                        </h2>
+                        <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: var(--ls-muted);">
+                            Inspect question-level diagnostics, score breakdowns, and study plans for past attempts.
+                        </p>
+                    </div>
+
+                    <!-- Search and Topic Filter Controls -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input 
+                            type="text" 
+                            id="historySearchInput" 
+                            placeholder="Filter by topic..." 
+                            class="form-control" 
+                            style="width: 200px; padding: 6px 12px; font-size: 0.85rem;"
+                            oninput="filterHistoryTable()"
+                        />
+                        <select 
+                            id="historyTopicSelect" 
+                            class="form-select" 
+                            style="width: auto; padding: 6px 12px; font-size: 0.85rem;"
+                            onchange="filterHistoryTable()"
+                        >
+                            <option value="all">All Topics</option>
+                            <% subjectsList.forEach(s => { %>
+                                <option value="<%= s.subject %>"><%= s.subject %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="history-table" id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Topic</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Accuracy</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                                const reversedQuizzes = [...performanceHistory].reverse();
+                            %>
+                            <% reversedQuizzes.forEach((quiz, idx) => { 
+                                const originalIdx = performanceHistory.length - 1 - idx;
+                                const isHigh = quiz.percentage >= 80;
+                                const isMid = quiz.percentage >= 65 && quiz.percentage < 80;
+                                const badgeClass = isHigh ? 'badge-green' : (isMid ? 'badge-purple' : 'badge-danger');
+                            %>
+                                <tr class="history-row" data-topic="<%= (quiz.topic || '').toLowerCase() %>">
+                                    <td style="font-weight: 800; color: var(--ls-muted);"><%= quiz.attemptNumber %></td>
+                                    <td style="font-weight: 800; color: var(--ls-black);">
+                                        <%= quiz.topic %>
+                                    </td>
+                                    <td style="color: var(--ls-muted); font-size: 0.85rem; font-weight: 600;">
+                                        <%= new Date(quiz.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                    </td>
+                                    <td style="font-weight: 700;">
+                                        <%= quiz.score %> / <%= quiz.totalQuestions %>
+                                    </td>
+                                    <td>
+                                        <span class="badge <%= badgeClass %>"><%= quiz.percentage %>%</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <div style="display: inline-flex; gap: 8px; align-items: center;">
+                                            <a href="/quiz/review/<%= quiz.attemptId || originalIdx %>" class="btn btn-outline btn-sm">
+                                                <i class="fas fa-eye"></i> Review
+                                            </a>
+                                            <form action="/generate-resource" method="POST" style="margin: 0; display: inline;">
+                                                <input type="hidden" name="topic" value="<%= quiz.topic %>">
+                                                <input type="hidden" name="quizResults" value='<%= JSON.stringify(quiz.results || []) %>'>
+                                                <button type="submit" class="btn btn-outline btn-sm">
+                                                    <i class="fas fa-compass"></i> Plan
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -237,44 +448,115 @@
     <%- include('includes/footer') %>
 
     <script>
+        const analyticsData = <%- JSON.stringify(typeof analytics !== 'undefined' ? analytics : null) %>;
         const testScoresData = <%- JSON.stringify(testScores || []) %>;
         const userQuizzesData = <%- JSON.stringify((typeof user !== 'undefined' && user && user.quizzes) ? user.quizzes : []) %>;
+        
         let chartInstance = null;
         let currentChartType = 'line';
-        let currentTopic = '';
+        let currentTopic = 'all';
 
-        function updateStats(topic) {
-            const topicData = testScoresData.find(t => t.topic === topic);
-            if (!topicData || topicData.scores.length === 0) return;
+        // Filter assessment history table by topic and text
+        function filterHistoryTable() {
+            const query = (document.getElementById('historySearchInput')?.value || '').trim().toLowerCase();
+            const selectedTopic = (document.getElementById('historyTopicSelect')?.value || 'all').toLowerCase();
+            const rows = document.querySelectorAll('.history-row');
 
-            const scores = topicData.scores;
-            const totalAttempts = scores.length;
-            const bestScore = Math.max(...scores);
-            const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / totalAttempts);
-            const improvement = scores.length > 1 ? scores[scores.length - 1] - scores[0] : 0;
+            rows.forEach(row => {
+                const topic = row.getAttribute('data-topic') || '';
+                const matchesTopic = selectedTopic === 'all' || topic === selectedTopic;
+                const matchesQuery = !query || topic.includes(query);
+                row.style.display = (matchesTopic && matchesQuery) ? '' : 'none';
+            });
+        }
 
-            document.getElementById('totalAttempts').textContent = totalAttempts;
-            document.getElementById('bestScore').textContent = `${bestScore}%`;
-            document.getElementById('avgScore').textContent = `${avgScore}%`;
-            const impEl = document.getElementById('improvement');
-            impEl.textContent = `${improvement >= 0 ? '+' : ''}${improvement}%`;
-            impEl.style.color = improvement >= 0 ? 'var(--ls-green)' : 'var(--ls-coral)';
+        function getChartDataset(topic) {
+            const history = (analyticsData && analyticsData.performanceOverTime) ? analyticsData.performanceOverTime : [];
+
+            if (topic === 'all') {
+                if (history.length > 0) {
+                    return {
+                        labels: history.map((q, i) => q.topic + ' #' + (i + 1)),
+                        scores: history.map(q => q.percentage),
+                        title: 'All Subjects Score Trajectory'
+                    };
+                }
+                // Fallback from testScoresData
+                const flatScores = [];
+                const flatLabels = [];
+                (testScoresData || []).forEach(t => {
+                    (t.scores || []).forEach((s, idx) => {
+                        flatLabels.push(t.topic + ' #' + (idx + 1));
+                        flatScores.push(s);
+                    });
+                });
+                return {
+                    labels: flatLabels,
+                    scores: flatScores,
+                    title: 'All Subjects Score Trajectory'
+                };
+            }
+
+            // Filter for specific topic
+            const topicClean = topic.toLowerCase();
+            const filtered = history.filter(q => (q.topic || '').toLowerCase() === topicClean);
+            if (filtered.length > 0) {
+                return {
+                    labels: filtered.map((_, i) => 'Attempt ' + (i + 1)),
+                    scores: filtered.map(q => q.percentage),
+                    title: topic + ' Performance Trajectory'
+                };
+            }
+
+            const legacy = (testScoresData || []).find(t => (t.topic || '').toLowerCase() === topicClean);
+            if (legacy && legacy.scores) {
+                return {
+                    labels: legacy.scores.map((_, i) => 'Attempt ' + (i + 1)),
+                    scores: legacy.scores,
+                    title: topic + ' Performance Trajectory'
+                };
+            }
+
+            return { labels: [], scores: [], title: topic + ' Performance Trajectory' };
         }
 
         function showChart(topic) {
             currentTopic = topic;
             document.querySelectorAll('.topic-pill-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById(`btn-${topic}`);
+
+            const buttonId = topic === 'all' ? 'btn-all' : ('btn-' + topic.replace(/\s+/g, '-').toLowerCase());
+            const activeBtn = document.getElementById(buttonId);
             if (activeBtn) activeBtn.classList.add('active');
 
-            const topicData = testScoresData.find(t => t.topic === topic);
-            if (!topicData) return;
+            const dataset = getChartDataset(topic);
+            const titleEl = document.getElementById('chartTitle');
+            if (titleEl) {
+                titleEl.innerHTML = '<i class="fas fa-chart-area" style="color: var(--ls-purple);"></i> ' + dataset.title;
+            }
 
-            document.getElementById('chartTitle').innerHTML = `<i class="fas fa-chart-area" style="color: var(--ls-purple);"></i> ${topic} Performance Trajectory`;
-            updateStats(topic);
-
-            const labels = topicData.scores.map((_, i) => `Attempt ${i + 1}`);
-            const data = topicData.scores;
+            // Also update KPI cards if topic is specific
+            if (topic !== 'all' && analyticsData && analyticsData.subjects) {
+                const subObj = analyticsData.subjects.find(s => s.subject.toLowerCase() === topic.toLowerCase());
+                if (subObj) {
+                    const attemptsEl = document.getElementById('totalAttempts');
+                    const bestEl = document.getElementById('bestScore');
+                    const avgEl = document.getElementById('avgScore');
+                    const latestEl = document.getElementById('latestScore');
+                    if (attemptsEl) attemptsEl.textContent = subObj.attempts;
+                    if (bestEl) bestEl.textContent = subObj.highestScore + '%';
+                    if (avgEl) avgEl.textContent = subObj.averageScore + '%';
+                    if (latestEl) latestEl.textContent = subObj.latestScore + '%';
+                }
+            } else if (topic === 'all' && analyticsData && analyticsData.summary) {
+                const attemptsEl = document.getElementById('totalAttempts');
+                const bestEl = document.getElementById('bestScore');
+                const avgEl = document.getElementById('avgScore');
+                const latestEl = document.getElementById('latestScore');
+                if (attemptsEl) attemptsEl.textContent = analyticsData.summary.completedQuizzes;
+                if (bestEl) bestEl.textContent = analyticsData.summary.highestScore + '%';
+                if (avgEl) avgEl.textContent = analyticsData.summary.averageScore + '%';
+                if (latestEl) latestEl.textContent = analyticsData.summary.latestScore + '%';
+            }
 
             const ctx = document.getElementById('scoreChart');
             if (!ctx) return;
@@ -284,10 +566,10 @@
             chartInstance = new Chart(ctx, {
                 type: currentChartType,
                 data: {
-                    labels: labels,
+                    labels: dataset.labels.length > 0 ? dataset.labels : ['No Attempts'],
                     datasets: [{
-                        label: `${topic} Score (%)`,
-                        data: data,
+                        label: 'Score (%)',
+                        data: dataset.scores.length > 0 ? dataset.scores : [0],
                         borderColor: '#5B20FF',
                         backgroundColor: currentChartType === 'line' ? 'rgba(91, 32, 255, 0.08)' : '#5B20FF',
                         borderWidth: 2.5,
@@ -307,7 +589,12 @@
                         tooltip: {
                             backgroundColor: '#111111',
                             padding: 8,
-                            cornerRadius: 6
+                            cornerRadius: 6,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Score: ' + context.parsed.y + '%';
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -334,26 +621,38 @@
             if (!chartInstance) return;
             const a = document.createElement('a');
             a.href = chartInstance.toBase64Image();
-            a.download = `LearnSmart-${currentTopic}-Progress.png`;
+            a.download = 'LearnSmart-' + currentTopic + '-Progress.png';
             a.click();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (testScoresData && testScoresData.length > 0) {
-                showChart(testScoresData[0].topic);
+            const hasData = (analyticsData && analyticsData.summary && analyticsData.summary.completedQuizzes > 0) ||
+                            (testScoresData && testScoresData.length > 0);
 
-                // Multi-Subject Bar Chart
+            if (hasData) {
+                showChart('all');
+
+                // Subject-Wise Average Chart
                 const multiCtx = document.getElementById('multiSubjectChart');
                 if (multiCtx) {
-                    const subLabels = testScoresData.map(t => t.topic);
-                    const subAvgs = testScoresData.map(t => Math.round(t.scores.reduce((a, b) => a + b, 0) / t.scores.length));
+                    let subLabels = [];
+                    let subAvgs = [];
+
+                    if (analyticsData && analyticsData.subjects && analyticsData.subjects.length > 0) {
+                        subLabels = analyticsData.subjects.map(s => s.subject);
+                        subAvgs = analyticsData.subjects.map(s => s.averageScore);
+                    } else if (testScoresData && testScoresData.length > 0) {
+                        subLabels = testScoresData.map(t => t.topic);
+                        subAvgs = testScoresData.map(t => Math.round(t.scores.reduce((a, b) => a + b, 0) / t.scores.length));
+                    }
+
                     new Chart(multiCtx, {
                         type: 'bar',
                         data: {
                             labels: subLabels,
                             datasets: [{
                                 data: subAvgs,
-                                backgroundColor: ['#5B20FF', '#2457FF', '#22A65A', '#FF7628', '#F45145'],
+                                backgroundColor: ['#5B20FF', '#2457FF', '#22A65A', '#FF7628', '#F45145', '#9C27B0'],
                                 borderWidth: 2,
                                 borderColor: '#111111'
                             }]
@@ -361,7 +660,16 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ' Average: ' + context.parsed.y + '%';
+                                        }
+                                    }
+                                }
+                            },
                             scales: {
                                 y: { min: 0, max: 100, grid: { color: '#EBEBEA' } },
                                 x: { grid: { display: false } }
@@ -370,29 +678,57 @@
                     });
                 }
 
-                // Progress Activity Timeline Chart
+                // Real Progress Activity Timeline Chart
                 const actCtx = document.getElementById('progressActivityChart');
-                if (actCtx && userQuizzesData.length > 0) {
-                    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                if (actCtx) {
+                    let dayLabels = [];
+                    let dayCounts = [];
+
+                    if (analyticsData && analyticsData.last7Days && analyticsData.last7Days.length > 0) {
+                        dayLabels = analyticsData.last7Days.map(d => d.day);
+                        dayCounts = analyticsData.last7Days.map(d => d.count);
+                    } else {
+                        dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        dayCounts = [0, 0, 0, 0, 0, 0, 0];
+                    }
+
                     new Chart(actCtx, {
                         type: 'line',
                         data: {
-                            labels: days,
+                            labels: dayLabels,
                             datasets: [{
-                                data: [1, 3, 2, 4, 3, 5, 4],
+                                label: 'Assessments Taken',
+                                data: dayCounts,
                                 borderColor: '#22A65A',
                                 backgroundColor: 'rgba(34, 166, 90, 0.1)',
                                 fill: true,
                                 borderWidth: 2.5,
-                                tension: 0.3
+                                tension: 0.3,
+                                pointBackgroundColor: '#FFFFFF',
+                                pointBorderColor: '#22A65A',
+                                pointBorderWidth: 2,
+                                pointRadius: 4
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ' Quizzes: ' + context.parsed.y;
+                                        }
+                                    }
+                                }
+                            },
                             scales: {
-                                y: { min: 0, grid: { color: '#EBEBEA' } },
+                                y: {
+                                    min: 0,
+                                    ticks: { stepSize: 1, precision: 0 },
+                                    grid: { color: '#EBEBEA' }
+                                },
                                 x: { grid: { display: false } }
                             }
                         }

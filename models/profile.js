@@ -4,16 +4,19 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const userSchema = new mongoose.Schema({
   email: String,
   username: String,
-  educationLevel: { type: String, required: true }, 
-   // ✅ Admin flag
+  educationLevel: { type: String, required: true },
   isAdmin: {
     type: Boolean,
-    default: false,   // By default users are NOT admins
+    default: false,
   },
- // 👈 NEW FIELD
   quizzes: [
     {
-      topic: String,
+      attemptId: { type: String, sparse: true },
+      topic: { type: String, required: true },
+      difficulty: { type: String, default: "general" },
+      score: { type: Number, default: 0 },
+      totalQuestions: { type: Number, default: 0 },
+      percentage: { type: Number, default: 0 },
       date: { type: Date, default: Date.now },
       results: [
         {
@@ -21,17 +24,18 @@ const userSchema = new mongoose.Schema({
           question: String,
           yourAnswer: String,
           correctAnswer: String,
-          isCorrect: Boolean
-        }
-      ]
-    }
+          isCorrect: Boolean,
+          explanation: String,
+        },
+      ],
+    },
   ],
   resources: [
     {
       topic: String,
       content: String,
-      date: { type: Date, default: Date.now }
-    }
+      date: { type: Date, default: Date.now },
+    },
   ],
   notes: [
     {
@@ -39,9 +43,9 @@ const userSchema = new mongoose.Schema({
       content: String,
       createdAt: {
         type: Date,
-        default: Date.now
-      }
-    }
+        default: Date.now,
+      },
+    },
   ],
   todos: [
     {
@@ -50,18 +54,18 @@ const userSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now },
     },
   ],
-   // ✅ Better approach: Use array of objects instead of Map
-  testScores: [{
-    topic: { 
-      type: String, 
-      required: true 
+  testScores: [
+    {
+      topic: {
+        type: String,
+        required: true,
+      },
+      scores: {
+        type: [Number],
+        default: [],
+      },
     },
-    scores: {
-      type: [Number],
-      default: []
-    }
-  }]
-  
+  ],
 });
 
 userSchema.plugin(passportLocalMongoose);

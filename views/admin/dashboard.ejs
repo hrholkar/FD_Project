@@ -18,7 +18,7 @@
             }
         }
 
-        /* 2-Column Analytics Charts Row (Matching Image 1) */
+        /* 2-Column Analytics Charts Row */
         .admin-charts-2col {
             display: grid;
             grid-template-columns: 1.25fr 1fr;
@@ -38,13 +38,13 @@
     <%- include('../includes/navbar', { currentPage: 'admin' }) %>
 
     <main class="admin-content-wrap">
-        <!-- Signature Yellow-Grid Hero Banner (Exact Match to Image 1 Bottom-Right: "Admin Hub") -->
+        <!-- Signature Yellow-Grid Hero Banner -->
         <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
             <div class="ls-hero-banner-content">
                 <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
                     <span class="badge badge-purple" style="font-size: 0.78rem;">INSTITUTIONAL ADMINISTRATION</span>
-                    <span class="badge badge-outline" style="font-size: 0.78rem; font-weight: 700;">
-                        <i class="fas fa-calendar" style="margin-right: 4px;"></i> Oct 1, 2026 &ndash; Oct 31, 2026
+                    <span class="badge badge-outline" id="activeDateBadge" style="font-size: 0.78rem; font-weight: 700;">
+                        <i class="fas fa-calendar" style="margin-right: 4px;"></i> <span id="activeDateRangeText">Last 30 Days</span>
                     </span>
                 </div>
 
@@ -52,7 +52,7 @@
                     Admin Hub
                 </h1>
                 <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B; margin-bottom: 1.25rem;">
-                    Manage students, track performance, and monitor platform activity.
+                    Manage students, track performance, and monitor real-time platform activity from live database records.
                 </p>
 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -68,9 +68,8 @@
                 </div>
             </div>
 
-            <!-- Campus Image Cutout & Orange Sticker (Matching Image 1 Bottom-Right) -->
+            <!-- Campus Image Cutout & Orange Sticker -->
             <div class="ls-hero-graphic-wrap" style="position: relative;">
-                <!-- Orange Sticker -->
                 <div style="position: absolute; top: -14px; right: 0; background: var(--ls-orange); color: #FFFFFF; font-family: var(--font-editorial); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border: 2px solid var(--ls-black); border-radius: var(--radius-sm); transform: rotate(3deg); z-index: 3;">
                     EDUCATION CREATES OPPORTUNITY
                 </div>
@@ -85,77 +84,78 @@
             </div>
         </header>
 
-        <!-- 4 Signature KPI Metric Cards (Strict Match to Image 1 Bottom-Right) -->
+        <!-- 4 Database-Driven KPI Metric Cards -->
         <section class="ls-metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-bottom: 2rem;">
-            <!-- Card 1: Total Students (Blue) -->
+            <!-- Card 1: Registered Learners (Blue) -->
             <div class="ls-metric-card">
                 <div class="ls-metric-icon blue">
                     <i class="fas fa-users"></i>
                 </div>
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span class="ls-metric-value" id="kpiUsers">120</span>
-                        <span class="badge badge-green" style="font-size: 0.72rem;">&uarr; 12%</span>
+                        <span class="ls-metric-value" id="kpiUsers">0</span>
+                        <span class="badge badge-outline" style="font-size: 0.72rem;">Learners</span>
                     </div>
-                    <div class="ls-metric-label">Total Students</div>
+                    <div class="ls-metric-label">Registered Learners</div>
                 </div>
             </div>
 
-            <!-- Card 2: Departments (Purple) -->
+            <!-- Card 2: Active Learners in Range (Purple) -->
             <div class="ls-metric-card">
                 <div class="ls-metric-icon purple">
-                    <i class="fas fa-building-columns"></i>
+                    <i class="fas fa-user-check"></i>
                 </div>
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span class="ls-metric-value" id="kpiEnrolled">3</span>
-                        <span class="badge badge-outline" style="font-size: 0.72rem;">0%</span>
+                        <span class="ls-metric-value" id="kpiActive">0</span>
+                        <span class="badge badge-outline" style="font-size: 0.72rem;">In Range</span>
                     </div>
-                    <div class="ls-metric-label">Departments</div>
+                    <div class="ls-metric-label">Active Learners</div>
                 </div>
             </div>
 
-            <!-- Card 3: Quizzes Taken (Orange) -->
+            <!-- Card 3: Completed Quizzes (Orange) -->
             <div class="ls-metric-card">
                 <div class="ls-metric-icon orange">
                     <i class="fas fa-clipboard-check"></i>
                 </div>
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span class="ls-metric-value" id="kpiCompletedQuizzes">432</span>
-                        <span class="badge badge-green" style="font-size: 0.72rem;">&uarr; 28%</span>
+                        <span class="ls-metric-value" id="kpiCompletedQuizzes">0</span>
+                        <span class="badge badge-outline" style="font-size: 0.72rem;">Attempts</span>
                     </div>
                     <div class="ls-metric-label">Quizzes Taken</div>
                 </div>
             </div>
 
-            <!-- Card 4: Avg Score (Green) -->
+            <!-- Card 4: Platform Average Score (Green) -->
             <div class="ls-metric-card">
                 <div class="ls-metric-icon green">
                     <i class="fas fa-bullseye"></i>
                 </div>
                 <div style="flex: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                        <span class="ls-metric-value" id="kpiAvgScore">82%</span>
-                        <span class="badge badge-green" style="font-size: 0.72rem;">&uarr; 6%</span>
+                        <span class="ls-metric-value" id="kpiAvgScore">0%</span>
+                        <span class="badge badge-outline" style="font-size: 0.72rem;">Accuracy</span>
                     </div>
-                    <div class="ls-metric-label">Avg. Score</div>
+                    <div class="ls-metric-label">Avg. Quiz Score</div>
                 </div>
             </div>
         </section>
 
-        <!-- 2-Column Visual Charts Row (Matching Reference Image 1 Bottom-Right) -->
+        <!-- 2-Column Visual Charts Row -->
         <section class="admin-charts-2col">
-            <!-- Chart 1: Student Enrollment Bar Chart -->
+            <!-- Chart 1: Performance Over Time -->
             <div class="ls-card">
                 <div class="ls-card-header">
                     <h2 class="ls-card-title">
-                        <i class="fas fa-chart-column" style="color: var(--ls-blue);"></i> Student Enrollment
+                        <i class="fas fa-chart-column" style="color: var(--ls-blue);"></i> Quiz Performance Trajectory
                     </h2>
-                    <select class="form-select" style="width: auto; padding: 4px 10px; font-size: 0.82rem; font-weight: 700;">
-                        <option>Last 6 Months</option>
-                        <option>This Academic Year</option>
-                        <option>All Time</option>
+                    <select id="adminDateRangeSelect" class="form-select" onchange="changeAnalyticsDateRange(this.value)" style="width: auto; padding: 4px 10px; font-size: 0.82rem; font-weight: 700;">
+                        <option value="30d" selected>Last 30 Days</option>
+                        <option value="7d">Last 7 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="all">All Time</option>
                     </select>
                 </div>
                 <div style="height: 240px; position: relative;">
@@ -163,60 +163,60 @@
                 </div>
             </div>
 
-            <!-- Chart 2: Department Distribution Donut Chart (Matching Reference Image 1) -->
+            <!-- Chart 2: Performance Score Distribution -->
             <div class="ls-card">
                 <div class="ls-card-header">
                     <h2 class="ls-card-title">
-                        <i class="fas fa-chart-pie" style="color: var(--ls-purple);"></i> Department Distribution
+                        <i class="fas fa-chart-pie" style="color: var(--ls-purple);"></i> Performance Distribution
                     </h2>
-                    <span class="badge badge-outline">120 Students</span>
+                    <span class="badge badge-outline" id="distTotalBadge">0 Completed</span>
                 </div>
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px; height: 240px;">
                     <div style="width: 170px; height: 170px; position: relative; flex-shrink: 0;">
                         <canvas id="distributionDoughnutChart"></canvas>
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                            <div style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 900;">120</div>
-                            <div style="font-size: 0.7rem; color: var(--ls-muted); font-weight: 700;">Students</div>
+                            <div id="distCenterCount" style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 900;">0</div>
+                            <div style="font-size: 0.7rem; color: var(--ls-muted); font-weight: 700;">Quizzes</div>
                         </div>
                     </div>
-                    <!-- Legend (Matching Image 1) -->
-                    <div style="font-size: 0.82rem; font-weight: 700; display: flex; flex-direction: column; gap: 8px;">
-                        <div><i class="fas fa-circle" style="color: #2457FF; margin-right: 6px;"></i> Computer Science <span style="color: var(--ls-muted); margin-left: 6px;">45%</span></div>
-                        <div><i class="fas fa-circle" style="color: #5B20FF; margin-right: 6px;"></i> AI &amp; Data Science <span style="color: var(--ls-muted); margin-left: 6px;">25%</span></div>
-                        <div><i class="fas fa-circle" style="color: #FF7628; margin-right: 6px;"></i> Electronics <span style="color: var(--ls-muted); margin-left: 6px;">20%</span></div>
-                        <div><i class="fas fa-circle" style="color: #22A65A; margin-right: 6px;"></i> Mechanical <span style="color: var(--ls-muted); margin-left: 6px;">10%</span></div>
+                    <!-- Dynamic Legend -->
+                    <div id="distLegendContainer" style="font-size: 0.82rem; font-weight: 700; display: flex; flex-direction: column; gap: 8px;">
+                        <div><i class="fas fa-circle" style="color: #22A65A; margin-right: 6px;"></i> 80-100% <span style="color: var(--ls-muted); margin-left: 6px;">0 (0%)</span></div>
+                        <div><i class="fas fa-circle" style="color: #2457FF; margin-right: 6px;"></i> 60-79% <span style="color: var(--ls-muted); margin-left: 6px;">0 (0%)</span></div>
+                        <div><i class="fas fa-circle" style="color: #FF7628; margin-right: 6px;"></i> 40-59% <span style="color: var(--ls-muted); margin-left: 6px;">0 (0%)</span></div>
+                        <div><i class="fas fa-circle" style="color: #F45145; margin-right: 6px;"></i> 0-39% <span style="color: var(--ls-muted); margin-left: 6px;">0 (0%)</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Student Directory Table Card (Exact Match to Image 1 Bottom-Right) -->
+        <!-- Student Performance Directory Table Card -->
         <section class="ls-card" style="margin-bottom: 2rem;">
             <div class="ls-card-header" style="flex-wrap: wrap; gap: 12px;">
                 <h2 class="ls-card-title">
-                    <i class="fas fa-users-gear" style="color: var(--ls-purple);"></i> Student Directory
+                    <i class="fas fa-users-gear" style="color: var(--ls-purple);"></i> Student Performance Directory
                 </h2>
 
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <input 
                         type="text" 
                         id="studentSearchInput" 
-                        placeholder="Search by name, email, or department..." 
+                        placeholder="Search student by name or email..." 
                         onkeyup="filterStudentTable(this.value)" 
                         class="form-control" 
                         style="width: 280px; padding: 6px 12px; font-size: 0.85rem;" 
                     />
-                    <select class="form-select" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onchange="fetchAdminAnalytics()">
-                        <option>All Departments</option>
-                        <option>Computer Science</option>
-                        <option>AI & Data Science</option>
+                    <select id="educationLevelFilter" class="form-select" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onchange="filterByEducationLevel(this.value)">
+                        <option value="all">All Education Levels</option>
                     </select>
-                    <select class="form-select" style="width: auto; padding: 6px 12px; font-size: 0.85rem;">
-                        <option>All Years</option>
-                        <option>1st Year</option>
-                        <option>2nd Year</option>
-                        <option>3rd Year</option>
-                        <option>4th Year</option>
+                    <select id="studentSortBy" class="form-select" style="width: auto; padding: 6px 12px; font-size: 0.85rem;" onchange="sortStudentTable(this.value)">
+                        <option value="default">Sort: Default</option>
+                        <option value="avgScoreDesc">Avg. Score: High to Low</option>
+                        <option value="avgScoreAsc">Avg. Score: Low to High</option>
+                        <option value="quizzesDesc">Quizzes: Most to Least</option>
+                        <option value="quizzesAsc">Quizzes: Least to Most</option>
+                        <option value="nameAsc">Name: A to Z</option>
+                        <option value="nameDesc">Name: Z to A</option>
                     </select>
                     <a href="/admin/students" class="btn btn-purple btn-sm">
                         <i class="fas fa-plus"></i> Add Student
@@ -230,18 +230,19 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Name</th>
+                            <th>Student</th>
                             <th>Email</th>
-                            <th>Department</th>
-                            <th>Year</th>
+                            <th>Education Level</th>
+                            <th>Quizzes Taken</th>
+                            <th>Avg. Score</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="studentCompBody">
                         <tr>
-                            <td colspan="7" style="text-align: center; color: var(--ls-muted); padding: 2rem;">
-                                <i class="fas fa-spinner fa-spin"></i> Loading student records...
+                            <td colspan="8" style="text-align: center; color: var(--ls-muted); padding: 2rem;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading student records from database...
                             </td>
                         </tr>
                     </tbody>
@@ -257,13 +258,31 @@
         let courseChartInstance = null;
         let distributionChartInstance = null;
         let studentsListCache = [];
+        let activeDateRange = '30d';
+
+        function changeAnalyticsDateRange(range) {
+            activeDateRange = range;
+            const badge = document.getElementById('activeDateRangeText');
+            if (badge) {
+                const labels = {
+                    '7d': 'Last 7 Days',
+                    '30d': 'Last 30 Days',
+                    '90d': 'Last 90 Days',
+                    'all': 'All Time'
+                };
+                badge.textContent = labels[range] || range;
+            }
+            fetchAdminAnalytics();
+        }
 
         async function fetchAdminAnalytics() {
             try {
-                const res = await fetch('/admin/api/analytics');
+                const res = await fetch('/admin/api/analytics?dateRange=' + encodeURIComponent(activeDateRange));
                 const data = await res.json();
-                if (data.success && data.data) {
-                    renderDashboardMetrics(data.data);
+                if (data && data.success) {
+                    renderDashboardMetrics(data);
+                } else {
+                    console.error('Analytics request unsuccessful:', data);
                 }
             } catch (err) {
                 console.error('Error fetching admin analytics:', err);
@@ -272,56 +291,133 @@
         }
 
         function renderDashboardMetrics(data) {
-            if (data.kpis) {
-                if (data.kpis.registeredUsers) document.getElementById('kpiUsers').textContent = data.kpis.registeredUsers;
-                if (data.kpis.enrolledStudents) document.getElementById('kpiEnrolled').textContent = data.kpis.enrolledStudents;
-                if (data.kpis.completedQuizzes) document.getElementById('kpiCompletedQuizzes').textContent = data.kpis.completedQuizzes;
-                if (data.kpis.overallAvgScore) document.getElementById('kpiAvgScore').textContent = `${data.kpis.overallAvgScore}%`;
-            }
+            const summary = data.summary || (data.data && data.data.summary) || {};
+            const kpis = data.kpis || (data.data && data.data.kpis) || {};
 
-            // Enrollment Bar Chart
+            // 1. Update KPI Card Values
+            const registeredUsers = summary.registeredLearners ?? summary.totalRegisteredUsers ?? kpis.registeredUsers ?? 0;
+            const activeLearners = summary.activeLearners ?? kpis.activeLearners ?? 0;
+            const completedQuizzes = summary.totalCompletedQuizzes ?? kpis.completedQuizzes ?? 0;
+            const avgScore = summary.platformAverageScore ?? kpis.overallAvgScore ?? 0;
+
+            const elUsers = document.getElementById('kpiUsers');
+            const elActive = document.getElementById('kpiActive');
+            const elCompleted = document.getElementById('kpiCompletedQuizzes');
+            const elAvgScore = document.getElementById('kpiAvgScore');
+
+            if (elUsers) elUsers.textContent = registeredUsers;
+            if (elActive) elActive.textContent = activeLearners;
+            if (elCompleted) elCompleted.textContent = completedQuizzes;
+            if (elAvgScore) elAvgScore.textContent = `${avgScore}%`;
+
+            // 2. Performance Over Time Chart
+            const timeData = data.performanceOverTime || (data.data && data.data.performanceOverTime) || {};
             const barCtx = document.getElementById('courseDistributionChart');
             if (barCtx) {
                 if (courseChartInstance) courseChartInstance.destroy();
-                const months = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
-                const counts = [45, 60, 52, 78, 92, 120];
+
+                const labels = (timeData.labels && timeData.labels.length > 0)
+                    ? timeData.labels
+                    : ['No Assessment Data in Range'];
+                const scores = (timeData.averageScores && timeData.averageScores.length > 0)
+                    ? timeData.averageScores
+                    : [0];
+                const attempts = (timeData.attemptsCount && timeData.attemptsCount.length > 0)
+                    ? timeData.attemptsCount
+                    : [0];
 
                 courseChartInstance = new Chart(barCtx, {
-                    type: 'bar',
+                    type: 'line',
                     data: {
-                        labels: months,
+                        labels: labels,
                         datasets: [{
-                            label: 'Enrolled Students',
-                            data: counts,
-                            backgroundColor: '#2457FF',
-                            borderColor: '#111111',
-                            borderWidth: 2,
-                            borderRadius: 6
+                            label: 'Average Score (%)',
+                            data: scores,
+                            borderColor: '#2457FF',
+                            backgroundColor: 'rgba(36, 87, 255, 0.08)',
+                            fill: true,
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#FFFFFF',
+                            pointBorderColor: '#2457FF',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            tension: 0.3
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    afterLabel: function(ctx) {
+                                        const idx = ctx.dataIndex;
+                                        const count = attempts[idx] || 0;
+                                        return `Quizzes Taken: ${count}`;
+                                    }
+                                }
+                            }
+                        },
                         scales: {
-                            y: { min: 0, grid: { color: '#EBEBEA' } },
+                            y: { min: 0, max: 100, ticks: { stepSize: 20 }, grid: { color: '#EBEBEA' } },
                             x: { grid: { display: false } }
                         }
                     }
                 });
             }
 
-            // Department Donut Chart
+            // 3. Score Distribution Donut Chart
+            const dist = data.performanceDistribution || (data.data && data.data.performanceDistribution) || {};
+            const distTotalBadge = document.getElementById('distTotalBadge');
+            const distCenterCount = document.getElementById('distCenterCount');
+            const legendContainer = document.getElementById('distLegendContainer');
+
+            const c80 = dist['80-100%'] || 0;
+            const c60 = dist['60-79%'] || 0;
+            const c40 = dist['40-59%'] || 0;
+            const c0 = dist['0-39%'] || 0;
+            const totalDistQuizzes = c80 + c60 + c40 + c0;
+
+            if (distTotalBadge) distTotalBadge.textContent = `${totalDistQuizzes} Quizzes`;
+            if (distCenterCount) distCenterCount.textContent = totalDistQuizzes;
+
+            // Render Dynamic Legend
+            if (legendContainer) {
+                const p80 = totalDistQuizzes > 0 ? Math.round((c80 / totalDistQuizzes) * 100) : 0;
+                const p60 = totalDistQuizzes > 0 ? Math.round((c60 / totalDistQuizzes) * 100) : 0;
+                const p40 = totalDistQuizzes > 0 ? Math.round((c40 / totalDistQuizzes) * 100) : 0;
+                const p0 = totalDistQuizzes > 0 ? Math.round((c0 / totalDistQuizzes) * 100) : 0;
+
+                legendContainer.innerHTML = `
+                    <div><i class="fas fa-circle" style="color: #22A65A; margin-right: 6px;"></i> 80-100% <span style="color: var(--ls-muted); margin-left: 6px;">${c80} (${p80}%)</span></div>
+                    <div><i class="fas fa-circle" style="color: #2457FF; margin-right: 6px;"></i> 60-79% <span style="color: var(--ls-muted); margin-left: 6px;">${c60} (${p60}%)</span></div>
+                    <div><i class="fas fa-circle" style="color: #FF7628; margin-right: 6px;"></i> 40-59% <span style="color: var(--ls-muted); margin-left: 6px;">${c40} (${p40}%)</span></div>
+                    <div><i class="fas fa-circle" style="color: #F45145; margin-right: 6px;"></i> 0-39% <span style="color: var(--ls-muted); margin-left: 6px;">${c0} (${p0}%)</span></div>
+                `;
+            }
+
             const donutCtx = document.getElementById('distributionDoughnutChart');
             if (donutCtx) {
                 if (distributionChartInstance) distributionChartInstance.destroy();
+
+                const chartLabels = totalDistQuizzes > 0
+                    ? ['80-100%', '60-79%', '40-59%', '0-39%']
+                    : ['No Assessments Recorded'];
+                const chartData = totalDistQuizzes > 0
+                    ? [c80, c60, c40, c0]
+                    : [1];
+                const chartColors = totalDistQuizzes > 0
+                    ? ['#22A65A', '#2457FF', '#FF7628', '#F45145']
+                    : ['#E0E0DE'];
+
                 distributionChartInstance = new Chart(donutCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Computer Science', 'AI & Data Science', 'Electronics', 'Mechanical'],
+                        labels: chartLabels,
                         datasets: [{
-                            data: [45, 25, 20, 10],
-                            backgroundColor: ['#2457FF', '#5B20FF', '#FF7628', '#22A65A'],
+                            data: chartData,
+                            backgroundColor: chartColors,
                             borderWidth: 2,
                             borderColor: '#111111'
                         }]
@@ -340,64 +436,37 @@
             try {
                 const res = await fetch('/admin/api/students');
                 const data = await res.json();
-                studentsListCache = data || [];
+                studentsListCache = Array.isArray(data) ? data : [];
+                populateEducationLevels(studentsListCache);
                 renderStudentsTable(studentsListCache);
             } catch (err) {
                 console.error('Error fetching students:', err);
+                renderStudentsTable([]);
             }
+        }
+
+        function populateEducationLevels(students) {
+            const select = document.getElementById('educationLevelFilter');
+            if (!select) return;
+            const levels = [...new Set(students.map(s => s.educationLevel).filter(Boolean))].sort();
+            const currentVal = select.value;
+            select.innerHTML = '<option value="all">All Education Levels</option>' +
+                levels.map(lvl => `<option value="${lvl}" ${lvl === currentVal ? 'selected' : ''}>${lvl}</option>`).join('');
         }
 
         function renderStudentsTable(students) {
             const tbody = document.getElementById('studentCompBody');
+            if (!tbody) return;
+
             if (!students || students.length === 0) {
-                // Render sample rows matching Image 1 Bottom-Right if empty
                 tbody.innerHTML = `
                     <tr>
-                        <td>1</td>
-                        <td style="font-weight: 800;"><i class="fas fa-circle-user text-primary" style="margin-right: 6px;"></i> Ananya Sharma</td>
-                        <td style="color: var(--ls-muted);">ananya@college.edu</td>
-                        <td>Computer Science</td>
-                        <td>3rd</td>
-                        <td><span class="badge badge-green">Active</span></td>
-                        <td>
-                            <a href="/admin/students" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></a>
-                            <a href="/admin/students" class="btn btn-outline btn-sm" style="color: var(--ls-coral);"><i class="fas fa-trash-can"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td style="font-weight: 800;"><i class="fas fa-circle-user text-primary" style="margin-right: 6px;"></i> Rohan Deshmukh</td>
-                        <td style="color: var(--ls-muted);">rohan@college.edu</td>
-                        <td>AI &amp; Data Science</td>
-                        <td>2nd</td>
-                        <td><span class="badge badge-green">Active</span></td>
-                        <td>
-                            <a href="/admin/students" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></a>
-                            <a href="/admin/students" class="btn btn-outline btn-sm" style="color: var(--ls-coral);"><i class="fas fa-trash-can"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td style="font-weight: 800;"><i class="fas fa-circle-user text-primary" style="margin-right: 6px;"></i> Priya Iyer</td>
-                        <td style="color: var(--ls-muted);">priya@college.edu</td>
-                        <td>Electronics</td>
-                        <td>4th</td>
-                        <td><span class="badge badge-green">Active</span></td>
-                        <td>
-                            <a href="/admin/students" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></a>
-                            <a href="/admin/students" class="btn btn-outline btn-sm" style="color: var(--ls-coral);"><i class="fas fa-trash-can"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="font-weight: 800;"><i class="fas fa-circle-user text-primary" style="margin-right: 6px;"></i> Kunal Mehta</td>
-                        <td style="color: var(--ls-muted);">kunal@college.edu</td>
-                        <td>Computer Science</td>
-                        <td>1st</td>
-                        <td><span class="badge badge-coral">Inactive</span></td>
-                        <td>
-                            <a href="/admin/students" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i></a>
-                            <a href="/admin/students" class="btn btn-outline btn-sm" style="color: var(--ls-coral);"><i class="fas fa-trash-can"></i></a>
+                        <td colspan="8" style="text-align: center; color: var(--ls-muted); padding: 3rem 1rem;">
+                            <div style="font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--ls-black);">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <strong style="color: var(--ls-black);">No registered learners found in the database.</strong><br>
+                            <span style="font-size: 0.85rem;">Student activity will automatically appear here as learners register and complete quizzes.</span>
                         </td>
                     </tr>
                 `;
@@ -407,29 +476,74 @@
             tbody.innerHTML = students.map((s, idx) => `
                 <tr>
                     <td>${idx + 1}</td>
-                    <td style="font-weight: 800;">
+                    <td style="font-weight: 800; color: var(--ls-black);">
                         <i class="fas fa-circle-user text-primary" style="margin-right: 6px;"></i> ${s.username}
                     </td>
-                    <td style="color: var(--ls-muted);">${s.email || `${s.username}@college.edu`}</td>
-                    <td>${s.department || s.course || 'Computer Science'}</td>
-                    <td>${s.educationLevel || '3rd'}</td>
-                    <td><span class="badge badge-green">Active</span></td>
+                    <td style="color: var(--ls-muted);">${s.email || `${s.username}@learnsmart.edu`}</td>
+                    <td><span class="badge badge-outline" style="font-size: 0.75rem;">${s.educationLevel || 'Undergraduate'}</span></td>
+                    <td style="font-weight: 700;">${s.totalQuizzes || 0}</td>
+                    <td style="font-weight: 800; color: ${(s.averageScore >= 70 ? 'var(--ls-green)' : (s.averageScore > 0 ? 'var(--ls-purple)' : 'var(--ls-muted)'))};">
+                        ${s.averageScoreText || (s.averageScore ? `${s.averageScore}%` : 'N/A')}
+                    </td>
                     <td>
-                        <a href="/admin/students" class="btn btn-outline btn-sm" title="Edit"><i class="fas fa-pen"></i></a>
-                        <a href="/admin/students" class="btn btn-outline btn-sm" style="color: var(--ls-coral);" title="Delete"><i class="fas fa-trash-can"></i></a>
+                        ${(s.totalQuizzes > 0)
+                            ? '<span class="badge badge-green">Active</span>'
+                            : '<span class="badge badge-outline">Inactive</span>'}
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <a href="/admin/learners/${s._id}" class="btn btn-purple btn-sm" style="margin-right: 4px;" title="View Comprehensive Learner Analytics">
+                            <i class="fas fa-id-card"></i> Profile
+                        </a>
+                        <a href="/admin/scores?student=${encodeURIComponent(s.username)}" class="btn btn-outline btn-sm" title="View Student Scores">
+                            <i class="fas fa-chart-line"></i> Scores
+                        </a>
                     </td>
                 </tr>
             `).join('');
         }
 
+        let currentStudentSort = 'default';
+
+        function sortStudentTable(sortVal) {
+            currentStudentSort = sortVal;
+            filterStudentTable(document.getElementById('studentSearchInput')?.value || '');
+        }
+
         function filterStudentTable(term) {
             const clean = (term || '').toLowerCase().trim();
-            if (!clean) {
-                renderStudentsTable(studentsListCache);
-                return;
+            const levelFilter = document.getElementById('educationLevelFilter')?.value || 'all';
+            let filtered = [...studentsListCache];
+
+            if (levelFilter && levelFilter !== 'all') {
+                filtered = filtered.filter(s => (s.educationLevel || '').toLowerCase() === levelFilter.toLowerCase());
             }
-            const filtered = studentsListCache.filter(s => (s.username || '').toLowerCase().includes(clean) || (s.email || '').toLowerCase().includes(clean));
+
+            if (clean) {
+                filtered = filtered.filter(s =>
+                    (s.username || '').toLowerCase().includes(clean) ||
+                    (s.email || '').toLowerCase().includes(clean)
+                );
+            }
+
+            if (currentStudentSort === 'avgScoreDesc') {
+                filtered.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
+            } else if (currentStudentSort === 'avgScoreAsc') {
+                filtered.sort((a, b) => (a.averageScore || 0) - (b.averageScore || 0));
+            } else if (currentStudentSort === 'quizzesDesc') {
+                filtered.sort((a, b) => (b.totalQuizzes || 0) - (a.totalQuizzes || 0));
+            } else if (currentStudentSort === 'quizzesAsc') {
+                filtered.sort((a, b) => (a.totalQuizzes || 0) - (b.totalQuizzes || 0));
+            } else if (currentStudentSort === 'nameAsc') {
+                filtered.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
+            } else if (currentStudentSort === 'nameDesc') {
+                filtered.sort((a, b) => (b.username || '').localeCompare(a.username || ''));
+            }
+
             renderStudentsTable(filtered);
+        }
+
+        function filterByEducationLevel(level) {
+            filterStudentTable(document.getElementById('studentSearchInput')?.value || '');
         }
 
         document.addEventListener('DOMContentLoaded', () => {

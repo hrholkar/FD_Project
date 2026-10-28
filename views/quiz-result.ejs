@@ -43,12 +43,16 @@
         <!-- Signature Yellow-Grid Hero Banner -->
         <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
             <div>
-                <div class="ls-sticker green" style="font-size: 0.75rem; margin-bottom: 8px;">ASSESSMENT EVALUATION</div>
+                <div class="ls-sticker green" style="font-size: 0.75rem; margin-bottom: 8px;"><%= (typeof isAdminView !== 'undefined' && isAdminView) ? 'ADMINISTRATIVE ATTEMPT REVIEW' : 'ASSESSMENT EVALUATION' %></div>
                 <h1 style="font-size: 2.25rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
                     Quiz Complete: <%= topic %>
                 </h1>
                 <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B;">
-                    You scored <strong><%= score %></strong> out of <strong><%= total %></strong> questions on this assessment.
+                    <% if (typeof isAdminView !== 'undefined' && isAdminView && typeof learner !== 'undefined') { %>
+                        Learner <strong><%= learner.username %></strong> scored <strong><%= score %></strong> out of <strong><%= total %></strong> questions on this assessment.
+                    <% } else { %>
+                        You scored <strong><%= score %></strong> out of <strong><%= total %></strong> questions on this assessment.
+                    <% } %>
                 </p>
             </div>
 
@@ -56,7 +60,7 @@
             <div style="position: relative; width: 130px; height: 130px; flex-shrink: 0;">
                 <canvas id="scoreChart"></canvas>
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-heading); font-size: 1.6rem; font-weight: 900; color: var(--ls-black);">
-                    <%= Math.round((score / total) * 100) %>%
+                    <%= (typeof percentage === 'number' ? percentage : (total > 0 ? Math.round((score / total) * 100) : 0)) %>%
                 </div>
             </div>
         </header>
@@ -88,7 +92,7 @@
                     <i class="fas fa-bullseye"></i>
                 </div>
                 <div>
-                    <div class="ls-metric-value"><%= Math.round((score / total) * 100) %>%</div>
+                    <div class="ls-metric-value"><%= (typeof percentage === 'number' ? percentage : (total > 0 ? Math.round((score / total) * 100) : 0)) %>%</div>
                     <div class="ls-metric-label">Overall Accuracy</div>
                 </div>
             </div>
@@ -134,28 +138,49 @@
             </div>
         </div>
 
-        <!-- Next Steps / AI Resource Generation Card -->
-        <div class="ls-card" style="text-align: center; padding: 2.5rem 2rem; background: var(--ls-yellow-subtle);">
-            <div class="ls-sticker orange" style="margin-bottom: 12px;">CONTINUE LEARNING</div>
-            <h2 style="font-size: 1.85rem; font-weight: 900; color: var(--ls-black); margin-bottom: 0.5rem;">
-                Ready for Your Personalized Learning Roadmap?
-            </h2>
-            <p style="font-size: 1rem; color: #2B2B2B; font-weight: 500; max-width: 600px; margin: 0 auto 1.5rem auto;">
-                Let our AI analyze the concepts you struggled with and generate tailored revision guides, code examples, and study notes.
-            </p>
+        <% if (typeof isAdminView !== 'undefined' && isAdminView) { %>
+            <!-- Administrative Attempt Review Navigation -->
+            <div class="ls-card" style="text-align: center; padding: 2.25rem 2rem; background: var(--ls-yellow-subtle);">
+                <div class="ls-sticker purple" style="margin-bottom: 12px;">ADMINISTRATOR REVIEW</div>
+                <h2 style="font-size: 1.85rem; font-weight: 900; color: var(--ls-black); margin-bottom: 0.5rem;">
+                    Completed Diagnostic Review
+                </h2>
+                <p style="font-size: 1rem; color: #2B2B2B; font-weight: 500; max-width: 600px; margin: 0 auto 1.5rem auto;">
+                    You are reviewing this assessment attempt in administrative mode. All question diagnostics and recorded student choices are displayed above.
+                </p>
+                <div style="display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                    <a href="<%= (typeof returnUrl !== 'undefined' && returnUrl) ? returnUrl : '/admin/dashboard' %>" class="btn btn-purple btn-lg">
+                        <i class="fas fa-arrow-left"></i> Return to Learner Profile
+                    </a>
+                    <a href="/admin/dashboard" class="btn btn-outline btn-lg">
+                        <i class="fas fa-gauge"></i> Admin Dashboard
+                    </a>
+                </div>
+            </div>
+        <% } else { %>
+            <!-- Next Steps / AI Resource Generation Card -->
+            <div class="ls-card" style="text-align: center; padding: 2.5rem 2rem; background: var(--ls-yellow-subtle);">
+                <div class="ls-sticker orange" style="margin-bottom: 12px;">CONTINUE LEARNING</div>
+                <h2 style="font-size: 1.85rem; font-weight: 900; color: var(--ls-black); margin-bottom: 0.5rem;">
+                    Ready for Your Personalized Learning Roadmap?
+                </h2>
+                <p style="font-size: 1rem; color: #2B2B2B; font-weight: 500; max-width: 600px; margin: 0 auto 1.5rem auto;">
+                    Let our AI analyze the concepts you struggled with and generate tailored revision guides, code examples, and study notes.
+                </p>
 
-            <form action="/generate-resource" method="POST" id="resourceForm" style="display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-                <input type="hidden" name="topic" value="<%= topic %>">
-                <input type="hidden" name="quizResults" value='<%= JSON.stringify(results) %>'>
-                <button type="submit" class="btn btn-purple btn-lg" id="generateBtn">
-                    <i class="fas fa-compass"></i>
-                    <span>Generate Learning Roadmap</span>
-                </button>
-                <a href="/quiz" class="btn btn-outline btn-lg">
-                    <i class="fas fa-rotate-right"></i> Try Another Quiz
-                </a>
-            </form>
-        </div>
+                <form action="/generate-resource" method="POST" id="resourceForm" style="display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                    <input type="hidden" name="topic" value="<%= topic %>">
+                    <input type="hidden" name="quizResults" value='<%= JSON.stringify(results) %>'>
+                    <button type="submit" class="btn btn-purple btn-lg" id="generateBtn">
+                        <i class="fas fa-compass"></i>
+                        <span>Generate Learning Roadmap</span>
+                    </button>
+                    <a href="/quiz" class="btn btn-outline btn-lg">
+                        <i class="fas fa-rotate-right"></i> Try Another Quiz
+                    </a>
+                </form>
+            </div>
+        <% } %>
     </main>
 
     <script>

@@ -8,6 +8,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/profile.js");
 const session = require("express-session");
+const crypto = require("crypto");
 const MongoStore = require("connect-mongo");
 require("dotenv").config();
 
@@ -48,11 +49,40 @@ function requireAdmin(req, res, next) {
   });
 }
 
-// MongoDB Session Store
+// Session & Environment Security Configuration
+const isProduction = process.env.NODE_ENV === "production";
+let resolvedSessionSecret = process.env.SESSION_SECRET;
+
+if (isProduction) {
+  if (!resolvedSessionSecret || resolvedSessionSecret.trim().length < 16) {
+    console.error(
+      "\n=======================================================\n" +
+      " [FATAL SECURITY CONFIGURATION ERROR]\n" +
+      " In production (NODE_ENV=production), a strong\n" +
+      " SESSION_SECRET (minimum 16 characters) must be set\n" +
+      " in environment variables before the server can start.\n" +
+      "=======================================================\n"
+    );
+    process.exit(1);
+  }
+  // Enable trust proxy behind reverse proxies (Nginx / ALB / Render / Cloudflare)
+  app.set("trust proxy", 1);
+} else {
+  if (!resolvedSessionSecret) {
+    resolvedSessionSecret = crypto.randomBytes(32).toString("hex");
+    console.warn(
+      "[SECURITY NOTICE] No SESSION_SECRET specified in development. " +
+      "Using an ephemeral cryptographically generated secret for this session. " +
+      "Set SESSION_SECRET in .env for persistent sessions across restarts."
+    );
+  }
+}
+
+// MongoDB Session Store with cryptographically resolved secret
 const store = MongoStore.create({
   mongoUrl: dburl,
   crypto: {
-    secret: process.env.SESSION_SECRET || "dciudcdh",
+    secret: resolvedSessionSecret,
   },
   touchAfter: 24 * 3600,
 });
@@ -61,16 +91,18 @@ store.on("error", (error) => {
   console.log("ERROR in Mongo SESSION STORE", error);
 });
 
-// Session configuration
+// Hardened Session Cookie Configuration
 const sessionOptions = {
+  name: "learnsmart.sid",
   store,
-  secret: process.env.SESSION_SECRET || "hfwfgfuhfuwhfdh",
+  secret: resolvedSessionSecret,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-    expires: Date.now() + 7 * 24 * 1000 * 60 * 60,
-    maxAge: 7 * 24 * 1000 * 60 * 60,
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "strict" : "lax",
+    maxAge: 7 * 24 * 1000 * 60 * 60,
   },
 };
 app.use(session(sessionOptions));
@@ -93,20 +125,36 @@ async function ensureAdminExists() {
   try {
     const adminCount = await User.countDocuments({ isAdmin: true });
     if (adminCount === 0) {
-      const existingUser = await User.findOne({ username: "admin" });
-      if (existingUser) {
-        existingUser.isAdmin = true;
-        await existingUser.save();
-        console.log("Account 'admin' promoted to Administrator.");
+      const initialUsername = (process.env.ADMIN_INITIAL_USERNAME || "").trim();
+      const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || "";
+      const initialEmail = (process.env.ADMIN_INITIAL_EMAIL || "admin@learnsmart.edu").trim();
+
+      if (initialUsername && initialPassword) {
+        if (initialPassword.length < 8) {
+          console.warn("[SECURITY WARNING] ADMIN_INITIAL_PASSWORD is shorter than 8 characters. Minimum 8 characters recommended.");
+        }
+        const existingUser = await User.findOne({ username: initialUsername });
+        if (existingUser) {
+          existingUser.isAdmin = true;
+          if (initialEmail) existingUser.email = initialEmail;
+          await existingUser.save();
+          console.log(`[Admin Provisioning] Existing account '${initialUsername}' designated as Administrator.`);
+        } else {
+          const newAdmin = new User({
+            username: initialUsername,
+            email: initialEmail,
+            educationLevel: "Postgraduate Level",
+            isAdmin: true,
+          });
+          await User.register(newAdmin, initialPassword);
+          console.log(`[Admin Provisioning] Administrator account '${initialUsername}' provisioned securely from environment.`);
+        }
       } else {
-        const newAdmin = new User({
-          username: "admin",
-          email: "admin@learnsmart.edu",
-          educationLevel: "Postgraduate Level",
-          isAdmin: true,
-        });
-        await User.register(newAdmin, "Admin@12345");
-        console.log("Default admin account created: admin / Admin@12345");
+        console.log(
+          "[SECURITY NOTICE] No administrator account currently exists. " +
+          "To provision an initial administrator safely, set ADMIN_INITIAL_USERNAME and ADMIN_INITIAL_PASSWORD in your environment, " +
+          "or run 'npm run create-admin' in your terminal."
+        );
       }
     }
   } catch (err) {
@@ -615,11 +663,63 @@ Output ONLY raw JSON array. No markdown, no conversational text.`;
       quiz = generateFallbackQuiz(topic, educationLevel, difficulty);
     }
 
-    res.render("quizgive.ejs", {
-      quiz,
+    // Normalize question items
+    quiz = quiz.map((q, idx) => ({
+      question: (q.question || `Question ${idx + 1}`).trim(),
+      options: Array.isArray(q.options) && q.options.length > 0 ? q.options.map((o) => String(o).trim()) : ["A", "B", "C", "D"],
+      answer: String(q.answer || (q.options ? q.options[0] : "A")).trim(),
+      explanation: (q.explanation || "").trim(),
+    }));
+
+    // 3. Generate secure attempt identifier and bind to authenticated user session
+    const attemptId = crypto.randomBytes(16).toString("hex");
+
+    if (!req.session.activeQuizzes) {
+      req.session.activeQuizzes = {};
+    }
+
+    // Prune expired attempts (> 1 hour) and bound memory size (max 10)
+    const now = Date.now();
+    Object.keys(req.session.activeQuizzes).forEach((id) => {
+      if (now - req.session.activeQuizzes[id].createdAt > 3600000) {
+        delete req.session.activeQuizzes[id];
+      }
+    });
+    const activeKeys = Object.keys(req.session.activeQuizzes);
+    if (activeKeys.length > 10) {
+      delete req.session.activeQuizzes[activeKeys[0]];
+    }
+
+    // Store trusted quiz on server
+    req.session.activeQuizzes[attemptId] = {
+      attemptId,
+      userId: String(req.user._id),
       topic,
       educationLevel,
       difficulty,
+      createdAt: now,
+      submitted: false,
+      questions: quiz.map((q, idx) => ({
+        index: idx,
+        question: q.question,
+        options: q.options,
+        answer: q.answer,
+        explanation: q.explanation,
+      })),
+    };
+
+    // Client receives sanitized questions and options only — NO answer keys
+    const clientQuiz = quiz.map((q) => ({
+      question: q.question,
+      options: q.options,
+    }));
+
+    res.render("quizgive.ejs", {
+      quiz: clientQuiz,
+      topic,
+      educationLevel,
+      difficulty,
+      attemptId,
     });
   } catch (e) {
     console.error("Error in /quizmaker:", e);
@@ -630,67 +730,125 @@ Output ONLY raw JSON array. No markdown, no conversational text.`;
   }
 });
 
-app.post("/submit-quiz", async (req, res) => {
+app.post("/submit-quiz", isAuthenticated, async (req, res) => {
   try {
-    const topic = (req.body.topic || "General").trim();
-    let correctAnswers = [];
-    let questions = [];
+    const attemptId = (req.body.attemptId || "").trim();
 
-    try {
-      correctAnswers = typeof req.body.answers === "string" ? JSON.parse(req.body.answers) : (req.body.answers || []);
-    } catch (_) { correctAnswers = []; }
-
-    try {
-      questions = typeof req.body.questions === "string" ? JSON.parse(req.body.questions) : (req.body.questions || []);
-    } catch (_) { questions = []; }
-
-    let score = 0;
-    const results = [];
-
-    for (let i = 0; i < correctAnswers.length; i++) {
-      const userAnswer = req.body[`q${i}`] || "";
-      const isCorrect = userAnswer === correctAnswers[i];
-      if (isCorrect) score++;
-      results.push({
-        questionNumber: i + 1,
-        question: questions[i] || `Question ${i + 1}`,
-        yourAnswer: userAnswer,
-        correctAnswer: correctAnswers[i],
-        isCorrect,
+    if (!attemptId) {
+      return res.status(400).render("error.ejs", {
+        title: "Invalid Submission",
+        message: "No quiz attempt identifier was provided. Please return to the quiz page and take a quiz.",
       });
     }
 
-    // Immediately record quiz attempt & test scores to user profile in MongoDB
-    if (req.user && req.user._id) {
-      try {
-        const user = await User.findById(req.user._id);
-        if (user) {
-          if (!user.quizzes) user.quizzes = [];
-          user.quizzes.push({ topic, results });
+    const activeQuizzes = req.session.activeQuizzes || {};
+    const activeQuiz = activeQuizzes[attemptId];
 
-          if (!user.testScores) user.testScores = [];
-          let topicScoreEntry = user.testScores.find((ts) => ts.topic.toLowerCase() === topic.toLowerCase());
-          if (topicScoreEntry) {
-            topicScoreEntry.scores.push(score);
-          } else {
-            user.testScores.push({ topic, scores: [score] });
-          }
-          await user.save();
+    if (!activeQuiz) {
+      return res.status(400).render("error.ejs", {
+        title: "Quiz Expired or Invalid",
+        message: "This quiz session does not exist, has expired, or has already been submitted. Please start a new quiz.",
+      });
+    }
+
+    // Validate ownership
+    if (activeQuiz.userId && activeQuiz.userId !== String(req.user._id)) {
+      return res.status(403).render("error.ejs", {
+        title: "Unauthorized Quiz Attempt",
+        message: "This quiz session belongs to another user account.",
+      });
+    }
+
+    // Validate session age (1 hour limit)
+    if (Date.now() - activeQuiz.createdAt > 3600000) {
+      delete activeQuizzes[attemptId];
+      return res.status(400).render("error.ejs", {
+        title: "Quiz Expired",
+        message: "Your quiz session has timed out. Please generate a new quiz.",
+      });
+    }
+
+    // Idempotency: Prevent duplicate submissions
+    if (activeQuiz.submitted) {
+      return res.redirect("/progress");
+    }
+    activeQuiz.submitted = true;
+
+    // Server-side authoritative grading against stored answer keys
+    let score = 0;
+    const results = [];
+    const questions = activeQuiz.questions;
+    const totalQuestions = questions.length;
+
+    for (let i = 0; i < totalQuestions; i++) {
+      const qObj = questions[i];
+      const submittedAnswer = (req.body[`q${i}`] || "").trim();
+
+      const isAllowedOption = qObj.options.includes(submittedAnswer);
+      const isCorrect = isAllowedOption && submittedAnswer === qObj.answer;
+
+      if (isCorrect) {
+        score++;
+      }
+
+      results.push({
+        questionNumber: i + 1,
+        question: qObj.question,
+        yourAnswer: isAllowedOption ? submittedAnswer : (submittedAnswer ? "Invalid choice" : "Unanswered"),
+        correctAnswer: qObj.answer,
+        isCorrect,
+        explanation: qObj.explanation || "",
+      });
+    }
+
+    const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+    const topic = activeQuiz.topic || "General";
+    const difficulty = activeQuiz.difficulty || "general";
+
+    // Persist verified score in MongoDB
+    const user = await User.findById(req.user._id);
+    if (user) {
+      if (!user.quizzes) user.quizzes = [];
+      const alreadySaved = user.quizzes.some((q) => q.attemptId === attemptId);
+      if (!alreadySaved) {
+        user.quizzes.push({
+          attemptId,
+          topic,
+          difficulty,
+          score,
+          totalQuestions,
+          percentage,
+          date: new Date(),
+          results,
+        });
+
+        // Maintain legacy testScores compatibility
+        if (!user.testScores) user.testScores = [];
+        let topicScoreEntry = user.testScores.find(
+          (ts) => ts.topic.toLowerCase() === topic.toLowerCase()
+        );
+        if (topicScoreEntry) {
+          topicScoreEntry.scores.push(percentage);
+        } else {
+          user.testScores.push({ topic, scores: [percentage] });
         }
-      } catch (saveErr) {
-        console.warn("Could not immediately record test score:", saveErr.message);
+        await user.save();
       }
     }
+
+    // Clean up active quiz from session
+    delete activeQuizzes[attemptId];
 
     res.render("quiz-result.ejs", {
       topic,
       score,
-      total: correctAnswers.length,
+      total: totalQuestions,
+      percentage,
       results,
     });
   } catch (err) {
     console.error("Error scoring quiz:", err);
-    res.render("error.ejs", {
+    res.status(500).render("error.ejs", {
       title: "Quiz Evaluation Notice",
       message: "An issue occurred while evaluating your answers. Please try again.",
     });
@@ -801,30 +959,98 @@ Generate a structured study roadmap with performance summary, weak areas, recomm
 });
 
 
+const { computeStudentAnalytics } = require("./services/studentAnalytics");
+
 app.get("/dashboard", isAuthenticated, async (req, res) => {
   try {
-    const user = req.user;
-    if (user && user.isAdmin) {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.redirect("/login");
+    if (user.isAdmin) {
       return res.redirect("/admin/dashboard");
     }
-    res.render("dashboard", { user });
+    const analytics = computeStudentAnalytics(user);
+    res.render("dashboard", { user, analytics });
   } catch (err) {
     console.error("Dashboard fetch error:", err);
     res.redirect("/login");
   }
 });
+
 app.get("/progress", isAuthenticated, async (req, res) => {
   try {
-    const user = req.user;
-    if (user && user.isAdmin) {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.redirect("/login");
+    if (user.isAdmin) {
       return res.redirect("/admin/scores");
     }
-    const testScores = (user && user.testScores) || [];
-
-    res.render("progress", { testScores, user });
+    const analytics = computeStudentAnalytics(user);
+    const testScores = user.testScores || [];
+    res.render("progress", { testScores, user, analytics });
   } catch (err) {
     console.error("Progress fetch error:", err);
     res.redirect("/login");
+  }
+});
+
+// Dedicated Assessment Attempt Review Permalink
+app.get("/quiz/review/:attemptIdOrIndex", isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.redirect("/login");
+
+    const param = (req.params.attemptIdOrIndex || "").trim();
+    const quizzes = user.quizzes || [];
+
+    // 1. Search by attemptId
+    let quiz = quizzes.find((q) => q.attemptId && q.attemptId === param);
+
+    // 2. If not found and param is a valid integer index
+    if (!quiz && /^\d+$/.test(param)) {
+      const idx = parseInt(param, 10);
+      if (idx >= 0 && idx < quizzes.length) {
+        quiz = quizzes[idx];
+      }
+    }
+
+    if (!quiz) {
+      return res.status(404).render("error.ejs", {
+        title: "Assessment Not Found",
+        message: "The requested quiz attempt could not be found in your learning history.",
+      });
+    }
+
+    const results = quiz.results || [];
+    const score =
+      typeof quiz.score === "number"
+        ? quiz.score
+        : results.filter((r) => r.isCorrect).length;
+    const total =
+      typeof quiz.totalQuestions === "number" && quiz.totalQuestions > 0
+        ? quiz.totalQuestions
+        : results.length > 0
+        ? results.length
+        : 5;
+    const percentage =
+      typeof quiz.percentage === "number"
+        ? quiz.percentage
+        : total > 0
+        ? Math.round((score / total) * 100)
+        : 0;
+
+    res.render("quiz-result.ejs", {
+      topic: quiz.topic || "General",
+      score,
+      total,
+      percentage,
+      results,
+      isReview: true,
+    });
+  } catch (err) {
+    console.error("Error retrieving quiz review:", err);
+    res.status(500).render("error.ejs", {
+      title: "Quiz Review Notice",
+      message: "An issue occurred while loading your quiz attempt review.",
+    });
   }
 });
 
@@ -839,90 +1065,33 @@ app.get("/api/student/analytics", isAuthenticated, async (req, res) => {
     const user = await User.findById(req.user._id).lean();
     if (!user) return res.status(404).json({ success: false, error: "User not found" });
 
-    const quizzes = user.quizzes || [];
-    const performanceOverTime = quizzes.map((q, i) => {
-      const total = q.results && q.results.length > 0 ? q.results.length : 5;
-      const correct = (q.results || []).filter((r) => r.isCorrect).length;
-      const pct = Math.round((correct / total) * 100);
-      return {
-        attemptNumber: i + 1,
-        topic: q.topic || "General",
-        date: q.date || new Date(),
-        score: correct,
-        totalQuestions: total,
-        percentage: pct,
-      };
-    });
-
-    const subjectMap = {};
-    quizzes.forEach((q) => {
-      const t = q.topic || "General";
-      const total = q.results && q.results.length > 0 ? q.results.length : 5;
-      const correct = (q.results || []).filter((r) => r.isCorrect).length;
-      const pct = Math.round((correct / total) * 100);
-      if (!subjectMap[t]) subjectMap[t] = { count: 0, sum: 0, max: 0 };
-      subjectMap[t].count++;
-      subjectMap[t].sum += pct;
-      if (pct > subjectMap[t].max) subjectMap[t].max = pct;
-    });
-
-    const subjects = Object.keys(subjectMap).map((s) => ({
-      subject: s,
-      attempts: subjectMap[s].count,
-      averageScore: Math.round(subjectMap[s].sum / subjectMap[s].count),
-      highestScore: subjectMap[s].max,
-    }));
-
-    const activityMap = {};
-    quizzes.forEach((q) => {
-      const d = (q.date ? new Date(q.date) : new Date()).toISOString().split("T")[0];
-      activityMap[d] = (activityMap[d] || 0) + 1;
-    });
-
-    const totalQuizzes = quizzes.length;
-    const avgScore =
-      performanceOverTime.length > 0
-        ? Math.round(performanceOverTime.reduce((a, b) => a + b.percentage, 0) / performanceOverTime.length)
-        : 0;
-    const highestScore =
-      performanceOverTime.length > 0 ? Math.max(...performanceOverTime.map((p) => p.percentage)) : 0;
-
+    const analytics = computeStudentAnalytics(user);
     res.json({
       success: true,
-      summary: {
-        completedQuizzes: totalQuizzes,
-        averageScore: avgScore,
-        highestScore: highestScore,
-        attemptedSubjectsCount: subjects.length,
-      },
-      performanceOverTime,
-      subjects,
-      activity: Object.keys(activityMap).sort().map((d) => ({ date: d, count: activityMap[d] })),
+      ...analytics,
     });
   } catch (err) {
+    console.error("Student analytics error:", err);
     res.status(500).json({ success: false, error: "Failed to load student analytics" });
   }
 });
 
-app.get("/delete", (req, res) => {
-  res.send("deleting ");
+app.get("/delete", requireAdmin, (req, res) => {
+  res.status(403).json({
+    success: false,
+    error: "Direct deletion endpoint is disabled.",
+  });
 });
 
 // User Routes
-app.get("/user", (req, res) => {
-  if (!req.user) {
-    console.log("Please log in first");
-    return res.redirect("/login");
-  }
-
-  // Pick only needed fields
-  const { _id, email, username,educationLevel } = req.user;
-
+app.get("/user", isAuthenticated, (req, res) => {
+  const { _id, email, username, educationLevel, isAdmin } = req.user;
   res.json({
     id: _id,
     email,
     username,
-    educationLevel
+    educationLevel,
+    isAdmin: !!isAdmin,
   });
 });
 
@@ -940,7 +1109,7 @@ app.get("/login", (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     let { username, email, password, educationLevel } = req.body;
-    console.log(username, email, password, educationLevel);
+    console.log(`Signup attempt for username: "${username ? username.trim() : "anonymous"}"`);
 
     let user = await User.findOne({ username: username });
     let alreadyuser = await User.findOne({ email: email });
@@ -1016,33 +1185,65 @@ app.get("/notes", isAuthenticated, async (req, res) => {
 });
 
 app.get("/notes/edit/:index", isAuthenticated, async (req, res) => {
-  const user = await User.findById(req.user._id);
-  const note = user.notes[req.params.index];
-  res.render("editNote", { note, index: req.params.index });
+  try {
+    const user = await User.findById(req.user._id);
+    const index = parseInt(req.params.index, 10);
+    if (isNaN(index) || index < 0 || !user.notes || index >= user.notes.length) {
+      return res.redirect("/notes");
+    }
+    const note = user.notes[index];
+    res.render("editNote", { note, index });
+  } catch (err) {
+    console.error("Notes edit render error:", err);
+    res.redirect("/notes");
+  }
 });
 
 // Handle Edit
 app.post("/notes/edit/:index", isAuthenticated, async (req, res) => {
-  const user = await User.findById(req.user._id);
-  const { title, content } = req.body;
-  user.notes[req.params.index] = { title, content };
-  await user.save();
-  res.redirect("/notes");
+  try {
+    const user = await User.findById(req.user._id);
+    const index = parseInt(req.params.index, 10);
+    if (isNaN(index) || index < 0 || !user.notes || index >= user.notes.length) {
+      return res.redirect("/notes");
+    }
+    const { title, content } = req.body;
+    user.notes[index] = { title: (title || "").trim(), content: (content || "").trim() };
+    await user.save();
+    res.redirect("/notes");
+  } catch (err) {
+    console.error("Notes edit save error:", err);
+    res.redirect("/notes");
+  }
 });
 
 // Handle Delete
 app.post("/notes/delete/:index", isAuthenticated, async (req, res) => {
-  const user = await User.findById(req.user._id);
-  user.notes.splice(req.params.index, 1);
-  await user.save();
-  res.redirect("/notes");
+  try {
+    const user = await User.findById(req.user._id);
+    const index = parseInt(req.params.index, 10);
+    if (isNaN(index) || index < 0 || !user.notes || index >= user.notes.length) {
+      return res.redirect("/notes");
+    }
+    user.notes.splice(index, 1);
+    await user.save();
+    res.redirect("/notes");
+  } catch (err) {
+    console.error("Notes delete error:", err);
+    res.redirect("/notes");
+  }
 });
 
 // TODO page - view list
-app.get("/todo", isAuthenticated, async (req, res) => {
-  const user = await User.findById(req.user._id);
-
-  res.render("todos", { todos: user.todos });
+// TODO page - view list (supports both /todo and /todos)
+app.get(["/todo", "/todos"], isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.render("todos", { todos: (user && user.todos) || [] });
+  } catch (err) {
+    console.error("Todo render error:", err);
+    res.redirect("/dashboard");
+  }
 });
 
 // Add a todo: /todo/add?task=Read+book
@@ -1058,24 +1259,34 @@ app.get("/todo/add", isAuthenticated, async (req, res) => {
 
 // Complete a todo: /todo/complete?index=0
 app.get("/todo/complete", isAuthenticated, async (req, res) => {
-  const { index } = req.query;
-  const user = await User.findById(req.user._id);
-  if (user.todos[index]) {
-    user.todos[index].completed = true;
-    await user.save();
+  try {
+    const index = parseInt(req.query.index, 10);
+    const user = await User.findById(req.user._id);
+    if (!isNaN(index) && index >= 0 && user && user.todos && index < user.todos.length) {
+      user.todos[index].completed = true;
+      await user.save();
+    }
+    res.redirect("/todo");
+  } catch (err) {
+    console.error("Todo complete error:", err);
+    res.redirect("/todo");
   }
-  res.redirect("/todo");
 });
 
 // Delete a todo: /todo/delete?index=0
 app.get("/todo/delete", isAuthenticated, async (req, res) => {
-  const { index } = req.query;
-  const user = await User.findById(req.user._id);
-  if (user.todos[index]) {
-    user.todos.splice(index, 1);
-    await user.save();
+  try {
+    const index = parseInt(req.query.index, 10);
+    const user = await User.findById(req.user._id);
+    if (!isNaN(index) && index >= 0 && user && user.todos && index < user.todos.length) {
+      user.todos.splice(index, 1);
+      await user.save();
+    }
+    res.redirect("/todo");
+  } catch (err) {
+    console.error("Todo delete error:", err);
+    res.redirect("/todo");
   }
-  res.redirect("/todo");
 });
 
 
@@ -1224,8 +1435,15 @@ app.get("/practical/student-management*", (req, res) => {
 // Server Start
 // ==========================================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = {
+  app,
+  computeStudentAnalytics,
+};
 
 

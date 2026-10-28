@@ -1,8 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
+const mongoose = require("mongoose");
 const User = require("../models/profile");
 const Student = require("../models/Student");
+const {
+  computeStudentAnalytics,
+  computeLearnerRecentVsEarlier,
+  computeLearnerScoreDistribution,
+  computeLearningRecommendations,
+} = require("../services/studentAnalytics");
 
 /**
  * Middleware to restrict access strictly to authenticated administrators
@@ -62,21 +69,68 @@ router.get("/analytics", requireAdmin, (req, res) => {
  */
 router.get("/scores", requireAdmin, async (req, res) => {
   try {
-    const allUsers = await User.find({}, "username educationLevel testScores").lean();
+    const allUsers = await User.find({ isAdmin: { $ne: true } }, "username educationLevel testScores quizzes").lean();
     let scores = [];
+
     allUsers.forEach((user) => {
-      (user.testScores || []).forEach((test) => {
-        const avgScore =
-          test.scores.length > 0
-            ? ((test.scores.reduce((a, b) => a + b, 0) / test.scores.length) * 10).toFixed(2)
-            : 0;
+      const topicQuizMap = {};
+      (user.quizzes || []).forEach((q) => {
+        const t = q.topic || "General";
+        if (!topicQuizMap[t]) topicQuizMap[t] = [];
+        const total = q.totalQuestions || (q.results ? q.results.length : 0);
+        const correct = typeof q.score === "number" ? q.score : (q.results ? q.results.filter((r) => r.isCorrect).length : 0);
+        const pct = typeof q.percentage === "number" ? q.percentage : (total > 0 ? Math.round((correct / total) * 100) : null);
+        topicQuizMap[t].push({
+          score: correct,
+          total,
+          percentage: pct,
+        });
+      });
+
+      const coveredTopics = new Set();
+
+      // 1. Precise scores derived from detailed quiz attempts
+      Object.keys(topicQuizMap).forEach((topic) => {
+        coveredTopics.add(topic.toLowerCase());
+        const attempts = topicQuizMap[topic];
+        const validPercentages = attempts.map((a) => a.percentage).filter((p) => p !== null && !isNaN(p));
+        const avgPct = validPercentages.length > 0
+          ? (validPercentages.reduce((a, b) => a + b, 0) / validPercentages.length).toFixed(1)
+          : "0.0";
+
         scores.push({
           username: user.username,
           educationLevel: user.educationLevel,
-          topic: test.topic,
-          scores: test.scores,
-          avgScore: avgScore,
+          topic,
+          scores: attempts.map((a) => (a.percentage !== null ? a.percentage : a.score)),
+          displayScores: attempts.map((a) => (a.percentage !== null ? `${a.percentage}%` : `${a.score}/${a.total}`)),
+          avgScore: avgPct,
+          isPercentage: true,
+          totalAttempts: attempts.length,
         });
+      });
+
+      // 2. Legacy testScores without detailed quiz records preserved accurately
+      (user.testScores || []).forEach((test) => {
+        if (!coveredTopics.has((test.topic || "").toLowerCase())) {
+          const rawScores = test.scores || [];
+          // Inspect if values appear to be raw counts (e.g. <= 10) or percentages
+          const isLikelyPercentage = rawScores.some((s) => s > 10);
+          const rawAvg = rawScores.length > 0
+            ? (rawScores.reduce((a, b) => a + b, 0) / rawScores.length).toFixed(1)
+            : "0.0";
+
+          scores.push({
+            username: user.username,
+            educationLevel: user.educationLevel,
+            topic: test.topic,
+            scores: rawScores,
+            displayScores: rawScores.map((s) => (isLikelyPercentage ? `${s}%` : `${s} pts`)),
+            avgScore: rawAvg,
+            isPercentage: isLikelyPercentage,
+            totalAttempts: rawScores.length,
+          });
+        }
       });
     });
 
@@ -88,8 +142,8 @@ router.get("/scores", requireAdmin, async (req, res) => {
       scores = scores.filter((s) => s.username === studentFilter);
     }
 
-    const uniqueTopics = [...new Set(allUsers.flatMap((u) => (u.testScores || []).map((t) => t.topic)))];
-    const uniqueStudents = allUsers.map((u) => u.username);
+    const uniqueTopics = [...new Set(scores.map((s) => s.topic))];
+    const uniqueStudents = [...new Set(allUsers.map((u) => u.username))];
 
     res.render("admin/scores", {
       scores,
@@ -111,7 +165,7 @@ router.get("/scores", requireAdmin, async (req, res) => {
  */
 router.get("/dashboard", requireAdmin, async (req, res) => {
   try {
-    const allUsers = await User.find({}, "username email educationLevel testScores quizzes").lean();
+    const allUsers = await User.find({ isAdmin: { $ne: true } }, "username email educationLevel testScores quizzes").lean();
     const allStudents = await Student.find({}, "name rollNumber course academicYear createdAt").lean();
 
     // Collect all available topics from quizzes & testScores
@@ -168,56 +222,109 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
     const now = new Date();
     if (dateRange === "7d") {
       dateLimit = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    } else if (dateRange === "30d") {
+    } else if (dateRange === "30d" || !dateRange) {
       dateLimit = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     } else if (dateRange === "90d") {
       dateLimit = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    } else if (dateRange === "all") {
+      dateLimit = null;
     }
 
-    // Fetch users with only non-sensitive fields
-    const users = await User.find({}, "username educationLevel quizzes testScores createdAt").lean();
+    // Query registered learners strictly (exclude administrators)
+    const learnerFilter = { isAdmin: { $ne: true } };
+    const users = await User.find(
+      learnerFilter,
+      "username email educationLevel quizzes createdAt"
+    ).lean();
 
-    // Query enrolled students
+    // Query institutional Student directory (if any)
     let studentQuery = {};
     if (course && course !== "all") studentQuery.course = course;
     if (academicYear && academicYear !== "all") studentQuery.academicYear = academicYear;
     const enrolledStudents = await Student.find(studentQuery).lean();
 
-    // Flatten all quiz attempts across all users
+    // Collect qualifying completed quiz attempts from real student records
     let attempts = [];
+    const activeLearnerIds = new Set();
+
     users.forEach((user) => {
-      (user.quizzes || []).forEach((quiz, qIdx) => {
-        const attemptDate = quiz.date ? new Date(quiz.date) : new Date(user.createdAt || now);
+      let userHasQualifyingAttempt = false;
 
-        if (dateLimit && attemptDate < dateLimit) return;
-        if (topic && topic !== "all" && quiz.topic?.toLowerCase() !== topic.toLowerCase()) return;
+      (user.quizzes || []).forEach((quiz) => {
+        // Parse date reliably without fallback to "now" for historical records
+        const attemptDate = quiz.date ? new Date(quiz.date) : null;
+        const isValidDate = attemptDate && !isNaN(attemptDate.getTime());
 
-        const totalQuestions = quiz.results?.length || 0;
-        const correctCount = (quiz.results || []).filter((r) => r.isCorrect).length;
-        const percentage = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+        // Respect date limit filter: undated attempts are excluded from date-bounded ranges
+        if (dateLimit) {
+          if (!isValidDate || attemptDate < dateLimit) return;
+        }
+
+        // Respect topic filter
+        if (topic && topic !== "all" && (quiz.topic || "").toLowerCase() !== topic.toLowerCase()) {
+          return;
+        }
+
+        // Derive actual question count and score without assumptions
+        const totalQuestions =
+          typeof quiz.totalQuestions === "number" && quiz.totalQuestions > 0
+            ? quiz.totalQuestions
+            : (quiz.results?.length || 0);
+
+        const correctCount =
+          typeof quiz.score === "number"
+            ? quiz.score
+            : ((quiz.results || []).filter((r) => r.isCorrect).length);
+
+        const hasReliableDenominator = totalQuestions > 0;
+        const percentage =
+          typeof quiz.percentage === "number" && !isNaN(quiz.percentage)
+            ? quiz.percentage
+            : (hasReliableDenominator ? Math.round((correctCount / totalQuestions) * 100) : null);
 
         attempts.push({
           userId: user._id,
           username: user.username,
-          educationLevel: user.educationLevel,
+          educationLevel: user.educationLevel || "Undergraduate",
           topic: quiz.topic || "General",
-          date: attemptDate,
+          date: isValidDate ? attemptDate : null,
           score: correctCount,
           total: totalQuestions,
-          percentage: percentage,
-          isCompleted: totalQuestions > 0,
+          percentage,
+          isCompleted: hasReliableDenominator,
         });
+
+        if (hasReliableDenominator) {
+          userHasQualifyingAttempt = true;
+        }
       });
+
+      if (userHasQualifyingAttempt) {
+        activeLearnerIds.add(String(user._id));
+      }
     });
 
-    // 1. Platform Performance Summary Metrics
+    // 1. Core Summary Metrics & KPIs
+    const totalRegisteredUsers = users.length;
     const totalQuizAttempts = attempts.length;
-    const totalCompleted = attempts.filter((a) => a.isCompleted).length;
-    const totalScoreSum = attempts.reduce((acc, a) => acc + a.percentage, 0);
-    const platformAverageScore = totalQuizAttempts > 0 ? Math.round(totalScoreSum / totalQuizAttempts) : 0;
+    const completedAttempts = attempts.filter((a) => a.isCompleted);
+    const totalCompletedQuizzes = completedAttempts.length;
 
-    const subjectsSet = new Set(attempts.map((a) => a.topic));
-    const activeSubjectsCount = subjectsSet.size;
+    // Percentage calculations include only attempts with a verified denominator
+    const attemptsWithValidPercentages = attempts.filter(
+      (a) => a.percentage !== null && !isNaN(a.percentage)
+    );
+    const totalPercentageSum = attemptsWithValidPercentages.reduce(
+      (acc, a) => acc + a.percentage,
+      0
+    );
+    const platformAverageScore =
+      attemptsWithValidPercentages.length > 0
+        ? Math.round(totalPercentageSum / attemptsWithValidPercentages.length)
+        : 0;
+
+    const activeSubjectsCount = new Set(attempts.map((a) => a.topic)).size;
+    const activeLearners = activeLearnerIds.size;
 
     // 2. Performance Distribution (mutually exclusive score buckets)
     const distribution = {
@@ -226,7 +333,7 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
       "60-79%": 0,
       "80-100%": 0,
     };
-    attempts.forEach((a) => {
+    attemptsWithValidPercentages.forEach((a) => {
       const p = a.percentage;
       if (p < 40) distribution["0-39%"]++;
       else if (p < 60) distribution["40-59%"]++;
@@ -234,9 +341,9 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
       else distribution["80-100%"]++;
     });
 
-    // 3. Subject-Wise Performance (Average % and attempt count)
+    // 3. Subject-Wise Performance
     const subjectStats = {};
-    attempts.forEach((a) => {
+    attemptsWithValidPercentages.forEach((a) => {
       if (!subjectStats[a.topic]) {
         subjectStats[a.topic] = { totalAttempts: 0, scoreSum: 0 };
       }
@@ -250,26 +357,38 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
     );
     const subjectCounts = subjectLabels.map((s) => subjectStats[s].totalAttempts);
 
-    // 4. Overall Student Performance Over Time (Aggregated Chronologically)
+    // 4. Chronological Performance Over Time
     const timelineMap = {};
+    if (dateRange === "7d") {
+      for (let d = 6; d >= 0; d--) {
+        const day = new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
+        timelineMap[day.toISOString().split("T")[0]] = { sum: 0, count: 0, completed: 0 };
+      }
+    }
+
     attempts
+      .filter((a) => a.date !== null)
       .sort((a, b) => a.date - b.date)
       .forEach((a) => {
-        const dateKey = a.date.toISOString().split("T")[0]; // YYYY-MM-DD
+        const dateKey = a.date.toISOString().split("T")[0];
         if (!timelineMap[dateKey]) {
           timelineMap[dateKey] = { sum: 0, count: 0, completed: 0 };
         }
-        timelineMap[dateKey].sum += a.percentage;
-        timelineMap[dateKey].count++;
+        if (a.percentage !== null) {
+          timelineMap[dateKey].sum += a.percentage;
+          timelineMap[dateKey].count++;
+        }
         if (a.isCompleted) timelineMap[dateKey].completed++;
       });
 
-    const timelineLabels = Object.keys(timelineMap);
-    const timelineScores = timelineLabels.map((d) => Math.round(timelineMap[d].sum / timelineMap[d].count));
+    const timelineLabels = Object.keys(timelineMap).sort();
+    const timelineScores = timelineLabels.map((d) =>
+      timelineMap[d].count > 0 ? Math.round(timelineMap[d].sum / timelineMap[d].count) : 0
+    );
     const timelineAttempts = timelineLabels.map((d) => timelineMap[d].count);
     const timelineCompleted = timelineLabels.map((d) => timelineMap[d].completed);
 
-    // 5. Student Enrollment Statistics (from Student collection)
+    // 5. Course & Directory Distribution
     const courseDistribution = {};
     const yearDistribution = {};
     enrolledStudents.forEach((st) => {
@@ -277,24 +396,33 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
       yearDistribution[st.academicYear] = (yearDistribution[st.academicYear] || 0) + 1;
     });
 
-    // If Student collection is empty, fallback to User educationLevel
+    // Fallback distribution from User educationLevel if Student collection is empty
     if (Object.keys(courseDistribution).length === 0) {
       users.forEach((u) => {
         const lvl = u.educationLevel || "Undergraduate";
         courseDistribution[lvl] = (courseDistribution[lvl] || 0) + 1;
       });
-      yearDistribution["General"] = users.length;
+      yearDistribution["Active Learners"] = activeLearners;
     }
 
-    return res.status(200).json({
+    const responseData = {
       success: true,
       summary: {
-        totalRegisteredUsers: users.length,
+        totalRegisteredUsers,
+        registeredLearners: totalRegisteredUsers,
+        activeLearners,
         totalEnrolledStudents: enrolledStudents.length,
         totalQuizAttempts,
-        totalCompletedQuizzes: totalCompleted,
+        totalCompletedQuizzes,
         platformAverageScore,
         activeSubjectsCount,
+      },
+      kpis: {
+        registeredUsers: totalRegisteredUsers,
+        activeLearners,
+        enrolledStudents: enrolledStudents.length,
+        completedQuizzes: totalCompletedQuizzes,
+        overallAvgScore: platformAverageScore,
       },
       performanceOverTime: {
         labels: timelineLabels,
@@ -318,7 +446,12 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
           counts: Object.values(yearDistribution),
         },
       },
-    });
+    };
+
+    // Wrap response in data property to satisfy both root and data.data client contracts
+    responseData.data = { ...responseData };
+
+    return res.status(200).json(responseData);
   } catch (error) {
     console.error("Admin analytics API error:", error);
     return res.status(500).json({
@@ -335,8 +468,9 @@ router.get("/api/analytics", requireAdmin, async (req, res) => {
  */
 router.get("/api/students", requireAdmin, async (req, res) => {
   try {
-    const { studentIds, topic, q } = req.query;
-    let filter = {};
+    const { studentIds, topic, q, sortBy, order } = req.query;
+    // Strictly exclude administrators from student directory and performance table
+    let filter = { isAdmin: { $ne: true } };
 
     if (studentIds) {
       const ids = studentIds.split(",").filter((id) => mongoose.isValidObjectId(id));
@@ -350,34 +484,93 @@ router.get("/api/students", requireAdmin, async (req, res) => {
       ];
     }
 
-    const users = await User.find(filter, "username email educationLevel quizzes testScores createdAt").lean();
+    const users = await User.find(
+      filter,
+      "username email educationLevel quizzes testScores createdAt"
+    ).lean();
 
     const comparisonList = users.map((u) => {
       let filteredQuizzes = u.quizzes || [];
       if (topic && topic !== "all") {
-        filteredQuizzes = filteredQuizzes.filter((qz) => qz.topic?.toLowerCase() === topic.toLowerCase());
+        filteredQuizzes = filteredQuizzes.filter(
+          (qz) => qz.topic?.toLowerCase() === topic.toLowerCase()
+        );
       }
 
-      const scores = filteredQuizzes.map((qz) => {
-        const total = qz.results?.length || 0;
-        const correct = (qz.results || []).filter((r) => r.isCorrect).length;
-        return total > 0 ? Math.round((correct / total) * 100) : 0;
+      const validScores = [];
+      filteredQuizzes.forEach((qz) => {
+        if (typeof qz.percentage === "number" && !isNaN(qz.percentage)) {
+          validScores.push(qz.percentage);
+        } else {
+          const total = qz.totalQuestions || qz.results?.length || 0;
+          const correct =
+            typeof qz.score === "number"
+              ? qz.score
+              : (qz.results || []).filter((r) => r.isCorrect).length;
+          if (total > 0) {
+            validScores.push(Math.round((correct / total) * 100));
+          }
+        }
       });
 
-      const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 0;
-      const highest = scores.length > 0 ? Math.max(...scores) : 0;
+      const avg =
+        validScores.length > 0
+          ? (validScores.reduce((a, b) => a + b, 0) / validScores.length).toFixed(1)
+          : null;
+      const highest = validScores.length > 0 ? Math.max(...validScores) : null;
+
+      // Determine most recent completed quiz date
+      const quizDates = (u.quizzes || [])
+        .map((q) => (q.date ? new Date(q.date) : null))
+        .filter((d) => d && !isNaN(d.getTime()));
+      const lastActive =
+        quizDates.length > 0
+          ? new Date(Math.max(...quizDates.map((d) => d.getTime())))
+              .toISOString()
+              .split("T")[0]
+          : "No attempts";
 
       return {
         _id: u._id,
         username: u.username,
-        email: u.email,
+        email: u.email || `${u.username}@learnsmart.edu`,
         educationLevel: u.educationLevel || "Undergraduate",
-        totalQuizzes: scores.length,
-        averageScore: avg,
-        highestScore: highest,
-        scores: scores,
+        course: u.educationLevel || "General Studies",
+        totalQuizzes: filteredQuizzes.length,
+        completedQuizzes: validScores.length,
+        averageScore: avg !== null ? parseFloat(avg) : 0,
+        averageScoreText: avg !== null ? `${avg}%` : "N/A",
+        highestScore: highest !== null ? highest : 0,
+        scores: validScores,
+        lastActiveDate: lastActive,
+        status: filteredQuizzes.length > 0 ? "Active" : "Inactive",
       };
     });
+
+    if (sortBy) {
+      const isAsc = order === "asc";
+      comparisonList.sort((a, b) => {
+        let valA, valB;
+        if (sortBy === "avgScore" || sortBy === "averageScore") {
+          valA = a.averageScore || 0;
+          valB = b.averageScore || 0;
+        } else if (sortBy === "totalQuizzes") {
+          valA = a.totalQuizzes || 0;
+          valB = b.totalQuizzes || 0;
+        } else if (sortBy === "lastActive" || sortBy === "lastActiveDate") {
+          valA = a.lastActiveDate === "No attempts" ? "" : a.lastActiveDate;
+          valB = b.lastActiveDate === "No attempts" ? "" : b.lastActiveDate;
+        } else if (sortBy === "username") {
+          valA = (a.username || "").toLowerCase();
+          valB = (b.username || "").toLowerCase();
+        } else {
+          return 0;
+        }
+        if (valA < valB) return isAsc ? -1 : 1;
+        if (valA > valB) return isAsc ? 1 : -1;
+        return 0;
+      });
+    }
 
     return res.status(200).json(comparisonList);
   } catch (err) {
@@ -394,7 +587,7 @@ router.get("/api/students", requireAdmin, async (req, res) => {
 router.get("/api/search-students", requireAdmin, async (req, res) => {
   try {
     const { q } = req.query;
-    let query = {};
+    let query = { isAdmin: { $ne: true } };
     if (q) {
       query.$or = [
         { username: { $regex: q, $options: "i" } },
@@ -416,11 +609,325 @@ router.get("/api/search-students", requireAdmin, async (req, res) => {
  */
 router.get("/api/all-students", requireAdmin, async (req, res) => {
   try {
-    const students = await User.find({}, "username email educationLevel").lean();
+    const students = await User.find({ isAdmin: { $ne: true } }, "username email educationLevel").lean();
     return res.status(200).json(students);
   } catch (err) {
     console.error("All students fetch error:", err);
     return res.status(500).json([]);
+  }
+});
+
+
+/**
+ * Helper to escape CSV cell and mitigate CSV formula injection
+ */
+function sanitizeCsvCell(val) {
+  if (val === null || val === undefined) return '""';
+  let str = String(val);
+  // Mitigate formula injection (=, +, -, @, tab, cr)
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = "'" + str;
+  }
+  return `"${str.replace(/"/g, '""')}"`;
+}
+
+/**
+ * @route   GET /admin/learners/:userId
+ * @desc    Dedicated administrator view for individual student analytics
+ * @access  Admin only
+ */
+router.get("/learners/:userId", requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.isValidObjectId(userId)) {
+      return res.status(404).render("error.ejs", {
+        title: "Learner Not Found",
+        message: "Invalid learner identifier specified.",
+        statusCode: 404,
+      });
+    }
+
+    const learner = await User.findOne({ _id: userId, isAdmin: { $ne: true } })
+      .select("-hash -salt")
+      .lean();
+
+    if (!learner) {
+      return res.status(404).render("error.ejs", {
+        title: "Learner Not Found",
+        message: "No student account matching the specified ID was found.",
+        statusCode: 404,
+      });
+    }
+
+    // Optional cross-reference with institutional Student directory
+    let institutionalStudent = null;
+    if (learner.email) {
+      institutionalStudent = await Student.findOne({ email: learner.email }).lean();
+    }
+
+    const analytics = computeStudentAnalytics(learner);
+    const recentVsEarlier = computeLearnerRecentVsEarlier(learner.quizzes);
+    const scoreDistribution = computeLearnerScoreDistribution(learner.quizzes);
+    const recommendations = computeLearningRecommendations(analytics);
+
+    return res.render("admin/learner-detail.ejs", {
+      user: req.user,
+      learner,
+      institutionalStudent,
+      analytics,
+      recentVsEarlier,
+      scoreDistribution,
+      recommendations,
+    });
+  } catch (err) {
+    console.error("Admin learner detail fetch error:", err);
+    return res.status(500).render("error.ejs", {
+      title: "Error Loading Student Analytics",
+      message: "An error occurred while loading individual student diagnostics.",
+      statusCode: 500,
+    });
+  }
+});
+
+/**
+ * @route   GET /admin/api/learners/:userId
+ * @desc    Individual student analytics JSON endpoint for administrator tools
+ * @access  Admin only
+ */
+router.get("/api/learners/:userId", requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.isValidObjectId(userId)) {
+      return res.status(404).json({
+        success: false,
+        error: "Invalid learner identifier specified.",
+      });
+    }
+
+    const learner = await User.findOne({ _id: userId, isAdmin: { $ne: true } })
+      .select("-hash -salt")
+      .lean();
+
+    if (!learner) {
+      return res.status(404).json({
+        success: false,
+        error: "Learner not found.",
+      });
+    }
+
+    let institutionalStudent = null;
+    if (learner.email) {
+      institutionalStudent = await Student.findOne({ email: learner.email }).lean();
+    }
+
+    const analytics = computeStudentAnalytics(learner);
+    const recentVsEarlier = computeLearnerRecentVsEarlier(learner.quizzes);
+    const scoreDistribution = computeLearnerScoreDistribution(learner.quizzes);
+    const recommendations = computeLearningRecommendations(analytics);
+
+    return res.status(200).json({
+      success: true,
+      learner: {
+        _id: learner._id,
+        username: learner.username,
+        email: learner.email,
+        educationLevel: learner.educationLevel,
+        createdAt: learner.createdAt,
+      },
+      institutionalStudent,
+      analytics,
+      recentVsEarlier,
+      scoreDistribution,
+      recommendations,
+    });
+  } catch (err) {
+    console.error("Admin learner API fetch error:", err);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch student analytics payload.",
+    });
+  }
+});
+
+/**
+ * @route   GET /admin/learners/:userId/review/:attemptIdOrIndex
+ * @desc    Diagnostic question-level review permalink for administrators
+ * @access  Admin only
+ */
+router.get("/learners/:userId/review/:attemptIdOrIndex", requireAdmin, async (req, res) => {
+  try {
+    const { userId, attemptIdOrIndex } = req.params;
+
+    if (!mongoose.isValidObjectId(userId)) {
+      return res.status(404).render("error.ejs", {
+        title: "Learner Not Found",
+        message: "Invalid learner identifier specified.",
+        statusCode: 404,
+      });
+    }
+
+    const learner = await User.findOne({ _id: userId, isAdmin: { $ne: true } })
+      .select("-hash -salt")
+      .lean();
+
+    if (!learner) {
+      return res.status(404).render("error.ejs", {
+        title: "Learner Not Found",
+        message: "No student account matching the specified ID was found.",
+        statusCode: 404,
+      });
+    }
+
+    const rawQuizzes = Array.isArray(learner.quizzes) ? learner.quizzes : [];
+    const quizzes = [...rawQuizzes].sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+
+    let attempt = null;
+    let attemptNumber = 1;
+
+    for (let i = 0; i < quizzes.length; i++) {
+      const q = quizzes[i];
+      if (
+        (q.attemptId && String(q.attemptId) === String(attemptIdOrIndex)) ||
+        (q._id && String(q._id) === String(attemptIdOrIndex)) ||
+        String(i + 1) === String(attemptIdOrIndex)
+      ) {
+        attempt = q;
+        attemptNumber = i + 1;
+        break;
+      }
+    }
+
+    if (!attempt) {
+      return res.status(404).render("error.ejs", {
+        title: "Attempt Not Found",
+        message: "The requested quiz attempt could not be found for this learner.",
+        statusCode: 404,
+      });
+    }
+
+    const results = Array.isArray(attempt.results) ? attempt.results : [];
+    const derivedCorrect = results.filter((r) => r.isCorrect).length;
+    const score = typeof attempt.score === "number" ? attempt.score : derivedCorrect;
+    const total =
+      typeof attempt.totalQuestions === "number" && attempt.totalQuestions > 0
+        ? attempt.totalQuestions
+        : results.length > 0
+        ? results.length
+        : 5;
+    const percentage =
+      typeof attempt.percentage === "number"
+        ? attempt.percentage
+        : total > 0
+        ? Math.round((score / total) * 100)
+        : 0;
+
+    return res.render("quiz-result.ejs", {
+      topic: attempt.topic || "General Assessment",
+      score,
+      total,
+      percentage,
+      attemptNumber,
+      results: results.map((r, rIdx) => ({
+        questionNumber: r.questionNumber || rIdx + 1,
+        question: r.question || "",
+        yourAnswer: r.yourAnswer || r.userAnswer || "Unanswered",
+        correctAnswer: r.correctAnswer || "",
+        isCorrect: !!r.isCorrect,
+        explanation: r.explanation || "",
+      })),
+      user: req.user,
+      learner,
+      isAdminView: true,
+      returnUrl: `/admin/learners/${learner._id}`,
+    });
+  } catch (err) {
+    console.error("Admin attempt review fetch error:", err);
+    return res.status(500).render("error.ejs", {
+      title: "Error Loading Attempt Review",
+      message: "An error occurred while loading the quiz attempt details.",
+      statusCode: 500,
+    });
+  }
+});
+
+/**
+ * @route   GET /admin/learners/:userId/export-csv
+ * @desc    Export student assessment history to CSV with injection mitigation
+ * @access  Admin only
+ */
+router.get("/learners/:userId/export-csv", requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!mongoose.isValidObjectId(userId)) {
+      return res.status(404).send("Invalid learner identifier specified.");
+    }
+
+    const learner = await User.findOne({ _id: userId, isAdmin: { $ne: true } })
+      .select("-hash -salt")
+      .lean();
+
+    if (!learner) {
+      return res.status(404).send("Learner not found.");
+    }
+
+    const rawQuizzes = Array.isArray(learner.quizzes) ? learner.quizzes : [];
+    const quizzes = [...rawQuizzes].sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+
+    const safeUsername = (learner.username || "student").replace(/[^a-zA-Z0-9_-]/g, "_");
+    const filename = `learnsmart-learner-${safeUsername}-quizzes.csv`;
+
+    const headers = [
+      "Attempt #",
+      "Topic",
+      "Difficulty",
+      "Date",
+      "Correct Answers",
+      "Total Questions",
+      "Percentage (%)",
+    ];
+
+    const rows = quizzes.map((q, idx) => {
+      const results = Array.isArray(q.results) ? q.results : [];
+      const derivedCorrect = results.filter((r) => r.isCorrect).length;
+      const score = typeof q.score === "number" ? q.score : derivedCorrect;
+      const total =
+        typeof q.totalQuestions === "number" && q.totalQuestions > 0
+          ? q.totalQuestions
+          : results.length > 0
+          ? results.length
+          : 5;
+      const percentage =
+        typeof q.percentage === "number"
+          ? q.percentage
+          : total > 0
+          ? Math.round((score / total) * 100)
+          : 0;
+
+      const dateStr = q.date ? new Date(q.date).toISOString().replace("T", " ").slice(0, 19) : "N/A";
+
+      return [
+        idx + 1,
+        sanitizeCsvCell(q.topic || "General"),
+        sanitizeCsvCell(q.difficulty || "general"),
+        sanitizeCsvCell(dateStr),
+        score,
+        total,
+        `${percentage}%`,
+      ].join(",");
+    });
+
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    return res.status(200).send(csvContent);
+  } catch (err) {
+    console.error("Admin learner CSV export error:", err);
+    return res.status(500).send("Error exporting learner assessment history.");
   }
 });
 

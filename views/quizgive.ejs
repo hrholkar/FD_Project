@@ -176,10 +176,8 @@
                 </div>
             <% }) %>
 
-            <!-- Hidden Inputs Preserved -->
-            <input type="hidden" name="answers" value='<%= JSON.stringify(quiz.map(q => q.answer)) %>' />
-            <input type="hidden" name="questions" value='<%= JSON.stringify(quiz.map(q => q.question)) %>' />
-            <input type="hidden" name="topic" value='<%= topic %>' />
+            <!-- Secure Server-Linked Quiz Attempt Identifier -->
+            <input type="hidden" name="attemptId" value="<%= attemptId %>" />
 
             <!-- Submit Button Card -->
             <div style="text-align: center; margin-top: 2rem;">
