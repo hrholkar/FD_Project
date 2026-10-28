@@ -1,166 +1,256 @@
-<!-- Shared LearnSmart Navigation Bar (Role-Aware) -->
-<% const activePage = typeof currentPage !== 'undefined' ? currentPage : ''; %>
-<nav class="ls-navbar">
-  <div class="ls-nav-container">
+<!-- Shared LearnSmart Navigation Architecture (Strict Reference Match) -->
+<% 
+  const activePage = typeof currentPage !== 'undefined' ? currentPage : ''; 
+  const user = typeof currentUser !== 'undefined' ? currentUser : null;
+  const isAuthApp = (user && activePage !== 'home' && activePage !== 'login' && activePage !== 'signup');
+%>
 
-    <% if (typeof currentUser !== 'undefined' && currentUser && currentUser.isAdmin) { %>
-      <!-- ==========================================
-           ADMINISTRATOR NAVIGATION
-           ========================================== -->
-      <a href="/admin/dashboard" class="ls-brand">
-        <div class="ls-brand-icon"><i class="fas fa-user-shield"></i></div>
-        <span>LearnSmart</span>
-        <span style="font-size: 0.72rem; background: var(--primary, #4361ee); color: #fff; padding: 2px 8px; border-radius: 9999px; margin-left: 6px; font-weight: 700; letter-spacing: 0.5px;">ADMIN</span>
+<% if (isAuthApp) { %>
+  <!-- ==========================================
+       AUTHENTICATED APPLICATION SHELL:
+       BLACK SIDEBAR + TOP BROWSER FRAME
+       ========================================== -->
+  <div class="ls-app-layout" id="lsAppLayout">
+    <!-- Black Navigation Sidebar -->
+    <aside class="ls-sidebar" id="lsSidebar">
+      <!-- Brand Header -->
+      <a href="<%= user.isAdmin ? '/admin/dashboard' : '/dashboard' %>" class="ls-sidebar-brand">
+        <div class="ls-sidebar-brand-mark">
+          <i class="fas <%= user.isAdmin ? 'fa-user-shield' : 'fa-brain' %>"></i>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <span class="ls-sidebar-brand-title">LearnSmart</span>
+          <% if (user.isAdmin) { %>
+            <span class="ls-sidebar-role-badge">ADMIN</span>
+          <% } %>
+        </div>
       </a>
 
-      <ul class="ls-nav-menu" id="lsNavMenu">
-        <li>
-          <a href="/admin/dashboard" class="ls-nav-link <%= (activePage === 'admin' || activePage === 'admin-dashboard') ? 'active' : '' %>">
-            <i class="fas fa-gauge-high"></i> Admin Dashboard
-          </a>
-        </li>
-        <li>
-          <a href="/admin/students" class="ls-nav-link <%= activePage === 'students' ? 'active' : '' %>">
-            <i class="fas fa-users-gear"></i> Students
-          </a>
-        </li>
-        <li>
-          <a href="/admin/analytics" class="ls-nav-link <%= activePage === 'analytics' ? 'active' : '' %>">
-            <i class="fas fa-chart-pie"></i> Analytics
-          </a>
-        </li>
-        <li>
-          <a href="/admin/scores" class="ls-nav-link <%= activePage === 'scores' ? 'active' : '' %>">
-            <i class="fas fa-table-list"></i> Quiz Performance
-          </a>
-        </li>
+      <!-- Navigation Menu -->
+      <ul class="ls-sidebar-nav">
+        <% if (user.isAdmin) { %>
+          <!-- Admin Navigation Links -->
+          <li>
+            <a href="/admin/dashboard" class="ls-sidebar-link <%= (activePage === 'admin' || activePage === 'admin-dashboard') ? 'active' : '' %>">
+              <i class="fas fa-table-cells-large"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/students" class="ls-sidebar-link <%= activePage === 'students' ? 'active' : '' %>">
+              <i class="fas fa-users-gear"></i>
+              <span>Students</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/analytics" class="ls-sidebar-link <%= activePage === 'analytics' ? 'active' : '' %>">
+              <i class="fas fa-chart-pie"></i>
+              <span>Analytics</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/scores" class="ls-sidebar-link <%= activePage === 'scores' ? 'active' : '' %>">
+              <i class="fas fa-table-list"></i>
+              <span>Quiz Performance</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/dashboard#resources" class="ls-sidebar-link">
+              <i class="fas fa-folder-open"></i>
+              <span>Manage Resources</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/dashboard#settings" class="ls-sidebar-link">
+              <i class="fas fa-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+
+        <% } else { %>
+          <!-- Student Navigation Links (Matching Reference Image 1) -->
+          <li>
+            <a href="/dashboard" class="ls-sidebar-link <%= activePage === 'dashboard' ? 'active' : '' %>">
+              <i class="fas fa-table-cells-large"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/quiz" class="ls-sidebar-link <%= activePage === 'quiz' ? 'active' : '' %>">
+              <i class="fas fa-wand-magic-sparkles"></i>
+              <span>AI Quiz</span>
+            </a>
+          </li>
+          <li>
+            <a href="/interview" class="ls-sidebar-link <%= activePage === 'interview' ? 'active' : '' %>">
+              <i class="fas fa-user-tie"></i>
+              <span>Interview Prep</span>
+            </a>
+          </li>
+          <li>
+            <a href="/notes" class="ls-sidebar-link <%= activePage === 'notes' ? 'active' : '' %>">
+              <i class="fas fa-book-open"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li>
+            <a href="/todos" class="ls-sidebar-link <%= activePage === 'todo' ? 'active' : '' %>">
+              <i class="fas fa-list-check"></i>
+              <span>To Do</span>
+            </a>
+          </li>
+          <li>
+            <a href="/progress" class="ls-sidebar-link <%= activePage === 'progress' ? 'active' : '' %>">
+              <i class="fas fa-chart-line"></i>
+              <span>Progress</span>
+            </a>
+          </li>
+          <li>
+            <a href="/dashboard#resources" class="ls-sidebar-link">
+              <i class="fas fa-folder-open"></i>
+              <span>Resources</span>
+            </a>
+          </li>
+        <% } %>
       </ul>
 
-      <div class="ls-nav-actions">
-        <a href="/admin/students" class="btn btn-primary btn-sm">
-          <i class="fas fa-user-plus"></i> <span>Manage Students</span>
-        </a>
-        <a href="/logout" class="btn btn-outline btn-sm">
-          <i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span>
-        </a>
-        <button class="ls-mobile-toggle" id="lsMobileToggle" aria-label="Toggle navigation">
-          <i class="fas fa-bars"></i>
-        </button>
+      <!-- Sidebar Sticker Card (Matching Exact Reference) -->
+      <div class="ls-sidebar-sticker">
+        <% if (user.isAdmin) { %>
+          <div class="ls-sidebar-sticker-text">EMPOWER STUDENTS<br>BUILD FUTURES</div>
+          <div class="ls-sidebar-sticker-sub">ADMINISTRATION HUB</div>
+          <i class="fas fa-arrow-trend-up ls-sidebar-sticker-icon"></i>
+        <% } else if (activePage === 'notes' || activePage === 'todo') { %>
+          <div class="ls-sidebar-sticker-text">GOOD NOTES<br>BRIGHTER IDEAS</div>
+          <div class="ls-sidebar-sticker-sub">STUDY WORKSPACE</div>
+          <i class="fas fa-star ls-sidebar-sticker-icon" style="color: var(--ls-yellow);"></i>
+        <% } else { %>
+          <div class="ls-sidebar-sticker-text">KEEP LEARNING<br>KEEP GROWING</div>
+          <div class="ls-sidebar-sticker-sub">LEARNSMART PLATFORM</div>
+          <i class="fas fa-bolt ls-sidebar-sticker-icon"></i>
+        <% } %>
       </div>
+    </aside>
 
-    <% } else if (typeof currentUser !== 'undefined' && currentUser) { %>
-      <!-- ==========================================
-           AUTHENTICATED STUDENT NAVIGATION
-           ========================================== -->
-      <a href="/dashboard" class="ls-brand">
-        <div class="ls-brand-icon"><i class="fas fa-brain"></i></div>
+    <!-- Application Main Area (Browser-Frame Container) -->
+    <div class="ls-main-area">
+      <!-- Browser-Style Top Header Bar -->
+      <header class="ls-browser-bar">
+        <div class="ls-browser-left">
+          <!-- Mobile Hamburger Toggle -->
+          <button class="ls-sidebar-mobile-toggle" id="lsSidebarToggle" aria-label="Toggle navigation menu">
+            <i class="fas fa-bars"></i>
+          </button>
+
+          <!-- macOS Window Dots -->
+          <div class="ls-browser-dots">
+            <div class="ls-browser-dot red" title="Close"></div>
+            <div class="ls-browser-dot yellow" title="Minimize"></div>
+            <div class="ls-browser-dot green" title="Expand"></div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="ls-search-bar">
+            <i class="fas fa-magnifying-glass"></i>
+            <input 
+              type="text" 
+              placeholder="<%= user.isAdmin ? 'Search students, departments, records...' : 'Search for subjects, quizzes, notes...' %>" 
+              id="lsGlobalSearch"
+            />
+          </div>
+        </div>
+
+        <div class="ls-browser-right">
+          <!-- Notification Bell -->
+          <button class="ls-icon-btn" title="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="badge-dot"></span>
+          </button>
+
+          <!-- User Profile Chip -->
+          <div class="ls-user-profile-badge">
+            <div class="ls-user-avatar">
+              <%= user.username ? user.username.charAt(0).toUpperCase() : 'U' %>
+            </div>
+            <div class="ls-user-info-text">
+              <span class="ls-user-name"><%= user.username %></span>
+              <span class="ls-user-role">
+                <%= user.isAdmin ? 'Administrator' : (user.educationLevel || '3rd Year • CSE') %>
+              </span>
+            </div>
+          </div>
+
+          <!-- Logout Button -->
+          <a href="/logout" class="btn btn-outline btn-sm" title="Sign out of account">
+            <i class="fas fa-arrow-right-from-bracket"></i>
+            <span style="display: inline-block;">Logout</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Overlay for mobile drawer -->
+      <div id="lsSidebarOverlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 95;"></div>
+
+<% } else { %>
+  <!-- ==========================================
+       PUBLIC SITE TOP NAVIGATION (Matching Reference Image 2)
+       ========================================== -->
+  <nav class="ls-public-navbar">
+    <div class="ls-public-nav-container">
+      <a href="/" class="ls-public-logo">
+        <div class="ls-sidebar-brand-mark" style="width: 38px; height: 38px; font-size: 1.25rem;">
+          <i class="fas fa-brain"></i>
+        </div>
         <span>LearnSmart</span>
       </a>
 
-      <ul class="ls-nav-menu" id="lsNavMenu">
-        <li>
-          <a href="/dashboard" class="ls-nav-link <%= activePage === 'dashboard' ? 'active' : '' %>">
+      <ul class="ls-public-nav-links" id="lsPublicNavLinks">
+        <li><a href="/" class="<%= activePage === 'home' ? 'active' : '' %>">Home</a></li>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/#pricing">Pricing</a></li>
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="ls-icon-btn" id="themeToggleBtn" title="Toggle theme mode" style="border-radius: var(--radius-full); width: 44px; height: 32px;">
+          <i class="fas fa-sun" style="font-size: 0.85rem; color: #E5A800;"></i>
+        </button>
+
+        <% if (user) { %>
+          <a href="<%= user.isAdmin ? '/admin/dashboard' : '/dashboard' %>" class="btn btn-primary btn-sm">
             <i class="fas fa-gauge-high"></i> Dashboard
           </a>
-        </li>
-        <li>
-          <a href="/progress" class="ls-nav-link <%= activePage === 'progress' ? 'active' : '' %>">
-            <i class="fas fa-chart-line"></i> Progress
-          </a>
-        </li>
-        <li>
-          <a href="/quiz" class="ls-nav-link <%= activePage === 'quiz' ? 'active' : '' %>">
-            <i class="fas fa-bolt"></i> Quiz
-          </a>
-        </li>
-        <li>
-          <a href="/interview" class="ls-nav-link <%= activePage === 'interview' ? 'active' : '' %>">
-            <i class="fas fa-user-tie"></i> Interview Preparation
-          </a>
-        </li>
-        <li>
-          <a href="/notes" class="ls-nav-link <%= activePage === 'notes' ? 'active' : '' %>">
-            <i class="fas fa-book-open"></i> Notes
-          </a>
-        </li>
-        <li>
-          <a href="/todo" class="ls-nav-link <%= activePage === 'todo' ? 'active' : '' %>">
-            <i class="fas fa-list-check"></i> To-Do
-          </a>
-        </li>
-      </ul>
-
-      <div class="ls-nav-actions">
-        <a href="/quiz" class="btn btn-primary btn-sm">
-          <i class="fas fa-plus"></i> <span>New Quiz</span>
-        </a>
-        <a href="/logout" class="btn btn-outline btn-sm">
-          <i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span>
-        </a>
-        <button class="ls-mobile-toggle" id="lsMobileToggle" aria-label="Toggle navigation">
-          <i class="fas fa-bars"></i>
-        </button>
+          <a href="/logout" class="btn btn-outline btn-sm">Logout</a>
+        <% } else { %>
+          <a href="/login" class="btn btn-outline btn-sm">Sign in</a>
+          <a href="/signup" class="btn btn-blue btn-sm">Get Started</a>
+        <% } %>
       </div>
-
-    <% } else { %>
-      <!-- ==========================================
-           PUBLIC / GUEST NAVIGATION
-           ========================================== -->
-      <a href="/" class="ls-brand">
-        <div class="ls-brand-icon"><i class="fas fa-brain"></i></div>
-        <span>LearnSmart</span>
-      </a>
-
-      <ul class="ls-nav-menu" id="lsNavMenu">
-        <li>
-          <a href="/" class="ls-nav-link <%= activePage === 'home' ? 'active' : '' %>">
-            <i class="fas fa-house"></i> Home
-          </a>
-        </li>
-        <li>
-          <a href="/login" class="ls-nav-link <%= activePage === 'login' ? 'active' : '' %>">
-            <i class="fas fa-right-to-bracket"></i> Student Login
-          </a>
-        </li>
-        <li>
-          <a href="/signup" class="ls-nav-link <%= activePage === 'signup' ? 'active' : '' %>">
-            <i class="fas fa-user-plus"></i> Sign Up
-          </a>
-        </li>
-      </ul>
-
-      <div class="ls-nav-actions">
-        <a href="/login" class="btn btn-outline btn-sm">Login</a>
-        <a href="/signup" class="btn btn-primary btn-sm">Sign Up</a>
-        <button class="ls-mobile-toggle" id="lsMobileToggle" aria-label="Toggle navigation">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
-    <% } %>
-
-  </div>
-</nav>
+    </div>
+  </nav>
+<% } %>
 
 <script>
   (function() {
-    const toggle = document.getElementById('lsMobileToggle');
-    const menu = document.getElementById('lsNavMenu');
-    if (toggle && menu) {
-      toggle.addEventListener('click', function(e) {
+    // Mobile Sidebar Drawer Toggle Logic
+    const toggleBtn = document.getElementById('lsSidebarToggle');
+    const sidebar = document.getElementById('lsSidebar');
+    const overlay = document.getElementById('lsSidebarOverlay');
+
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        menu.classList.toggle('show');
-        const icon = toggle.querySelector('i');
-        if (icon) {
-          icon.className = menu.classList.contains('show') ? 'fas fa-xmark' : 'fas fa-bars';
-        }
+        const isOpen = sidebar.classList.toggle('open');
+        if (overlay) overlay.style.display = isOpen ? 'block' : 'none';
       });
-      document.addEventListener('click', function(e) {
-        if (!menu.contains(e.target) && !toggle.contains(e.target)) {
-          menu.classList.remove('show');
-          const icon = toggle.querySelector('i');
-          if (icon) icon.className = 'fas fa-bars';
-        }
-      });
+
+      if (overlay) {
+        overlay.addEventListener('click', function() {
+          sidebar.classList.remove('open');
+          overlay.style.display = 'none';
+        });
+      }
     }
   })();
 </script>

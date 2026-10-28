@@ -1,726 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <%- include('includes/head') %>
   <title>Personalized Learning Roadmap: <%= topic %> | LearnSmart</title>
-
-  <!-- Google Fonts & Font Awesome -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/learnsmart-theme.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
-    :root {
-      --primary: #4361ee;
-      --primary-light: #e8edff;
-      --primary-dark: #3144c9;
-      --secondary: #7209b7;
-      --success: #10b981;
-      --success-light: #d1fae5;
-      --warning: #f59e0b;
-      --warning-light: #fef3c7;
-      --danger: #ef4444;
-      --danger-light: #fee2e2;
-      --dark: #0f172a;
-      --slate-800: #1e293b;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --bg-page: #f8fafc;
-      --card-bg: #ffffff;
-      --border-color: #e2e8f0;
-      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.07);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-      --shadow-lg: 0 12px 25px -4px rgb(0 0 0 / 0.09), 0 4px 10px -2px rgb(0 0 0 / 0.04);
-      --shadow-xl: 0 20px 35px -5px rgb(67 97 238 / 0.12);
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --radius-full: 9999px;
-      --font-body: 'Inter', -apple-system, sans-serif;
-      --font-heading: 'Outfit', sans-serif;
-      --font-code: 'JetBrains Mono', monospace;
-      --gradient-brand: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-      --gradient-surface: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+    .resource-content-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem 1.5rem;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
+    .study-markdown-content {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--ls-black);
+    }
+
+    .study-markdown-content h1, 
+    .study-markdown-content h2, 
+    .study-markdown-content h3 {
+      font-family: var(--font-heading);
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--ls-black);
+    }
+
+    .study-markdown-content p {
+      margin-bottom: 1.25rem;
+      color: #333333;
+    }
+
+    .study-markdown-content ul, 
+    .study-markdown-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .study-markdown-content code {
+      font-family: var(--font-mono);
+      background-color: #F0F0EE;
+      border: 1px solid #D5D5D0;
+      padding: 2px 6px;
+      border-radius: var(--radius-xs);
+      font-size: 0.9em;
+      color: var(--ls-purple);
+    }
+
+    .study-markdown-content pre {
+      background-color: #111318;
+      color: #FFFFFF;
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--ls-black);
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+    }
+
+    .study-markdown-content pre code {
+      background: transparent;
+      border: none;
+      color: #79FFE1;
       padding: 0;
     }
 
-    body {
-      font-family: var(--font-body);
-      background-color: var(--bg-page);
-      color: var(--text-main);
-      line-height: 1.65;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Navbar */
-    .navbar {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 0.9rem 1.5rem;
-    }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-heading);
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--primary);
-      text-decoration: none;
-    }
-    .logo-icon {
-      width: 38px;
-      height: 38px;
-      background: var(--gradient-brand);
-      color: white;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-    }
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-weight: 500;
-      font-size: 0.92rem;
-      padding: 6px 14px;
-      border-radius: var(--radius-sm);
-      transition: all 0.2s ease;
-    }
-    .nav-links a:hover {
-      color: var(--primary);
-      background: var(--primary-light);
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      font-size: 0.92rem;
-      font-weight: 600;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      transition: all 0.25s ease;
-      cursor: pointer;
-      border: 1px solid transparent;
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: white !important;
-      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
-    }
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-    .btn-outline {
-      border-color: var(--border-color);
-      color: var(--text-main) !important;
-      background: white;
-    }
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary) !important;
-      background: var(--primary-light);
-    }
-
-    /* Main Container */
-    .main-wrap {
-      max-width: 1140px;
-      margin: 2.5rem auto 4rem auto;
-      padding: 0 1.5rem;
-      width: 100%;
-    }
-
-    /* Hero Header */
-    .hero-banner {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: 3rem 2.5rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-xl);
-      margin-bottom: 2rem;
-    }
-    .hero-banner::before {
-      content: '';
-      position: absolute;
-      top: -60px;
-      right: -60px;
-      width: 280px;
-      height: 280px;
-      background: radial-gradient(circle, rgba(114, 9, 183, 0.35) 0%, rgba(67, 97, 238, 0) 70%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .hero-banner::after {
-      content: '';
-      position: absolute;
-      bottom: -40px;
-      left: 30%;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(67, 97, 238, 0.3) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .hero-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-      position: relative;
-      z-index: 2;
-    }
-    .topic-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(8px);
-      padding: 6px 16px;
-      border-radius: var(--radius-full);
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #93c5fd;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border-radius: var(--radius-full);
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-    .status-needs-work {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-    }
-    .status-progressing {
-      background: rgba(245, 158, 11, 0.2);
-      color: #fde68a;
-      border: 1px solid rgba(245, 158, 11, 0.4);
-    }
-    .status-mastered {
-      background: rgba(16, 185, 129, 0.2);
-      color: #a7f3d0;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    .hero-title {
-      font-family: var(--font-heading);
-      font-size: 2.4rem;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 0.75rem;
-      position: relative;
-      z-index: 2;
-    }
-    .hero-subtitle {
-      font-size: 1.1rem;
-      color: #cbd5e1;
-      max-width: 720px;
-      position: relative;
-      z-index: 2;
-    }
-
-    /* Executive Score & KPI Grid */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    @media (max-width: 880px) {
-      .kpi-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .kpi-gauge-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 2rem 1.5rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-    }
-    .gauge-circle {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      margin-bottom: 1.25rem;
-    }
-    .gauge-circle svg {
-      transform: rotate(-90deg);
-      width: 100%;
-      height: 100%;
-    }
-    .gauge-circle circle {
-      fill: none;
-      stroke-width: 10;
-      stroke-linecap: round;
-    }
-    .gauge-bg {
-      stroke: #f1f5f9;
-    }
-    .gauge-fill {
-      stroke: var(--primary);
-      transition: stroke-dashoffset 1.5s ease;
-    }
-    .gauge-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: var(--font-heading);
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-    .gauge-label {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 4px;
-    }
-    .gauge-sub {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .metrics-col {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-    @media (max-width: 600px) {
-      .metrics-col {
-        grid-template-columns: 1fr;
-      }
-    }
-    .metric-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 1.5rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.25s ease;
-    }
-    .metric-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: #cbd5e1;
-    }
-    .metric-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-    }
-    .icon-blue { background: #eff6ff; color: #3b82f6; }
-    .icon-green { background: #ecfdf5; color: #10b981; }
-    .icon-rose { background: #fff1f2; color: #f43f5e; }
-    .metric-num {
-      font-family: var(--font-heading);
-      font-size: 1.85rem;
-      font-weight: 800;
-      color: var(--text-main);
-      line-height: 1.1;
-      margin-bottom: 4px;
-    }
-    .metric-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    /* Section Headers */
-    .section-title-wrap {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid #eef2f6;
-    }
-    .section-heading {
-      font-family: var(--font-heading);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .section-heading i {
-      color: var(--primary);
-      font-size: 1.2rem;
-    }
-    .section-tag {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* 4-Step Learning Roadmap Timeline */
-    .roadmap-track {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 2rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 2.5rem;
-    }
-    .timeline-steps {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      position: relative;
-    }
-    @media (max-width: 900px) {
-      .timeline-steps {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-    }
-    .timeline-step {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    .step-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--primary-light);
-      color: var(--primary);
-      font-weight: 800;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.75rem;
-    }
-    .timeline-step.active .step-badge {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 0 0 5px rgba(67, 97, 238, 0.2);
-    }
-    .step-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }
-    .step-desc {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    /* Video Resources Cards Grid */
     .resources-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.25rem;
-      margin-bottom: 2.5rem;
     }
-    .resource-card {
-      background: var(--card-bg);
+
+    .resource-box-item {
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
       border-radius: var(--radius-md);
-      padding: 1.5rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      box-shadow: none;
+      padding: 1.35rem 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-    .resource-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-      border-color: #cbd5e1;
-    }
-    .resource-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 1rem;
-    }
-    .card-type-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-    .icon-yt {
-      background: #fee2e2;
-      color: #ef4444;
-    }
-    .icon-doc {
-      background: #e0f2fe;
-      color: #0284c7;
-    }
-    .card-meta-wrap {
-      flex: 1;
-    }
-    .card-badge {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-bottom: 4px;
-    }
-    .badge-video { background: #fee2e2; color: #b91c1c; }
-    .badge-article { background: #e0f2fe; color: #0369a1; }
-    .card-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-main);
-      line-height: 1.4;
-    }
-    .card-action-btn {
-      margin-top: 1rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      background: #f8fafc;
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-    }
-    .resource-card:hover .card-action-btn {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
+      transition: var(--transition-fast);
     }
 
-    /* Structured AI Insights Markdown Container */
-    .study-markdown-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 2.25rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 2.5rem;
-      line-height: 1.8;
-    }
-    .study-markdown-content h3 {
-      font-family: var(--font-heading);
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin: 1.5rem 0 0.75rem 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .study-markdown-content h3:first-child {
-      margin-top: 0;
-    }
-    .study-markdown-content p {
-      margin-bottom: 1rem;
-      color: #334155;
-    }
-    .study-markdown-content ul {
-      margin-bottom: 1.25rem;
-      padding-left: 1.5rem;
-    }
-    .study-markdown-content li {
-      margin-bottom: 0.5rem;
-      color: #334155;
-    }
-    .study-markdown-content strong {
-      color: #0f172a;
-    }
-
-    /* Question Performance Accordion */
-    .quiz-review-wrap {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 2rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 2.5rem;
-    }
-    .review-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .review-item {
-      padding: 1.25rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      background: #fafafa;
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    .review-item.is-correct {
-      background: #f0fdf4;
-      border-color: #bbf7d0;
-    }
-    .review-item.is-wrong {
-      background: #fff1f2;
-      border-color: #fecdd3;
-    }
-    .review-indicator {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 0.85rem;
-      margin-top: 2px;
-    }
-    .is-correct .review-indicator {
-      background: #10b981;
-      color: white;
-    }
-    .is-wrong .review-indicator {
-      background: #f43f5e;
-      color: white;
-    }
-    .review-content {
-      flex: 1;
-    }
-    .review-q-text {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 0.98rem;
-      margin-bottom: 6px;
-    }
-    .review-answers {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      font-size: 0.88rem;
-    }
-    .ans-selected {
-      color: var(--text-muted);
-    }
-    .ans-correct {
-      color: #15803d;
-      font-weight: 600;
-    }
-
-    /* Action Dock */
-    .action-dock {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 1.75rem 2rem;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-md);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .dock-left h4 {
-      font-family: var(--font-heading);
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .dock-left p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-    .dock-buttons {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    /* Print Styles */
-    @media print {
-      .navbar, .dock-buttons, .hero-top .btn {
-        display: none !important;
-      }
-      .main-wrap {
-        margin: 0;
-        padding: 0;
-      }
-      .hero-banner {
-        box-shadow: none;
-        border: 1px solid #ccc;
-        color: #000;
-        background: #fff;
-      }
-      .hero-subtitle {
-        color: #444;
-      }
+    .resource-box-item:hover {
+      border-color: var(--ls-purple);
     }
   </style>
 </head>
@@ -728,249 +92,128 @@
 
   <%- include('includes/navbar', { currentPage: 'quiz' }) %>
 
-  <main class="main-wrap">
+  <main class="resource-content-wrap">
+    <!-- Signature Yellow-Grid Hero Banner -->
+    <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+      <div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+          <span class="badge badge-purple" style="font-size: 0.82rem;">
+            <i class="fas fa-bolt"></i> <%= topic %> Specialization
+          </span>
+          <% if (percentage >= 80) { %>
+            <span class="badge badge-green"><i class="fas fa-check-double"></i> Advanced Track</span>
+          <% } else if (percentage >= 50) { %>
+            <span class="badge badge-yellow"><i class="fas fa-chart-line"></i> Intermediate Core Track</span>
+          <% } else { %>
+            <span class="badge badge-coral"><i class="fas fa-bullseye"></i> Foundations Practice</span>
+          <% } %>
+        </div>
 
-    <!-- Hero Header -->
-    <header class="hero-banner">
-      <div class="hero-top">
-        <span class="topic-pill">
-          <i class="fas fa-bolt"></i> <%= topic %> Specialization
-        </span>
-        <% if (percentage >= 80) { %>
-          <span class="status-badge status-mastered"><i class="fas fa-check-double"></i> Advanced Mastery Track</span>
-        <% } else if (percentage >= 50) { %>
-          <span class="status-badge status-progressing"><i class="fas fa-chart-line"></i> Solid Core — Intermediate Track</span>
-        <% } else { %>
-          <span class="status-badge status-needs-work"><i class="fas fa-bullseye"></i> Foundations Practice Recommended</span>
-        <% } %>
+        <h1 style="font-size: 2.25rem; font-weight: 900; color: var(--ls-black); margin-bottom: 6px;">
+          Personalized Learning Roadmap
+        </h1>
+        <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B;">
+          Diagnostic recommendations and curated resources generated dynamically for <strong><%= topic %></strong>.
+        </p>
       </div>
 
-      <h1 class="hero-title">Personalized Learning Roadmap & Study Plan</h1>
-      <p class="hero-subtitle">
-        Intelligent diagnostic recommendations and curated multi-modal resources generated dynamically for <strong><%= topic %></strong>.
-      </p>
+      <div style="text-align: right; flex-shrink: 0;">
+        <span class="badge badge-outline" style="font-size: 1.35rem; padding: 10px 18px; border-width: 2px;">
+          <%= percentage %>% Mastery
+        </span>
+      </div>
     </header>
 
-    <!-- Executive KPI Grid & Gauge -->
-    <section class="kpi-grid">
-      <!-- Donut Dial Card -->
-      <div class="kpi-gauge-card">
-        <div class="gauge-circle">
-          <svg viewBox="0 0 100 100">
-            <circle class="gauge-bg" cx="50" cy="50" r="42"></circle>
-            <% 
-              const radius = 42;
-              const circumference = 2 * Math.PI * radius;
-              const offset = circumference - (percentage / 100) * circumference;
-            %>
-            <circle class="gauge-fill" cx="50" cy="50" r="42" 
-                    stroke-dasharray="<%= circumference %>" 
-                    stroke-dashoffset="<%= offset %>"></circle>
-          </svg>
-          <div class="gauge-text"><%= percentage %>%</div>
-        </div>
-        <div class="gauge-label">Assessment Accuracy</div>
-        <div class="gauge-sub">Based on <%= total %> diagnostic questions</div>
-      </div>
-
-      <!-- Metric Cards -->
-      <div class="metrics-col">
-        <div class="metric-card">
-          <div class="metric-icon icon-blue"><i class="fas fa-list-check"></i></div>
-          <div>
-            <div class="metric-num"><%= total %></div>
-            <div class="metric-title">Questions Tested</div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon icon-green"><i class="fas fa-check-circle"></i></div>
-          <div>
-            <div class="metric-num"><%= score %></div>
-            <div class="metric-title">Correct Answers</div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon icon-rose"><i class="fas fa-lightbulb"></i></div>
-          <div>
-            <div class="metric-num"><%= total - score %></div>
-            <div class="metric-title">Concepts To Solidify</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4-Step Interactive Learning Roadmap Timeline -->
-    <section class="roadmap-track">
-      <div class="section-title-wrap">
-        <h2 class="section-heading"><i class="fas fa-route"></i> Your Strategic Learning Milestones</h2>
-        <span class="section-tag">Target completion: 4-6 days</span>
-      </div>
-      <div class="timeline-steps">
-        <div class="timeline-step <%= percentage < 50 ? 'active' : '' %>">
-          <div class="step-badge">1</div>
-          <div class="step-title">Diagnostic Analysis</div>
-          <div class="step-desc">Inspect missed questions, identify syntax or memory misconceptions in <%= topic %>.</div>
-        </div>
-
-        <div class="timeline-step <%= percentage >= 50 && percentage < 80 ? 'active' : '' %>">
-          <div class="step-badge">2</div>
-          <div class="step-title">Video Deep-Dives</div>
-          <div class="step-desc">Watch targeted masterclasses covering core paradigms, memory models, and standard libraries.</div>
-        </div>
-
-        <div class="timeline-step <%= percentage >= 80 ? 'active' : '' %>">
-          <div class="step-badge">3</div>
-          <div class="step-title">Hands-on Code Labs</div>
-          <div class="step-desc">Solve 3 practical code challenges and implement working clean implementations.</div>
-        </div>
-
-        <div class="timeline-step">
-          <div class="step-badge">4</div>
-          <div class="step-title">Mastery Retake</div>
-          <div class="step-desc">Retake the assessment to validate your understanding and log improvement on your Dashboard.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI Personalized Insights & Study Guide -->
-    <section class="study-markdown-card">
-      <div class="section-title-wrap">
-        <h2 class="section-heading"><i class="fas fa-compass"></i> Personalized Curriculum & Remediation Guide</h2>
-        <span class="section-tag">AI Calibrated</span>
+    <!-- Personalized Curriculum Guide -->
+    <div class="ls-card" style="margin-bottom: 2.5rem;">
+      <div class="ls-card-header">
+        <h2 class="ls-card-title">
+          <i class="fas fa-compass" style="color: var(--ls-purple);"></i> Curriculum &amp; Remediation Guide
+        </h2>
+        <span class="badge badge-purple"><i class="fas fa-sparkles"></i> AI Calibrated</span>
       </div>
       <div class="study-markdown-content" id="markdownContainer"></div>
-    </section>
-
-    <!-- Curated Video Masterclasses -->
-    <% if (videos && videos.length > 0) { %>
-      <section style="margin-bottom: 2.5rem;">
-        <div class="section-title-wrap">
-          <h2 class="section-heading"><i class="fab fa-youtube" style="color: #ef4444;"></i> Recommended Video Masterclasses</h2>
-          <span class="section-tag">Interactive video lessons</span>
-        </div>
-        <div class="resources-grid">
-          <% videos.forEach(v => { %>
-            <div class="resource-card">
-              <div>
-                <div class="resource-top">
-                  <div class="card-type-icon icon-yt"><i class="fab fa-youtube"></i></div>
-                  <div class="card-meta-wrap">
-                    <span class="card-badge badge-video">Video Course</span>
-                    <h3 class="card-title"><%= v.title %></h3>
-                  </div>
-                </div>
-              </div>
-              <a href="<%= v.url %>" target="_blank" rel="noopener noreferrer" class="card-action-btn">
-                <span>Watch Video Tutorial</span>
-                <i class="fas fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-          <% }) %>
-        </div>
-      </section>
-    <% } %>
-
-    <!-- Curated Documentation & Reading Guides -->
-    <% if (articles && articles.length > 0) { %>
-      <section style="margin-bottom: 2.5rem;">
-        <div class="section-title-wrap">
-          <h2 class="section-heading"><i class="fas fa-book-bookmark" style="color: #0284c7;"></i> Official Documentation & References</h2>
-          <span class="section-tag">Standard documentation & tutorials</span>
-        </div>
-        <div class="resources-grid">
-          <% articles.forEach(a => { %>
-            <div class="resource-card">
-              <div>
-                <div class="resource-top">
-                  <div class="card-type-icon icon-doc"><i class="fas fa-file-lines"></i></div>
-                  <div class="card-meta-wrap">
-                    <span class="card-badge badge-article">Documentation</span>
-                    <h3 class="card-title"><%= a.title %></h3>
-                  </div>
-                </div>
-              </div>
-              <a href="<%= a.url %>" target="_blank" rel="noopener noreferrer" class="card-action-btn">
-                <span>Read Official Guide</span>
-                <i class="fas fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-          <% }) %>
-        </div>
-      </section>
-    <% } %>
-
-    <!-- Question Diagnostic Review (If results available) -->
-    <% if (quizResults && quizResults.length > 0) { %>
-      <section class="quiz-review-wrap">
-        <div class="section-title-wrap">
-          <h2 class="section-heading"><i class="fas fa-clipboard-check"></i> Diagnostic Assessment Breakdown</h2>
-          <span class="section-tag"><%= score %> of <%= total %> correct</span>
-        </div>
-        <div class="review-list">
-          <% quizResults.forEach(r => { %>
-            <div class="review-item <%= r.isCorrect ? 'is-correct' : 'is-wrong' %>">
-              <div class="review-indicator">
-                <i class="fas <%= r.isCorrect ? 'fa-check' : 'fa-xmark' %>"></i>
-              </div>
-              <div class="review-content">
-                <div class="review-q-text">Q<%= r.questionNumber %>: <%= r.question %></div>
-                <div class="review-answers">
-                  <div class="ans-selected">
-                    Your Answer: <strong><%= r.yourAnswer || 'No answer selected' %></strong>
-                  </div>
-                  <% if (!r.isCorrect) { %>
-                    <div class="ans-correct">
-                      Correct Key: <strong><%= r.correctAnswer %></strong>
-                    </div>
-                  <% } %>
-                </div>
-              </div>
-            </div>
-          <% }) %>
-        </div>
-      </section>
-    <% } %>
-
-    <!-- Action Dock -->
-    <div class="action-dock">
-      <div class="dock-left">
-        <h4>Ready to level up your mastery?</h4>
-        <p>Retake this assessment anytime or head back to your analytics dashboard.</p>
-      </div>
-      <div class="dock-buttons">
-        <a href="/quiz" class="btn btn-primary">
-          <i class="fas fa-rotate-right"></i> Take Another Quiz
-        </a>
-        <a href="/dashboard" class="btn btn-outline">
-          <i class="fas fa-gauge-high"></i> Dashboard
-        </a>
-        <button onclick="window.print()" class="btn btn-outline">
-          <i class="fas fa-print"></i> Print / Save PDF
-        </button>
-      </div>
     </div>
 
+    <!-- Recommended Video Masterclasses -->
+    <% if (typeof videos !== 'undefined' && videos && videos.length > 0) { %>
+      <div class="ls-card" style="margin-bottom: 2.5rem;">
+        <div class="ls-card-header">
+          <h2 class="ls-card-title">
+            <i class="fab fa-youtube" style="color: #EF4444;"></i> Video Masterclasses
+          </h2>
+          <span class="badge badge-outline"><%= videos.length %> Video Lessons</span>
+        </div>
+
+        <div class="resources-grid">
+          <% videos.forEach(v => { %>
+            <div class="resource-box-item">
+              <div>
+                <span class="badge badge-coral" style="margin-bottom: 8px; font-size: 0.72rem;">Video Lesson</span>
+                <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--ls-black); margin-bottom: 1rem;">
+                  <%= v.title %>
+                </h3>
+              </div>
+              <a href="<%= v.url %>" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="align-self: flex-start;">
+                <span>Watch Tutorial</span>
+                <i class="fas fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Official Documentation & Reading Guides -->
+    <% if (typeof articles !== 'undefined' && articles && articles.length > 0) { %>
+      <div class="ls-card" style="margin-bottom: 2.5rem;">
+        <div class="ls-card-header">
+          <h2 class="ls-card-title">
+            <i class="fas fa-book-bookmark" style="color: var(--ls-blue);"></i> Documentation &amp; Standard References
+          </h2>
+          <span class="badge badge-outline"><%= articles.length %> Reference Guides</span>
+        </div>
+
+        <div class="resources-grid">
+          <% articles.forEach(a => { %>
+            <div class="resource-box-item">
+              <div>
+                <span class="badge badge-blue" style="margin-bottom: 8px; font-size: 0.72rem;">Documentation</span>
+                <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--ls-black); margin-bottom: 1rem;">
+                  <%= a.title %>
+                </h3>
+              </div>
+              <a href="<%= a.url %>" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="align-self: flex-start;">
+                <span>Read Reference</span>
+                <i class="fas fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Actions / Back to Quiz -->
+    <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+      <a href="/dashboard" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Return to Dashboard
+      </a>
+      <a href="/quiz" class="btn btn-purple">
+        <i class="fas fa-bolt"></i> Practice Another Quiz
+      </a>
+    </div>
   </main>
 
   <script>
-    // Clean, robust markdown parsing for study guide
     document.addEventListener('DOMContentLoaded', () => {
-      const rawMarkdown = `<%- JSON.stringify(resource || "") %>`;
-      try {
-        const cleanText = JSON.parse(rawMarkdown);
-        if (cleanText && window.marked) {
-          document.getElementById('markdownContainer').innerHTML = marked.parse(cleanText);
-        } else {
-          document.getElementById('markdownContainer').innerText = cleanText;
-        }
-      } catch (e) {
-        console.warn("Markdown parse issue:", e);
-        document.getElementById('markdownContainer').innerText = `<%- resource %>`;
+      const rawMarkdown = <%- JSON.stringify(typeof resourceContent !== 'undefined' && resourceContent ? resourceContent : "") %>;
+      const target = document.getElementById('markdownContainer');
+      if (target && rawMarkdown) {
+        target.innerHTML = marked.parse(rawMarkdown);
       }
     });
   </script>
+
   <%- include('includes/footer') %>
 </body>
 </html>

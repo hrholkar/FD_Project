@@ -1,392 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <%- include('includes/head') %>
     <title>Quiz Results | LearnSmart</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/learnsmart-theme.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-light: #e8edff;
-            --primary-dark: #3550d4;
-            --secondary: #7209b7;
-            --success: #06d6a0;
-            --success-light: #ecfdf5;
-            --danger: #ef476f;
-            --danger-light: #fef2f2;
-            --dark: #111827;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --bg-light: #f9fafb;
-            --bg-white: #ffffff;
-            --border-color: #e5e7eb;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --border-radius: 12px;
-            --border-radius-lg: 24px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-family: 'Inter', sans-serif;
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-bg: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+        .results-wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem 1.5rem;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: var(--font-family);
-            background: var(--gradient-bg);
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        /* --- Navbar --- */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 1.5rem;
-            position: sticky; top: 0; z-index: 1000;
-        }
-        .nav-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.75rem; font-weight: 800; color: var(--primary); text-decoration: none; }
-        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-primary); font-weight: 500; transition: var(--transition); padding: 8px 12px; border-radius: 8px; }
-        .nav-links a:hover { color: var(--primary); background-color: var(--primary-light); }
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary); }
-        .btn { display: inline-block; padding: 0.7rem 1.5rem; border-radius: var(--border-radius); text-decoration: none; transition: var(--transition); font-weight: 600; box-shadow: var(--shadow-sm); border: 2px solid transparent; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: white; }
-
-        /* --- Results Page --- */
-        .results-container {
-            max-width: 850px;
-            margin: 40px auto;
-        }
-
-        .score-summary-card {
-            background: var(--bg-white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-lg);
-            padding: 2.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            border: 1px solid var(--border-color);
-        }
-        
-        .score-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-        
-        .chart-container {
-            position: relative;
-            width: 180px;
-            height: 180px;
-        }
-
-        #scoreChart {
-            position: absolute;
-            top: 0; left: 0;
-        }
-
-        .score-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .summary-text h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .summary-text p {
-            font-size: 1.1rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 2rem;
-        }
-
-        .stat-item {
-            background: var(--bg-light);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            text-align: center;
-        }
-        
-        .stat-item i {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-item .value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        
-        .stat-item .label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .result-item {
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            background-color: var(--bg-white);
-            box-shadow: var(--shadow-md);
-            border-left: 5px solid;
-            transition: var(--transition);
-        }
-
-        .result-item:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .result-item.correct { border-color: var(--success); }
-        .result-item.incorrect { border-color: var(--danger); }
-
-        .question {
-            font-weight: 600;
+        .result-card-item {
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-md);
+            box-shadow: none;
+            padding: 1.25rem 1.5rem;
             margin-bottom: 1rem;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-        }
-        
-        .answer {
-            margin-top: 0.75rem;
-            padding-left: 1rem;
-            border-left: 2px solid var(--border-color);
-            font-size: 1rem;
-        }
-        
-        .answer-correct { color: var(--success); font-weight: 500; }
-        .answer-incorrect { color: var(--danger); font-weight: 500; }
-        
-        .resource-cta {
-            background: var(--gradient-primary);
-            padding: 2.5rem;
-            border-radius: var(--border-radius-lg);
-            text-align: center;
-            margin-top: 2rem;
-            box-shadow: var(--shadow-lg);
+            transition: var(--transition-fast);
         }
 
-        .resource-cta h2 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        
-        .resource-cta p {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 2rem;
+        .result-card-item:hover {
+            border-color: var(--ls-purple);
         }
 
-        .btn-generate {
-            padding: 1rem 2.5rem;
-            font-size: 1.1rem;
-            background-color: white;
-            color: var(--primary);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: var(--shadow-md);
+        .result-card-item.correct {
+            border-left: 6px solid var(--ls-green);
         }
 
-        .btn-generate:hover {
-            background-color: var(--primary-light);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-generate:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(67, 97, 238, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .mobile-menu-btn { display: block; }
-            .nav-links {
-                position: absolute; top: 100%; left: 0; width: 100%; background: #fff;
-                flex-direction: column; gap: 0; padding: 1rem 0; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-                display: none;
-            }
-            .nav-links.active { display: flex; }
-            .nav-links a { padding: 1rem; width: 100%; text-align: center; }
-            .nav-links .btn { margin: 0.5rem auto; display: block; width: 80%; text-align: center; }
-            .results-container { padding: 0 1rem; }
-            .score-summary-card { padding: 1.5rem; }
-            .stats-grid { grid-template-columns: 1fr; }
+        .result-card-item.incorrect {
+            border-left: 6px solid var(--ls-coral);
         }
     </style>
 </head>
 <body>
+
     <%- include('includes/navbar', { currentPage: 'quiz' }) %>
 
-    <div class="container results-container">
-        <div class="score-summary-card">
-            <div class="score-display">
-                <div class="chart-container">
-                    <canvas id="scoreChart"></canvas>
-                    <div class="score-text"><%= Math.round((score / total) * 100) %>%</div>
+    <main class="results-wrap">
+        <!-- Signature Yellow-Grid Hero Banner -->
+        <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+            <div>
+                <div class="ls-sticker green" style="font-size: 0.75rem; margin-bottom: 8px;">ASSESSMENT EVALUATION</div>
+                <h1 style="font-size: 2.25rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+                    Quiz Complete: <%= topic %>
+                </h1>
+                <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B;">
+                    You scored <strong><%= score %></strong> out of <strong><%= total %></strong> questions on this assessment.
+                </p>
+            </div>
+
+            <!-- Visual Donut Chart Score Badge -->
+            <div style="position: relative; width: 130px; height: 130px; flex-shrink: 0;">
+                <canvas id="scoreChart"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-heading); font-size: 1.6rem; font-weight: 900; color: var(--ls-black);">
+                    <%= Math.round((score / total) * 100) %>%
                 </div>
-                <div class="summary-text">
-                    <h1>Quiz Complete!</h1>
-                    <p>You scored <strong><%= score %></strong> out of <strong><%= total %></strong> on the <%= topic %> quiz.</p>
+            </div>
+        </header>
+
+        <!-- 3 KPI Result Metrics Grid -->
+        <div class="ls-metric-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+            <div class="ls-metric-card">
+                <div class="ls-metric-icon green">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div>
+                    <div class="ls-metric-value"><%= score %></div>
+                    <div class="ls-metric-label">Correct Answers</div>
                 </div>
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                    <div class="value"><%= score %></div>
-                    <div class="label">Correct Answers</div>
+            <div class="ls-metric-card">
+                <div class="ls-metric-icon coral">
+                    <i class="fas fa-xmark"></i>
                 </div>
-                <div class="stat-item">
-                    <i class="fas fa-times-circle" style="color: var(--danger);"></i>
-                    <div class="value"><%= total - score %></div>
-                    <div class="label">Incorrect Answers</div>
+                <div>
+                    <div class="ls-metric-value"><%= total - score %></div>
+                    <div class="ls-metric-label">Incorrect Answers</div>
                 </div>
-                <div class="stat-item">
-                    <i class="fas fa-bullseye" style="color: var(--primary);"></i>
-                    <div class="value"><%= Math.round((score / total) * 100) %>%</div>
-                    <div class="label">Accuracy</div>
+            </div>
+
+            <div class="ls-metric-card">
+                <div class="ls-metric-icon purple">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div>
+                    <div class="ls-metric-value"><%= Math.round((score / total) * 100) %>%</div>
+                    <div class="ls-metric-label">Overall Accuracy</div>
                 </div>
             </div>
         </div>
-        
-        <% results.forEach(r => { %>
-            <div class="result-item <%= r.isCorrect ? 'correct' : 'incorrect' %>">
-                <div class="question">
-                    <i class="fas <%= r.isCorrect ? 'fa-check' : 'fa-times' %>"></i>
-                    Q<%= r.questionNumber %>: <%= r.question %>
-                </div>
-                <% if (r.isCorrect) { %>
-                    <div class="answer answer-correct">
-                        Your answer was correct: <strong><%= r.yourAnswer %></strong>
-                    </div>
-                <% } else { %>
-                    <div class="answer answer-incorrect">
-                        Your answer: <strong><%= r.yourAnswer %></strong>
-                    </div>
-                    <div class="answer">
-                        Correct answer: <strong><%= r.correctAnswer %></strong>
-                    </div>
-                <% } %>
+
+        <!-- Question By Question Diagnostics -->
+        <div class="ls-card" style="margin-bottom: 2rem;">
+            <div class="ls-card-header">
+                <h2 class="ls-card-title">
+                    <i class="fas fa-list-check" style="color: var(--ls-purple);"></i> Question Diagnostics
+                </h2>
+                <span class="badge badge-outline"><%= results.length %> Total Questions</span>
             </div>
-        <% }) %>
-        
-        <div class="resource-cta">
-            <h2>Ready for the Next Step?</h2>
-            <p>Let our AI analyze your results and generate personalized learning materials to help you master this topic.</p>
-            <form action="/generate-resource" method="POST" id="resourceForm">
+
+            <div style="display: flex; flex-direction: column;">
+                <% results.forEach(r => { %>
+                    <div class="result-card-item <%= r.isCorrect ? 'correct' : 'incorrect' %>">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+                            <div style="font-weight: 800; font-size: 1rem; color: var(--ls-black);">
+                                <span style="color: var(--ls-muted); margin-right: 4px;">Q<%= r.questionNumber %>:</span>
+                                <%= r.question %>
+                            </div>
+                            <span class="badge <%= r.isCorrect ? 'badge-green' : 'badge-coral' %>" style="flex-shrink: 0;">
+                                <i class="fas <%= r.isCorrect ? 'fa-check' : 'fa-xmark' %>"></i>
+                                <%= r.isCorrect ? 'Correct' : 'Incorrect' %>
+                            </span>
+                        </div>
+
+                        <div style="font-size: 0.9rem; margin-bottom: 4px;">
+                            <span style="font-weight: 700; color: var(--ls-black);">Your Answer:</span>
+                            <span style="color: <%= r.isCorrect ? 'var(--ls-green)' : 'var(--ls-coral)' %>; font-weight: 700;">
+                                <%= r.yourAnswer || 'Unanswered' %>
+                            </span>
+                        </div>
+
+                        <% if (!r.isCorrect) { %>
+                            <div style="font-size: 0.9rem; color: var(--ls-green); font-weight: 700;">
+                                <span>Correct Answer:</span> <%= r.correctAnswer %>
+                            </div>
+                        <% } %>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <!-- Next Steps / AI Resource Generation Card -->
+        <div class="ls-card" style="text-align: center; padding: 2.5rem 2rem; background: var(--ls-yellow-subtle);">
+            <div class="ls-sticker orange" style="margin-bottom: 12px;">CONTINUE LEARNING</div>
+            <h2 style="font-size: 1.85rem; font-weight: 900; color: var(--ls-black); margin-bottom: 0.5rem;">
+                Ready for Your Personalized Learning Roadmap?
+            </h2>
+            <p style="font-size: 1rem; color: #2B2B2B; font-weight: 500; max-width: 600px; margin: 0 auto 1.5rem auto;">
+                Let our AI analyze the concepts you struggled with and generate tailored revision guides, code examples, and study notes.
+            </p>
+
+            <form action="/generate-resource" method="POST" id="resourceForm" style="display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
                 <input type="hidden" name="topic" value="<%= topic %>">
                 <input type="hidden" name="quizResults" value='<%= JSON.stringify(results) %>'>
-                <button type="submit" class="btn-generate" id="generateBtn">
-                    <i class="fas fa-magic"></i>
-                    <span>Generate Learning Resources</span>
+                <button type="submit" class="btn btn-purple btn-lg" id="generateBtn">
+                    <i class="fas fa-compass"></i>
+                    <span>Generate Learning Roadmap</span>
                 </button>
+                <a href="/quiz" class="btn btn-outline btn-lg">
+                    <i class="fas fa-rotate-right"></i> Try Another Quiz
+                </a>
             </form>
         </div>
-    </div>
+    </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Mobile menu toggle ---
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const navLinks = document.getElementById('navLinks');
-            mobileMenuBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-            });
+            const scoreVal = <%= score %>;
+            const totalVal = <%= total %>;
+            const scorePct = Math.round((scoreVal / totalVal) * 100);
+            const remainingPct = 100 - scorePct;
 
-            // --- Score Donut Chart ---
-            const scoreValue = <%= score %>;
-            const totalValue = <%= total %>;
-            const scorePercentage = (scoreValue / totalValue) * 100;
-            const remainingPercentage = 100 - scorePercentage;
-            
-            const ctx = document.getElementById('scoreChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [scorePercentage, remainingPercentage],
-                        backgroundColor: ['#4361ee', '#e5e7eb'],
-                        borderWidth: 0,
-                        borderRadius: 20
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '80%',
-                    plugins: {
-                        tooltip: { enabled: false }
+            const ctx = document.getElementById('scoreChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [scorePct, remainingPct],
+                            backgroundColor: ['#5B20FF', '#EBEBEA'],
+                            borderWidth: 2,
+                            borderColor: '#111111'
+                        }]
                     },
-                    animation: {
-                        animateRotate: true,
-                        duration: 1500
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        plugins: {
+                            tooltip: { enabled: false }
+                        }
                     }
-                }
-            });
+                });
+            }
 
-            // --- Form submission loading state ---
             const resourceForm = document.getElementById('resourceForm');
             const generateBtn = document.getElementById('generateBtn');
-            
-            resourceForm.addEventListener('submit', () => {
-                generateBtn.disabled = true;
-                generateBtn.innerHTML = `
-                    <div class="spinner"></div>
-                    <span>Analyzing Results...</span>
-                `;
-            });
+            if (resourceForm && generateBtn) {
+                resourceForm.addEventListener('submit', () => {
+                    generateBtn.disabled = true;
+                    generateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Analyzing &amp; Generating Roadmap...</span>`;
+                });
+            }
         });
     </script>
+
     <%- include('includes/footer') %>
 </body>
 </html>

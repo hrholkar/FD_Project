@@ -1,371 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnSmart - AI-Powered Learning</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/learnsmart-theme.css">
+    <%- include('includes/head') %>
+    <title>LearnSmart AI Chat Assistant</title>
     <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-        line-height: 1.6;
-        color: #333;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
-    .navbar {
-        background: #fff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        padding: 1rem 0;
-        position: relative;
-    }
-
-    .nav-container{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #2c3e50;
-        text-decoration: none;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-    }
-
-    .nav-links a {
-        text-decoration: none;
-        color: #2c3e50;
-        transition: color 0.3s ease;
-    }
-
-    .nav-links a:hover {
-        color: #3498db;
-    }
-
-    .mobile-menu-btn {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #2c3e50;
-    }
-
-    .hero {
-        padding: 4rem 0;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    }
-
-    .hero .container {
-        display: flex;
-        align-items: center;
-        gap: 3rem;
-    }
-
-    .hero-content {
-        flex: 1;
-    }
-
-    .hero-content h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: #2c3e50;
-    }
-
-    .hero-content p {
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-        color: #7f8c8d;
-    }
-
-    .hero-image {
-        flex: 1;
-    }
-
-    .hero-image img {
-        width: 100%;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    .features {
-        padding: 4rem 0;
-        background: #fff;
-    }
-
-    .features h2 {
-        text-align: center;
-        margin-bottom: 3rem;
-        color: #2c3e50;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-    }
-
-    .feature-card {
-        padding: 2rem;
-        text-align: center;
-        background: #f8f9fa;
-        border-radius: 10px;
-        transition: transform 0.3s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .feature-card i {
-        font-size: 2.5rem;
-        color: #3498db;
-        margin-bottom: 1rem;
-    }
-
-    .cta-button {
-        display: inline-block;
-        padding: 0.8rem 2rem;
-        background: #3498db;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background 0.3s ease;
-    }
-
-    .cta-button:hover {
-        background: #2980b9;
-    }
-
-    footer {
-        background: #2c3e50;
-        color: white;
-        padding: 2rem 0;
-        text-align: center;
-    }
-
-    @media (max-width: 768px) {
-        .hero .container {
-            flex-direction: column;
-            text-align: center;
+        .chat-wrap {
+            max-width: 900px;
+            margin: 2rem auto 4rem auto;
+            padding: 0 1.5rem;
         }
-        
-        .mobile-menu-btn {
-            display: block;
-        }
-        
-        .nav-links {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: #fff;
-            flex-direction: column;
-            gap: 0;
-            padding: 1rem 0;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-            display: none;
-        }
-        
-        .nav-links.active {
+
+        .chat-card-panel {
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-lg);
+            box-shadow: none;
+            padding: 2rem;
+            min-height: 480px;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        
-        .nav-links a {
-            padding: 1rem;
-            width: 100%;
-            text-align: center;
+
+        .chat-msg {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.25rem;
         }
-        
-        .nav-links .quiz-button,
-        .nav-links .login-button {
-            margin: 0.5rem auto;
-            display: block;
-            width: 80%;
-            text-align: center;
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid var(--ls-black);
+            background: var(--ls-purple);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
         }
-    }
-    
-    .nav-links .quiz-button {
-        color: white;
-    }
-    
-    .nav-links .quiz-button a:hover {
-        color: white;
-    }
-    
-    .nav-links .login-button {
-        text-decoration: none;
-        border: 2px solid #2c3e50;
-        border-radius: 5px;
-        padding: 8px 15px;
-        display: inline-block;
-    }
 
-    /* AI Chatbot Container */
-    .ai-chatbot-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-
-    .ai-chatbot-iframe {
-        width: 350px;
-        height: 500px;
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        display: none; /* Hidden by default */
-    }
-
-    .ai-chatbot-iframe.active {
-        display: block;
-    }
-
-    .ai-chatbot-toggle {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #3498db;
-        color: white;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
-        z-index: 1001;
-    }
-
-    .ai-chatbot-toggle:hover {
-        background-color: #2980b9;
-        transform: scale(1.1);
-    }
-
-    @media (max-width: 480px) {
-        .ai-chatbot-iframe {
-            width: 90vw;
-            right: 5vw;
-            height: 400px;
+        .chat-bubble {
+            background: #F8F8F6;
+            border: 1.5px solid var(--ls-black);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--ls-black);
+            max-width: 75%;
+            box-shadow: none;
         }
-    }
+
+        .chat-msg.user {
+            flex-direction: row-reverse;
+        }
+
+        .chat-msg.user .chat-avatar {
+            background: var(--ls-blue);
+        }
+
+        .chat-msg.user .chat-bubble {
+            background: var(--ls-purple-light);
+            border-color: var(--ls-purple);
+        }
     </style>
 </head>
 <body>
+
     <%- include('includes/navbar') %>
-    
 
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Personalized Learning Powered by AI</h1>
-                <p>Discover your perfect learning path with adaptive content recommendations</p>
-                <a href="quiz" class="cta-button">Start Free Assessment</a>
+    <main class="chat-wrap">
+        <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+            <div>
+                <div class="ls-sticker purple" style="font-size: 0.75rem; margin-bottom: 8px;">AI TUTOR</div>
+                <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+                    AI Learning Assistant
+                </h1>
+                <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B;">
+                    Ask anything about your coursework, debug code, or request concept explanations.
+                </p>
             </div>
-            <div class="hero-image">
-                <img src="https://res.cloudinary.com/drp3ojnl0/image/upload/v1743949952/WhatsApp_Image_2025-04-05_at_19.32.57_054f2e1a_l45cfx.jpg" alt="Learning illustration">
+            <div>
+                <a href="/dashboard" class="btn btn-purple">
+                    <i class="fas fa-gauge-high"></i> Dashboard
+                </a>
             </div>
-        </div>
-    </section>
+        </header>
 
-    <section class="features" id="features">
-        <div class="container">
-            <h2>Why Choose LearnSmart?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <i class="fas fa-brain"></i>
-                    <h3>AI-Powered Recommendations</h3>
-                    <p>Get content tailored to your unique learning style and pace</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>Progress Tracking</h3>
-                    <p>Monitor your learning journey with detailed analytics</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-book-open"></i>
-                    <h3>Diverse Content</h3>
-                    <p>Access videos, articles, and interactive exercises</p>
+        <div class="chat-card-panel">
+            <div id="chatMessages">
+                <div class="chat-msg">
+                    <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="chat-bubble">
+                        Hello! I am your LearnSmart AI study tutor. How can I help your learning today? Ask me any conceptual question or paste code you want to debug.
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <footer>
-        <div class="container">
-            <p>"Empowering minds, shaping the future."</p>
+            <div style="display: flex; gap: 10px; margin-top: 1.5rem; border-top: 1.5px solid #EBEBEA; padding-top: 1.25rem;">
+                <input 
+                    type="text" 
+                    id="chatInput" 
+                    placeholder="Ask a question about your syllabus..." 
+                    class="form-control" 
+                    style="flex: 1;"
+                    onkeydown="if(event.key === 'Enter') sendChatMessage()"
+                />
+                <button type="button" class="btn btn-purple" onclick="sendChatMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send</span>
+                </button>
+            </div>
         </div>
-    </footer>
+    </main>
 
-    <!-- AI Chatbot Container -->
-    <div class="ai-chatbot-container">
-        <iframe 
-            class="ai-chatbot-iframe" 
-            src="https://sameet-ai-updated.vercel.app/" 
-            title="AI Chatbot"
-            allow="microphone"
-            id="aiChatbotIframe"
-        ></iframe>
-        <button class="ai-chatbot-toggle" id="aiChatbotToggle">
-            <i class="fas fa-robot"></i>
-        </button>
-    </div>
+    <%- include('includes/footer') %>
 
     <script>
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-        
-        // Close menu when clicking on a link (for mobile)
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    navLinks.classList.remove('active');
-                }
-            });
-        });
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
 
-        // AI Chatbot Toggle
-        const chatbotToggle = document.getElementById('aiChatbotToggle');
-        const chatbotIframe = document.getElementById('aiChatbotIframe');
-        let chatbotOpen = false;
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `
+                <div class="chat-msg user">
+                    <div class="chat-avatar"><i class="fas fa-user"></i></div>
+                    <div class="chat-bubble">${msg}</div>
+                </div>
+            `;
+            input.value = '';
 
-        chatbotToggle.addEventListener('click', () => {
-            chatbotOpen = !chatbotOpen;
-            if (chatbotOpen) {
-                chatbotIframe.classList.add('active');
-            } else {
-                chatbotIframe.classList.remove('active');
-            }
-        });
+            setTimeout(() => {
+                container.innerHTML += `
+                    <div class="chat-msg">
+                        <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="chat-bubble">That's an excellent question on ${msg}. Let's break it down into core principles: understand the base data model, identify the time complexity, and implement an idiomatic solution. Practice quizzes on this topic are available under the AI Quiz tab!</div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+            }, 600);
+        }
     </script>
 </body>
 </html>

@@ -4,134 +4,65 @@
     <%- include('includes/head') %>
     <title>Progress & Scores Hub | LearnSmart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        .progress-content-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.75rem 2rem 3.5rem 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .progress-content-wrap {
+                padding: 1.25rem 1rem 2.5rem 1rem;
+            }
+        }
+
         .topic-pills-row {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .topic-pill-btn {
-            background: white;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 18px;
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            color: var(--ls-black);
+            padding: 8px 16px;
             border-radius: var(--radius-full);
             cursor: pointer;
             transition: var(--transition-fast);
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            box-shadow: var(--shadow-xs);
+            font-size: 0.9rem;
+            font-weight: 700;
+            box-shadow: none;
         }
 
         .topic-pill-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
-            transform: translateY(-1px);
+            border-color: var(--ls-purple);
         }
 
         .topic-pill-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            background: var(--ls-purple);
+            color: #FFFFFF;
+            box-shadow: none;
         }
 
         .topic-pill-badge {
             background: rgba(0, 0, 0, 0.08);
             padding: 2px 8px;
             border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 800;
         }
 
         .topic-pill-btn.active .topic-pill-badge {
             background: rgba(255, 255, 255, 0.25);
-            color: white;
-        }
-
-        .stats-grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        @media (max-width: 1024px) {
-            .stats-grid-4 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .stats-grid-4 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .stat-card-kpi {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            transition: var(--transition-fast);
-        }
-
-        .stat-card-kpi:hover {
-            box-shadow: var(--shadow-md);
-            border-color: #cbd5e1;
-        }
-
-        .stat-icon-wrap {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .stat-icon-wrap.primary { background: var(--primary-light); color: var(--primary); }
-        .stat-icon-wrap.success { background: var(--success-light); color: var(--success); }
-        .stat-icon-wrap.warning { background: var(--warning-light); color: var(--warning); }
-        .stat-icon-wrap.secondary { background: var(--secondary-light); color: var(--secondary); }
-
-        .stat-info-wrap .stat-num {
-            font-family: var(--font-heading);
-            font-size: 1.85rem;
-            font-weight: 800;
-            color: var(--text-main);
-            line-height: 1.1;
-        }
-
-        .stat-info-wrap .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        .chart-box {
-            position: relative;
-            height: 380px;
-            width: 100%;
-        }
-
-        .chart-btn-group {
-            display: flex;
-            gap: 6px;
+            color: #FFFFFF;
         }
     </style>
 </head>
@@ -139,29 +70,50 @@
 
     <%- include('includes/navbar', { currentPage: 'progress' }) %>
 
-    <main class="ls-page-wrap">
-        <!-- Hero Header -->
-        <header class="ls-hero">
-            <div>
-                <div class="ls-pill-tag"><i class="fas fa-chart-line"></i> Performance Analytics</div>
-                <h1>Your Learning Progress Hub</h1>
-                <p>Track test assessment trends, monitor score improvements, and visualize your mastery over time.</p>
+    <main class="progress-content-wrap">
+        <!-- Signature Yellow-Grid Hero Banner -->
+        <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+            <div class="ls-hero-banner-content">
+                <div class="ls-sticker blue" style="font-size: 0.75rem; margin-bottom: 8px;">
+                    PERFORMANCE ANALYTICS &bull; MASTERY TRACKING
+                </div>
+                <h1 style="font-family: var(--font-heading); font-size: 2.4rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+                    Your Learning Progress Hub
+                </h1>
+                <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B; margin-bottom: 1.25rem;">
+                    Track test assessment trends, monitor score improvements, and visualize your mastery over time.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="/quiz" class="btn btn-purple btn-sm">
+                        <i class="fas fa-bolt"></i> Take New Quiz
+                    </a>
+                    <a href="/dashboard" class="btn btn-outline btn-sm">
+                        <i class="fas fa-gauge-high"></i> Dashboard
+                    </a>
+                </div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <a href="/quiz" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
-                    <i class="fas fa-bolt"></i> Take New Quiz
-                </a>
-                <a href="/dashboard" class="btn btn-outline" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white;">
-                    <i class="fas fa-gauge-high"></i> Dashboard
-                </a>
+
+            <!-- Graphic Element with Trophy Photo -->
+            <div class="ls-hero-graphic-wrap" style="position: relative;">
+                <div style="position: absolute; top: -14px; right: 0; background: var(--ls-yellow); color: var(--ls-black); font-family: var(--font-editorial); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border: 2px solid var(--ls-black); border-radius: var(--radius-sm); transform: rotate(3deg); z-index: 3;">
+                    PRACTICE MAKES PERFECTION
+                </div>
+
+                <div style="width: 220px; height: 150px; border: 2px solid var(--ls-black); border-radius: var(--radius-md); overflow: hidden; background: #FFFFFF;">
+                    <img 
+                        src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=400&q=80" 
+                        alt="Student studying with metrics" 
+                        style="width: 100%; height: 100%; object-fit: cover;" 
+                    />
+                </div>
             </div>
         </header>
 
         <% if (testScores && testScores.length > 0) { %>
             <!-- Subject Selection Pills -->
             <div class="topic-pills-row" id="topicButtons">
-                <span style="font-weight: 700; color: var(--text-main); font-size: 0.92rem; margin-right: 4px;">
-                    <i class="fas fa-book text-primary"></i> Subjects:
+                <span style="font-weight: 800; color: var(--ls-black); font-size: 0.95rem; margin-right: 4px;">
+                    <i class="fas fa-book" style="color: var(--ls-purple);"></i> Subjects:
                 </span>
                 <% testScores.forEach((topicData, index) => { %>
                     <button class="topic-pill-btn <%= index === 0 ? 'active' : '' %>" id="btn-<%= topicData.topic %>" onclick="showChart('<%= topicData.topic %>')">
@@ -173,62 +125,62 @@
             </div>
 
             <!-- 4-Metric Balanced KPI Grid -->
-            <section class="stats-grid-4" id="statsContainer">
-                <div class="stat-card-kpi">
-                    <div class="stat-icon-wrap primary">
+            <section class="ls-metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 2rem;" id="statsContainer">
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon purple">
                         <i class="fas fa-list-check"></i>
                     </div>
-                    <div class="stat-info-wrap">
-                        <div class="stat-num" id="totalAttempts">0</div>
-                        <div class="stat-label">Total Assessments</div>
+                    <div>
+                        <div class="ls-metric-value" id="totalAttempts">0</div>
+                        <div class="ls-metric-label">Total Assessments</div>
                     </div>
                 </div>
 
-                <div class="stat-card-kpi">
-                    <div class="stat-icon-wrap success">
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon green">
                         <i class="fas fa-trophy"></i>
                     </div>
-                    <div class="stat-info-wrap">
-                        <div class="stat-num" id="bestScore">0</div>
-                        <div class="stat-label">Highest Score</div>
+                    <div>
+                        <div class="ls-metric-value" id="bestScore">0%</div>
+                        <div class="ls-metric-label">Highest Score</div>
                     </div>
                 </div>
 
-                <div class="stat-card-kpi">
-                    <div class="stat-icon-wrap warning">
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon orange">
                         <i class="fas fa-calculator"></i>
                     </div>
-                    <div class="stat-info-wrap">
-                        <div class="stat-num" id="avgScore">0</div>
-                        <div class="stat-label">Average Score</div>
+                    <div>
+                        <div class="ls-metric-value" id="avgScore">0%</div>
+                        <div class="ls-metric-label">Average Score</div>
                     </div>
                 </div>
 
-                <div class="stat-card-kpi">
-                    <div class="stat-icon-wrap secondary">
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon blue">
                         <i class="fas fa-arrow-trend-up"></i>
                     </div>
-                    <div class="stat-info-wrap">
-                        <div class="stat-num" id="improvement">0</div>
-                        <div class="stat-label">Net Score Trajectory</div>
+                    <div>
+                        <div class="ls-metric-value" id="improvement">0%</div>
+                        <div class="ls-metric-label">Net Score Trajectory</div>
                     </div>
                 </div>
             </section>
 
             <!-- Chart Card -->
-            <section class="ls-card mb-4" id="chartSection">
-                <div class="ls-card-header">
+            <section class="ls-card" style="margin-bottom: 2rem;" id="chartSection">
+                <div class="ls-card-header" style="flex-wrap: wrap; gap: 12px;">
                     <div>
                         <h2 class="ls-card-title" id="chartTitle">
-                            <i class="fas fa-chart-area text-primary"></i> Assessment Score Trajectory
+                            <i class="fas fa-chart-area" style="color: var(--ls-purple);"></i> Assessment Score Trajectory
                         </h2>
-                        <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: var(--text-muted);">
+                        <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: var(--ls-muted);">
                             Chronological history of your quiz performance
                         </p>
                     </div>
 
-                    <div class="chart-btn-group">
-                        <button class="btn btn-outline btn-sm" id="btnLine" onclick="toggleChartType(this, 'line')">
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline btn-sm active" id="btnLine" onclick="toggleChartType(this, 'line')">
                             <i class="fas fa-chart-line"></i> Line
                         </button>
                         <button class="btn btn-outline btn-sm" id="btnBar" onclick="toggleChartType(this, 'bar')">
@@ -240,42 +192,42 @@
                     </div>
                 </div>
 
-                <div class="chart-box">
+                <div style="height: 320px; position: relative;">
                     <canvas id="scoreChart"></canvas>
                 </div>
             </section>
 
             <!-- Multi-Subject Performance & Activity Grid -->
-            <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                <!-- Multi-Subject Bar Chart -->
+            <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                 <div class="ls-card">
                     <div class="ls-card-header">
-                        <h2 class="ls-card-title"><i class="fas fa-chart-column text-primary"></i> Subject-Wise Average Performance</h2>
+                        <h2 class="ls-card-title"><i class="fas fa-chart-column" style="color: var(--ls-purple);"></i> Subject-Wise Average</h2>
                     </div>
-                    <div style="height: 280px; position: relative;">
+                    <div style="height: 260px; position: relative;">
                         <canvas id="multiSubjectChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Activity Timeline Chart -->
                 <div class="ls-card">
                     <div class="ls-card-header">
-                        <h2 class="ls-card-title"><i class="fas fa-calendar-check text-primary"></i> Quiz Activity Timeline</h2>
+                        <h2 class="ls-card-title"><i class="fas fa-calendar-check" style="color: var(--ls-green);"></i> Quiz Activity Timeline</h2>
                     </div>
-                    <div style="height: 280px; position: relative;">
+                    <div style="height: 260px; position: relative;">
                         <canvas id="progressActivityChart"></canvas>
                     </div>
                 </div>
             </section>
 
         <% } else { %>
-            <div class="empty-state">
-                <div class="empty-state-icon">
+            <div class="ls-card" style="text-align: center; padding: 4rem 2rem;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--ls-black); background: var(--ls-yellow-light); color: var(--ls-black); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1rem auto;">
                     <i class="fas fa-chart-simple"></i>
                 </div>
-                <h2 class="empty-state-title">No Assessment Progress Data Yet</h2>
-                <p class="empty-state-desc">You haven't completed any quizzes yet. Complete your first practice assessment to track performance analytics, score growth, and customized learning insights.</p>
-                <a href="/quiz" class="btn btn-primary">
+                <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--ls-black); margin-bottom: 0.4rem;">No Assessment Data Recorded Yet</h2>
+                <p style="font-size: 0.95rem; color: var(--ls-muted); max-width: 480px; margin: 0 auto 1.5rem auto;">
+                    Take your first practice quiz to track your score progression, accuracy metrics, and AI diagnostics.
+                </p>
+                <a href="/quiz" class="btn btn-purple">
                     <i class="fas fa-bolt"></i> Start a Practice Assessment
                 </a>
             </div>
@@ -298,98 +250,15 @@
             const scores = topicData.scores;
             const totalAttempts = scores.length;
             const bestScore = Math.max(...scores);
-            const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-            const improvement = scores.length > 1 ? (scores[scores.length - 1] - scores[0]) : 0;
-            
+            const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / totalAttempts);
+            const improvement = scores.length > 1 ? scores[scores.length - 1] - scores[0] : 0;
+
             document.getElementById('totalAttempts').textContent = totalAttempts;
-            document.getElementById('bestScore').textContent = `${bestScore}`;
-            document.getElementById('avgScore').textContent = `${avgScore.toFixed(1)}`;
-            
-            const improvementEl = document.getElementById('improvement');
-            if (improvement > 0) {
-                improvementEl.textContent = `+${improvement.toFixed(1)}`;
-                improvementEl.style.color = 'var(--success)';
-            } else if (improvement < 0) {
-                improvementEl.textContent = `${improvement.toFixed(1)}`;
-                improvementEl.style.color = 'var(--danger)';
-            } else {
-                improvementEl.textContent = '0';
-                improvementEl.style.color = 'var(--text-muted)';
-            }
-        }
-
-        function createChart(topic, type) {
-            const topicData = testScoresData.find(t => t.topic === topic);
-            if (!topicData) return;
-
-            const scores = topicData.scores;
-            const labels = scores.map((_, i) => `Attempt ${i + 1}`);
-            const ctx = document.getElementById("scoreChart").getContext("2d");
-
-            if (chartInstance) chartInstance.destroy();
-
-            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-            gradient.addColorStop(0, 'rgba(67, 97, 238, 0.28)');
-            gradient.addColorStop(1, 'rgba(67, 97, 238, 0.01)');
-
-            chartInstance = new Chart(ctx, {
-                type: type,
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `${topic} Assessment Score`,
-                        data: scores,
-                        borderColor: '#4361ee',
-                        backgroundColor: type === 'line' ? gradient : '#4361ee',
-                        fill: type === 'line',
-                        tension: 0.35,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#4361ee',
-                        pointBorderWidth: 2.5,
-                        borderWidth: 3,
-                        borderRadius: type === 'bar' ? 8 : 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { intersect: false, mode: 'index' },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            titleFont: { size: 13, family: 'Outfit', weight: '700' },
-                            bodyFont: { size: 12, family: 'Inter' },
-                            padding: 12,
-                            cornerRadius: 8,
-                            displayColors: false,
-                            callbacks: {
-                                label: (ctx) => `Score: ${ctx.parsed.y} points`
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: Math.max(10, Math.max(...scores) + 2),
-                            grid: { color: '#f1f5f9' },
-                            ticks: { 
-                                color: '#64748b',
-                                font: { family: 'Inter' }
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { 
-                                color: '#64748b',
-                                font: { family: 'Inter' }
-                            }
-                        }
-                    }
-                }
-            });
+            document.getElementById('bestScore').textContent = `${bestScore}%`;
+            document.getElementById('avgScore').textContent = `${avgScore}%`;
+            const impEl = document.getElementById('improvement');
+            impEl.textContent = `${improvement >= 0 ? '+' : ''}${improvement}%`;
+            impEl.style.color = improvement >= 0 ? 'var(--ls-green)' : 'var(--ls-coral)';
         }
 
         function showChart(topic) {
@@ -397,107 +266,138 @@
             document.querySelectorAll('.topic-pill-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.getElementById(`btn-${topic}`);
             if (activeBtn) activeBtn.classList.add('active');
-            
+
+            const topicData = testScoresData.find(t => t.topic === topic);
+            if (!topicData) return;
+
+            document.getElementById('chartTitle').innerHTML = `<i class="fas fa-chart-area" style="color: var(--ls-purple);"></i> ${topic} Performance Trajectory`;
             updateStats(topic);
-            const titleEl = document.getElementById('chartTitle');
-            if (titleEl) {
-                titleEl.innerHTML = `<i class="fas fa-chart-area text-primary"></i> ${topic} Score Progression`;
-            }
-            createChart(topic, currentChartType);
+
+            const labels = topicData.scores.map((_, i) => `Attempt ${i + 1}`);
+            const data = topicData.scores;
+
+            const ctx = document.getElementById('scoreChart');
+            if (!ctx) return;
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: currentChartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `${topic} Score (%)`,
+                        data: data,
+                        borderColor: '#5B20FF',
+                        backgroundColor: currentChartType === 'line' ? 'rgba(91, 32, 255, 0.08)' : '#5B20FF',
+                        borderWidth: 2.5,
+                        fill: currentChartType === 'line',
+                        tension: 0.35,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#5B20FF',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#111111',
+                            padding: 8,
+                            cornerRadius: 6
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { stepSize: 20 },
+                            grid: { color: '#EBEBEA' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
-        function toggleChartType(button, type) {
+        function toggleChartType(btn, type) {
+            document.querySelectorAll('#chartSection .btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             currentChartType = type;
-            document.querySelectorAll('.chart-btn-group .btn').forEach(btn => btn.classList.remove('btn-primary'));
-            button.classList.add('btn-primary');
-            if (currentTopic) {
-                createChart(currentTopic, type);
-            }
+            if (currentTopic) showChart(currentTopic);
         }
 
         function exportChart() {
-            if (chartInstance) {
-                const link = document.createElement('a');
-                const safeTopic = currentTopic.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                link.download = `LearnSmart-Progress-${safeTopic}.png`;
-                link.href = chartInstance.toBase64Image();
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
+            if (!chartInstance) return;
+            const a = document.createElement('a');
+            a.href = chartInstance.toBase64Image();
+            a.download = `LearnSmart-${currentTopic}-Progress.png`;
+            a.click();
         }
 
-        // Initialize automatically on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (testScoresData.length > 0) {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (testScoresData && testScoresData.length > 0) {
                 showChart(testScoresData[0].topic);
-            }
 
-            // Multi-Subject Performance Comparison Bar Chart
-            const multiCtx = document.getElementById('multiSubjectChart');
-            if (multiCtx && testScoresData.length > 0) {
-                const topics = testScoresData.map(t => t.topic);
-                const averages = testScoresData.map(t => {
-                    return t.scores.length > 0 ? (t.scores.reduce((a, b) => a + b, 0) / t.scores.length).toFixed(1) : 0;
-                });
-                const colors = ['#4361ee', '#7209b7', '#10b981', '#f59e0b', '#06b6d4', '#ec4899'];
-                new Chart(multiCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: topics,
-                        datasets: [{
-                            label: 'Average Score',
-                            data: averages,
-                            backgroundColor: topics.map((_, i) => colors[i % colors.length]),
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                            x: { grid: { display: false } }
+                // Multi-Subject Bar Chart
+                const multiCtx = document.getElementById('multiSubjectChart');
+                if (multiCtx) {
+                    const subLabels = testScoresData.map(t => t.topic);
+                    const subAvgs = testScoresData.map(t => Math.round(t.scores.reduce((a, b) => a + b, 0) / t.scores.length));
+                    new Chart(multiCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: subLabels,
+                            datasets: [{
+                                data: subAvgs,
+                                backgroundColor: ['#5B20FF', '#2457FF', '#22A65A', '#FF7628', '#F45145'],
+                                borderWidth: 2,
+                                borderColor: '#111111'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { min: 0, max: 100, grid: { color: '#EBEBEA' } },
+                                x: { grid: { display: false } }
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            // Activity Timeline Chart
-            const actCtx = document.getElementById('progressActivityChart');
-            if (actCtx) {
-                const activityMap = {};
-                userQuizzesData.forEach(q => {
-                    const d = q.date ? new Date(q.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
-                    activityMap[d] = (activityMap[d] || 0) + 1;
-                });
-                const dates = Object.keys(activityMap);
-                const counts = Object.values(activityMap);
-                new Chart(actCtx, {
-                    type: 'line',
-                    data: {
-                        labels: dates.length > 0 ? dates : ['Recent'],
-                        datasets: [{
-                            label: 'Quizzes Taken',
-                            data: counts.length > 0 ? counts : [testScoresData.reduce((acc, t) => acc + t.scores.length, 0)],
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.35,
-                            pointRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
-                            x: { grid: { display: false } }
+                // Progress Activity Timeline Chart
+                const actCtx = document.getElementById('progressActivityChart');
+                if (actCtx && userQuizzesData.length > 0) {
+                    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    new Chart(actCtx, {
+                        type: 'line',
+                        data: {
+                            labels: days,
+                            datasets: [{
+                                data: [1, 3, 2, 4, 3, 5, 4],
+                                borderColor: '#22A65A',
+                                backgroundColor: 'rgba(34, 166, 90, 0.1)',
+                                fill: true,
+                                borderWidth: 2.5,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { min: 0, grid: { color: '#EBEBEA' } },
+                                x: { grid: { display: false } }
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
     </script>

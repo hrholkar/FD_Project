@@ -1,5 +1,25 @@
-<footer class="ls-footer">
-  <div class="ls-container">
-    <p>&copy; <%= new Date().getFullYear() %> LearnSmart &bull; AI-Powered Adaptive Learning & Student Management Platform</p>
+<% 
+  const userFooter = typeof currentUser !== 'undefined' ? currentUser : null;
+  const pageFooter = typeof currentPage !== 'undefined' ? currentPage : '';
+  const isAuthAppFooter = (userFooter && pageFooter !== 'home' && pageFooter !== 'login' && pageFooter !== 'signup');
+%>
+
+<footer class="ls-footer" style="padding: 1.5rem 2rem; border-top: 2px solid var(--ls-black); background-color: #FFFFFF; margin-top: auto;">
+  <div style="max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #FF7628 0%, #2457FF 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.65rem;">
+        <i class="fas fa-brain"></i>
+      </div>
+      <span style="font-family: var(--font-heading); font-weight: 800; font-size: 0.95rem; color: var(--ls-black);">LearnSmart</span>
+      <span style="color: var(--ls-muted); font-size: 0.85rem; font-weight: 500;">&bull; AI-Powered Adaptive Learning Platform</span>
+    </div>
+    <div style="font-size: 0.82rem; color: var(--ls-muted); font-weight: 600;">
+      &copy; <%= new Date().getFullYear() %> LearnSmart. All rights reserved.
+    </div>
   </div>
 </footer>
+
+<% if (isAuthAppFooter) { %>
+    </div> <!-- Closes .ls-main-area -->
+  </div> <!-- Closes .ls-app-layout -->
+<% } %>

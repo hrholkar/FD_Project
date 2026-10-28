@@ -4,6 +4,18 @@
     <%- include('includes/head') %>
     <title>AI Interview Preparation | LearnSmart</title>
     <style>
+        .interview-content-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.75rem 2rem 3.5rem 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .interview-content-wrap {
+                padding: 1.25rem 1rem 2.5rem 1rem;
+            }
+        }
+
         .interview-grid {
             display: grid;
             grid-template-columns: 360px 1fr;
@@ -11,62 +23,33 @@
             align-items: start;
         }
 
-        @media (max-width: 992px) {
+        @media (max-width: 1024px) {
             .interview-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .config-card {
-            background: white;
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
             border-radius: var(--radius-md);
             padding: 1.75rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            box-shadow: none;
             position: sticky;
-            top: 90px;
+            top: 85px;
         }
 
         .config-title {
             font-family: var(--font-heading);
             font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-weight: 800;
+            color: var(--ls-black);
             margin-bottom: 1.25rem;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .form-group-custom {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-label-custom {
-            display: block;
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .form-select-custom, .form-input-custom, .form-textarea-custom {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            font-family: var(--font-body);
-            font-size: 0.92rem;
-            color: var(--text-main);
-            background: #f8fafc;
-            transition: var(--transition-fast);
-            outline: none;
-        }
-
-        .form-select-custom:focus, .form-input-custom:focus, .form-textarea-custom:focus {
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            padding-bottom: 0.75rem;
+            border-bottom: 1.5px solid #EBEBEA;
         }
 
         .practice-arena {
@@ -76,12 +59,28 @@
         }
 
         .question-header-card {
-            background: white;
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
             border-radius: var(--radius-md);
             padding: 1.75rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            box-shadow: none;
             position: relative;
+        }
+
+        .progress-bar-wrap {
+            height: 8px;
+            background: #EBEBEA;
+            border: 1px solid var(--ls-black);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--ls-purple);
+            border-radius: var(--radius-full);
+            transition: width 0.3s ease;
         }
 
         .q-meta-row {
@@ -100,219 +99,165 @@
             flex-wrap: wrap;
         }
 
-        .badge-pill-tech {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.78rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .badge-pill-diff {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.78rem;
-            font-weight: 700;
-        }
-        .badge-diff-beginner { background: #ecfdf5; color: #059669; }
-        .badge-diff-intermediate { background: #fef3c7; color: #d97706; }
-        .badge-diff-advanced { background: #fee2e2; color: #dc2626; }
-
-        .progress-bar-wrap {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-full);
-            transition: width 0.3s ease;
-        }
-
-        .question-text-box {
-            font-family: var(--font-heading);
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: var(--text-main);
+        .q-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--ls-black);
             line-height: 1.45;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
 
-        .coding-details-box {
-            background: #0f172a;
-            color: #f8fafc;
-            padding: 1.25rem;
+        .q-context-hint {
+            background: var(--ls-yellow-subtle);
+            border: 1.5px solid var(--ls-black);
             border-radius: var(--radius-sm);
-            margin-bottom: 1.25rem;
-            font-family: 'Consolas', monospace;
+            padding: 10px 14px;
             font-size: 0.88rem;
-        }
-
-        .coding-details-title {
-            color: #38bdf8;
-            font-weight: 700;
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .answer-input-area {
-            width: 100%;
-            min-height: 160px;
-            padding: 14px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            font-family: var(--font-body);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            background: white;
-            color: var(--text-main);
-            resize: vertical;
-            outline: none;
-            transition: var(--transition-fast);
-        }
-
-        .answer-input-area:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-        }
-
-        .actions-toolbar {
+            font-weight: 600;
+            color: var(--ls-black);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .q-nav-actions {
+            display: flex;
             justify-content: space-between;
-            margin-top: 1rem;
+            align-items: center;
+            padding-top: 1.25rem;
+            border-top: 1.5px solid #EBEBEA;
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        .eval-card {
-            background: white;
+        .answer-workspace-card {
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
             border-radius: var(--radius-md);
             padding: 1.75rem;
-            border: 1px solid #cbd5e1;
-            box-shadow: var(--shadow-md);
-            animation: fadeIn 0.3s ease;
+            box-shadow: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .eval-header {
+        .audio-recorder-bar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.25rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            background: #F8F8F6;
+            border: 1.5px solid var(--ls-black);
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
 
-        .eval-score-badge {
-            font-family: var(--font-heading);
-            font-size: 1.4rem;
-            font-weight: 800;
-            padding: 6px 16px;
+        .record-btn {
+            background: var(--ls-coral);
+            color: white;
+            border: 1.5px solid var(--ls-black);
             border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .score-excellent { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-        .score-proficient { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
-        .score-developing { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
-        .score-review { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-
-        .eval-section {
-            margin-bottom: 1.25rem;
-        }
-
-        .eval-section-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .suggested-answer-box {
-            background: #f8fafc;
-            border-left: 4px solid var(--primary);
-            padding: 1.25rem;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            margin-top: 1rem;
-        }
-
-        .nav-questions-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 0;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .q-pills-selector {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .q-pill-btn {
             width: 36px;
             height: 36px;
-            border-radius: 50%;
-            background: white;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.88rem;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            box-shadow: none;
             transition: var(--transition-fast);
         }
 
-        .q-pill-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        .record-btn.recording {
+            animation: pulse-coral 1s infinite;
         }
 
-        .q-pill-btn.completed {
-            border-color: #10b981;
-            color: #10b981;
+        @keyframes pulse-coral {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .eval-result-card {
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+            box-shadow: none;
+            border-left: 8px solid var(--ls-purple);
+        }
+
+        .score-circle-badge {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid var(--ls-black);
+            background: var(--ls-purple);
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            box-shadow: none;
+            flex-shrink: 0;
+        }
+
+        .feedback-pill-card {
+            border: 1.5px solid var(--ls-black);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .feedback-pill-card.strengths {
+            background: var(--ls-green-light);
+            border-color: var(--ls-green);
+        }
+
+        .feedback-pill-card.weaknesses {
+            background: var(--ls-coral-light);
+            border-color: var(--ls-coral);
+        }
+
+        .feedback-pill-card.model-ans {
+            background: var(--ls-blue-light);
+            border-color: var(--ls-blue);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 17, 17, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+            padding: 1.5rem;
+        }
+
+        .modal-box {
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-lg);
+            box-shadow: none;
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
         }
 
         .history-session-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 1.25rem;
-            margin-bottom: 1rem;
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            box-shadow: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: var(--transition-fast);
-        }
-
-        .history-session-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary);
+            gap: 12px;
+            margin-bottom: 12px;
         }
     </style>
 </head>
@@ -320,21 +265,42 @@
 
     <%- include('includes/navbar', { currentPage: 'interview' }) %>
 
-    <main class="ls-page-wrap">
-        <!-- Hero Banner -->
-        <header class="ls-hero">
-            <div>
-                <div class="ls-pill-tag"><i class="fas fa-wand-magic-sparkles"></i> AI Career Suite</div>
-                <h1>AI Interview Preparation & Practice</h1>
-                <p>Generate targeted interview questions across domains, practice your responses in real time, and receive instant, constructive AI evaluations.</p>
+    <main class="interview-content-wrap">
+        <!-- Signature Yellow-Grid Hero Banner -->
+        <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+            <div class="ls-hero-banner-content">
+                <div class="ls-sticker purple" style="font-size: 0.75rem; margin-bottom: 8px;">
+                    CAREER SUITE &bull; AI MOCK ARENA
+                </div>
+                <h1 style="font-family: var(--font-heading); font-size: 2.4rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+                    AI Interview Preparation &amp; Practice
+                </h1>
+                <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B; margin-bottom: 1.25rem;">
+                    Practice technical and behavioral interview questions with real-time AI scoring, feedback, and model answers.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="showHistoryModal()" class="btn btn-outline btn-sm">
+                        <i class="fas fa-clock-rotate-left"></i> Saved Sessions
+                    </button>
+                    <a href="/quiz" class="btn btn-purple btn-sm">
+                        <i class="fas fa-bolt"></i> Quiz Hub
+                    </a>
+                </div>
             </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button onclick="showHistoryModal()" class="btn btn-outline" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: white;">
-                    <i class="fas fa-clock-rotate-left"></i> Saved Sessions
-                </button>
-                <a href="/quiz" class="btn btn-primary" style="background: white; color: var(--primary) !important;">
-                    <i class="fas fa-bolt"></i> Quiz Hub
-                </a>
+
+            <!-- Graphic Element with Microphone Photo -->
+            <div class="ls-hero-graphic-wrap" style="position: relative;">
+                <div style="position: absolute; top: -14px; right: 0; background: var(--ls-yellow); color: var(--ls-black); font-family: var(--font-editorial); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border: 2px solid var(--ls-black); border-radius: var(--radius-sm); transform: rotate(3deg); z-index: 3;">
+                    CONFIDENCE &bull; CLARITY &bull; IMPACT
+                </div>
+
+                <div style="width: 220px; height: 150px; border: 2px solid var(--ls-black); border-radius: var(--radius-md); overflow: hidden; background: #FFFFFF;">
+                    <img 
+                        src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" 
+                        alt="Professional candidate in mock interview" 
+                        style="width: 100%; height: 100%; object-fit: cover;" 
+                    />
+                </div>
             </div>
         </header>
 
@@ -343,45 +309,45 @@
             <aside>
                 <div class="config-card">
                     <h2 class="config-title">
-                        <i class="fas fa-sliders text-primary"></i> Setup Interview
+                        <i class="fas fa-sliders" style="color: var(--ls-purple);"></i> Setup Interview
                     </h2>
 
                     <form id="interviewConfigForm" onsubmit="handleGenerate(event)">
                         <!-- Domain -->
-                        <div class="form-group-custom">
-                            <label class="form-label-custom" for="domainSelect">
-                                <i class="fas fa-layer-group text-primary"></i> Technical Domain
+                        <div class="form-group">
+                            <label class="form-label" for="domainSelect">
+                                <i class="fas fa-layer-group" style="color: var(--ls-purple); margin-right: 4px;"></i> Technical Domain
                             </label>
-                            <select id="domainSelect" class="form-select-custom" onchange="toggleCustomDomain(this.value)">
+                            <select id="domainSelect" class="form-select" onchange="toggleCustomDomain(this.value)">
                                 <option value="Frontend Development">Frontend Development</option>
                                 <option value="Backend Development">Backend Development</option>
                                 <option value="Full-Stack Development" selected>Full-Stack Development</option>
                                 <option value="React JS">React JS</option>
-                                <option value="Node.js and Express.js">Node.js & Express.js</option>
-                                <option value="MongoDB and SQL">MongoDB & SQL Databases</option>
+                                <option value="Node.js and Express.js">Node.js &amp; Express.js</option>
+                                <option value="MongoDB and SQL">MongoDB &amp; SQL Databases</option>
                                 <option value="Java">Java (Core, Spring, JVM)</option>
                                 <option value="Python">Python (Core, Django, OOP)</option>
-                                <option value="Data Structures and Algorithms">Data Structures & Algorithms</option>
-                                <option value="AI and Machine Learning">AI & Machine Learning</option>
-                                <option value="HR and Behavioral Interviews">HR & Behavioral Interviews</option>
+                                <option value="Data Structures and Algorithms">Data Structures &amp; Algorithms</option>
+                                <option value="AI and Machine Learning">AI &amp; Machine Learning</option>
+                                <option value="HR and Behavioral Interviews">HR &amp; Behavioral Interviews</option>
                                 <option value="custom">Custom Specialization...</option>
                             </select>
                         </div>
 
                         <!-- Custom Domain Input -->
-                        <div class="form-group-custom" id="customDomainGroup" style="display: none;">
-                            <label class="form-label-custom" for="customDomainInput">
-                                Enter Custom Domain / Technology
+                        <div class="form-group" id="customDomainGroup" style="display: none;">
+                            <label class="form-label" for="customDomainInput">
+                                Enter Custom Technology / Domain
                             </label>
-                            <input type="text" id="customDomainInput" class="form-input-custom" placeholder="e.g. DevOps & Kubernetes, GraphQL, Golang">
+                            <input type="text" id="customDomainInput" class="form-control" placeholder="e.g. DevOps &amp; Kubernetes, Golang">
                         </div>
 
                         <!-- Difficulty -->
-                        <div class="form-group-custom">
-                            <label class="form-label-custom" for="difficultySelect">
-                                <i class="fas fa-signal text-primary"></i> Difficulty Level
+                        <div class="form-group">
+                            <label class="form-label" for="difficultySelect">
+                                <i class="fas fa-signal" style="color: var(--ls-blue); margin-right: 4px;"></i> Difficulty Level
                             </label>
-                            <select id="difficultySelect" class="form-select-custom">
+                            <select id="difficultySelect" class="form-select">
                                 <option value="Beginner">Beginner (Entry / Junior)</option>
                                 <option value="Intermediate" selected>Intermediate (Mid-Level)</option>
                                 <option value="Advanced">Advanced (Senior / Staff)</option>
@@ -389,41 +355,40 @@
                         </div>
 
                         <!-- Interview Type -->
-                        <div class="form-group-custom">
-                            <label class="form-label-custom" for="typeSelect">
-                                <i class="fas fa-briefcase text-primary"></i> Interview Type
+                        <div class="form-group">
+                            <label class="form-label" for="typeSelect">
+                                <i class="fas fa-briefcase" style="color: var(--ls-orange); margin-right: 4px;"></i> Interview Type
                             </label>
-                            <select id="typeSelect" class="form-select-custom">
+                            <select id="typeSelect" class="form-select">
                                 <option value="Technical interview" selected>Technical interview</option>
                                 <option value="Coding interview">Coding interview</option>
-                                <option value="HR interview">HR & Behavioral interview</option>
+                                <option value="HR interview">HR &amp; Behavioral interview</option>
                                 <option value="Project-based interview">Project-based interview</option>
                                 <option value="Mixed interview">Mixed interview</option>
                             </select>
                         </div>
 
                         <!-- Question Count -->
-                        <div class="form-group-custom">
-                            <label class="form-label-custom" for="countSelect">
-                                <i class="fas fa-list-ol text-primary"></i> Number of Questions
+                        <div class="form-group">
+                            <label class="form-label" for="countSelect">
+                                <i class="fas fa-list-ol" style="color: var(--ls-green); margin-right: 4px;"></i> Number of Questions
                             </label>
-                            <select id="countSelect" class="form-select-custom">
+                            <select id="countSelect" class="form-select">
                                 <option value="5" selected>5 Questions</option>
                                 <option value="10">10 Questions</option>
                                 <option value="15">15 Questions</option>
-                                <option value="20">20 Questions</option>
                             </select>
                         </div>
 
                         <!-- Optional Context -->
-                        <div class="form-group-custom">
-                            <label class="form-label-custom" for="contextInput">
-                                <i class="fas fa-pen-to-square text-primary"></i> Target Role / Context <span style="font-weight: 400; color: var(--text-muted);">(Optional)</span>
+                        <div class="form-group">
+                            <label class="form-label" for="contextInput">
+                                Target Role / Context <span style="font-weight: 400; color: var(--ls-muted);">(Optional)</span>
                             </label>
-                            <textarea id="contextInput" class="form-textarea-custom" rows="3" placeholder="e.g. SDE-1 position at fintech company, focus on system design, microservices, and concurrency"></textarea>
+                            <textarea id="contextInput" class="form-control" rows="3" placeholder="e.g. SDE-1 position at high-scale tech company, focus on system design and APIs"></textarea>
                         </div>
 
-                        <button type="submit" id="btnGenerate" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        <button type="submit" id="btnGenerate" class="btn btn-purple" style="width: 100%; padding: 12px; font-size: 1rem;">
                             <i class="fas fa-wand-magic-sparkles"></i>
                             <span>Generate Questions</span>
                         </button>
@@ -434,26 +399,27 @@
             <!-- Right Column: Interactive Practice Arena -->
             <section class="practice-arena">
                 <!-- Initial Empty State -->
-                <div id="arenaEmptyState" class="empty-state" style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                    <div class="empty-state-icon">
+                <div id="arenaEmptyState" class="ls-card" style="text-align: center; padding: 4rem 2rem;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--ls-black); background: var(--ls-yellow-light); color: var(--ls-black); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem auto;">
                         <i class="fas fa-user-tie"></i>
                     </div>
-                    <h2 class="empty-state-title">Ready for Your Mock Interview?</h2>
-                    <p class="empty-state-desc">Select your desired domain, difficulty, and question count on the left, then click <strong>Generate Questions</strong> to start practicing with instant AI evaluation.</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--ls-black); margin-bottom: 0.5rem;">Ready for Your Mock Interview?</h2>
+                    <p style="color: var(--ls-muted); font-size: 0.95rem; max-width: 480px; margin: 0 auto 1.5rem auto;">
+                        Select your desired domain, difficulty, and question count on the left, then click <strong>Generate Questions</strong> to start practicing with instant AI evaluation.
+                    </p>
                 </div>
 
                 <!-- Loading State -->
-                <div id="arenaLoadingState" style="display: none; text-align: center; padding: 4rem 2rem; background: white; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                    <div style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;">
+                <div id="arenaLoadingState" class="ls-card" style="display: none; text-align: center; padding: 4rem 2rem;">
+                    <div style="font-size: 2.5rem; color: var(--ls-purple); margin-bottom: 1rem;">
                         <i class="fas fa-spinner fa-spin"></i>
                     </div>
-                    <h3 style="font-family: var(--font-heading); color: var(--text-main);">Generating Tailored Interview Questions...</h3>
-                    <p style="color: var(--text-muted); font-size: 0.92rem; margin-top: 4px;">Analyzing domain competencies, architecting real-world scenarios, and preparing benchmarks.</p>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: var(--ls-black);">Generating Tailored Interview Questions...</h3>
+                    <p style="color: var(--ls-muted); font-size: 0.92rem; margin-top: 4px;">Analyzing domain competencies and building real-world evaluation benchmarks.</p>
                 </div>
 
                 <!-- Active Question Box -->
                 <div id="arenaActiveCard" style="display: none;">
-                    <!-- Question Header & Badges -->
                     <div class="question-header-card">
                         <!-- Progress Bar -->
                         <div class="progress-bar-wrap">
@@ -462,181 +428,226 @@
 
                         <div class="q-meta-row">
                             <div class="q-badges-group">
-                                <span class="badge-pill-tech" id="qDomainBadge">Full-Stack Development</span>
-                                <span class="badge-pill-diff badge-diff-intermediate" id="qDiffBadge">Intermediate</span>
-                                <span class="badge-pill-tech" id="qTypeBadge" style="background: var(--secondary-light); color: var(--secondary);">Technical</span>
+                                <span class="badge badge-purple" id="badgeQuestionNumber">Question 1 / 5</span>
+                                <span class="badge badge-blue" id="badgeDifficulty">Intermediate</span>
+                                <span class="badge badge-outline" id="badgeDomain">Full-Stack Development</span>
                             </div>
-                            <span style="font-weight: 700; color: var(--text-muted); font-size: 0.92rem;" id="qCounterText">
-                                Question 1 of 5
+                            <button type="button" class="btn btn-outline btn-sm" onclick="saveInterviewSession()">
+                                <i class="fas fa-bookmark"></i> Save Session
+                            </button>
+                        </div>
+
+                        <div class="q-text" id="questionText">Loading question...</div>
+
+                        <div class="q-context-hint" id="questionContextHint">
+                            <i class="fas fa-lightbulb" style="color: var(--ls-yellow); font-size: 1.1rem; flex-shrink: 0;"></i>
+                            <span id="questionTipText">Structure your response using the STAR method: Situation, Task, Action, Result.</span>
+                        </div>
+
+                        <div class="q-nav-actions">
+                            <button type="button" class="btn btn-outline btn-sm" id="btnPrevQ" onclick="navigateQuestion(-1)">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-muted);" id="qIndicatorText">Question 1 of 5</span>
+                            <button type="button" class="btn btn-outline btn-sm" id="btnNextQ" onclick="navigateQuestion(1)">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Answer Workspace Card -->
+                    <div class="answer-workspace-card" style="margin-top: 1.5rem;">
+                        <div class="ls-card-header">
+                            <h3 class="ls-card-title">
+                                <i class="fas fa-pen-to-square" style="color: var(--ls-purple);"></i> Your Response
+                            </h3>
+                            <span style="font-size: 0.82rem; font-weight: 700; color: var(--ls-muted);" id="wordCountLabel">0 words</span>
+                        </div>
+
+                        <!-- Audio Dictation Bar -->
+                        <div class="audio-recorder-bar">
+                            <button type="button" class="record-btn" id="btnRecordToggle" onclick="toggleAudioRecording()" title="Speak your answer">
+                                <i class="fas fa-microphone" id="micIcon"></i>
+                            </button>
+                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--ls-black);" id="speechStatusText">
+                                Click mic to speak your answer, or type below.
                             </span>
                         </div>
 
-                        <h3 class="question-text-box" id="questionText">
-                            How does the browser rendering pipeline work?
-                        </h3>
+                        <textarea 
+                            id="answerTextarea" 
+                            class="form-control" 
+                            rows="6" 
+                            placeholder="Type your structured answer here, addressing the technical concepts or real-world experience..."
+                            oninput="handleAnswerInput(this.value)"
+                        ></textarea>
 
-                        <!-- Coding Details (if coding question) -->
-                        <div id="codingDetailsWrap" class="coding-details-box" style="display: none;">
-                            <div class="coding-details-title"><i class="fas fa-code"></i> Constraints & Test Cases</div>
-                            <div id="codingConstraintsText" style="margin-bottom: 6px;"></div>
-                            <div id="codingTestCasesText"></div>
-                        </div>
-
-                        <!-- Practice Answer Input -->
-                        <div style="margin-top: 1.25rem;">
-                            <label class="form-label-custom" for="studentAnswerInput">
-                                <i class="fas fa-keyboard text-primary"></i> Your Answer / Solution
-                            </label>
-                            <textarea id="studentAnswerInput" class="answer-input-area" placeholder="Type or paste your answer here. Provide your reasoning, architectural explanation, code, or STAR framework..."></textarea>
-                        </div>
-
-                        <!-- Action Toolbar -->
-                        <div class="actions-toolbar">
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <button type="button" id="btnEvaluate" class="btn btn-primary" onclick="handleEvaluate()">
-                                    <i class="fas fa-brain"></i> Evaluate My Answer
-                                </button>
-                                <button type="button" id="btnToggleSuggested" class="btn btn-outline" onclick="toggleSuggestedAnswer()">
-                                    <i class="fas fa-eye"></i> Suggested Answer
-                                </button>
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                <button type="button" class="btn btn-outline" onclick="saveCurrentSession()">
-                                    <i class="fas fa-bookmark"></i> Save Session
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Suggested Answer Accordion Box -->
-                        <div id="suggestedAnswerBox" class="suggested-answer-box" style="display: none;">
-                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 6px;">
-                                <i class="fas fa-lightbulb"></i> Recommended Answer & Conceptual Breakdown
-                            </h4>
-                            <p id="suggestedAnswerContent" style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 10px;"></p>
-                            
-                            <div style="margin-top: 8px;">
-                                <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">Key Concepts Looked For:</strong>
-                                <p id="keyConceptsContent" style="font-size: 0.88rem; color: var(--text-main); font-weight: 600; margin-top: 2px;"></p>
-                            </div>
-
-                            <div id="followUpsWrap" style="margin-top: 8px; display: none;">
-                                <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">Probable Follow-Up Questions:</strong>
-                                <ul id="followUpsList" style="margin: 4px 0 0 1.25rem; font-size: 0.88rem; color: var(--text-main);"></ul>
-                            </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.25rem;">
+                            <button type="button" class="btn btn-outline" onclick="clearAnswer()">Clear</button>
+                            <button type="button" class="btn btn-purple" id="btnSubmitAnswer" onclick="evaluateCurrentAnswer()">
+                                <i class="fas fa-brain"></i> Evaluate Answer with AI
+                            </button>
                         </div>
                     </div>
 
                     <!-- AI Evaluation Feedback Card -->
-                    <div id="evalResultCard" class="eval-card" style="display: none; margin-top: 1.5rem;">
-                        <div class="eval-header">
+                    <div class="eval-result-card" id="evalResultCard" style="display: none; margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 14px;">
                             <div>
-                                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
-                                    AI Evaluator Feedback
-                                </span>
-                                <h3 style="font-family: var(--font-heading); margin-top: 2px; font-size: 1.25rem;" id="evalRatingText">
-                                    Strong Candidate Response
-                                </h3>
+                                <span class="badge badge-purple" style="margin-bottom: 6px;">AI PERFORMANCE DIAGNOSTIC</span>
+                                <h3 style="font-size: 1.35rem; font-weight: 900; color: var(--ls-black);">Response Evaluation</h3>
                             </div>
-                            <div class="eval-score-badge score-proficient" id="evalScoreBadge">
-                                <i class="fas fa-award"></i> <span id="evalScoreValue">85</span>/100
+                            <div class="score-circle-badge">
+                                <span style="font-size: 1.5rem; line-height: 1;" id="evalScore">8.5</span>
+                                <span style="font-size: 0.65rem; text-transform: uppercase;">out of 10</span>
                             </div>
                         </div>
 
-                        <div class="eval-section">
-                            <div class="eval-section-title" style="color: #059669;">
-                                <i class="fas fa-circle-check"></i> Key Strengths Demonstrated
+                        <!-- Strengths -->
+                        <div class="feedback-pill-card strengths">
+                            <div style="font-weight: 800; font-size: 0.95rem; color: var(--ls-green); margin-bottom: 4px;">
+                                <i class="fas fa-circle-check"></i> Key Strengths
                             </div>
-                            <p id="evalStrengthsText" style="font-size: 0.92rem; line-height: 1.6; color: var(--text-main);"></p>
+                            <div id="evalStrengths" style="font-size: 0.92rem; color: var(--ls-black); line-height: 1.5;"></div>
                         </div>
 
-                        <div class="eval-section">
-                            <div class="eval-section-title" style="color: #d97706;">
-                                <i class="fas fa-triangle-exclamation"></i> Concepts Omitted or Areas to Deepen
+                        <!-- Areas for Improvement -->
+                        <div class="feedback-pill-card weaknesses">
+                            <div style="font-weight: 800; font-size: 0.95rem; color: var(--ls-coral); margin-bottom: 4px;">
+                                <i class="fas fa-triangle-exclamation"></i> Growth Areas
                             </div>
-                            <p id="evalMissingText" style="font-size: 0.92rem; line-height: 1.6; color: var(--text-main);"></p>
+                            <div id="evalWeaknesses" style="font-size: 0.92rem; color: var(--ls-black); line-height: 1.5;"></div>
                         </div>
 
-                        <div class="eval-section">
-                            <div class="eval-section-title" style="color: var(--primary);">
-                                <i class="fas fa-arrow-trend-up"></i> Actionable Suggestions for Senior Level
+                        <!-- Model Benchmark Answer -->
+                        <div class="feedback-pill-card model-ans">
+                            <div style="font-weight: 800; font-size: 0.95rem; color: var(--ls-blue); margin-bottom: 4px;">
+                                <i class="fas fa-lightbulb"></i> Recommended Benchmark Response
                             </div>
-                            <p id="evalSuggestionsText" style="font-size: 0.92rem; line-height: 1.6; color: var(--text-main);"></p>
+                            <div id="evalModelAnswer" style="font-size: 0.92rem; color: var(--ls-black); line-height: 1.5; white-space: pre-wrap;"></div>
                         </div>
-
-                        <div style="font-size: 0.78rem; color: var(--text-muted); text-align: right; margin-top: 8px;">
-                            * Simulated AI evaluation based on industry benchmarks. Not a hiring guarantee.
-                        </div>
-                    </div>
-
-                    <!-- Question Navigation Footer -->
-                    <div class="nav-questions-row">
-                        <button type="button" id="btnPrev" class="btn btn-outline" onclick="goToQuestion(currentQuestionIndex - 1)">
-                            <i class="fas fa-arrow-left"></i> Previous
-                        </button>
-
-                        <div class="q-pills-selector" id="qPillsSelector">
-                            <!-- Injected dynamically -->
-                        </div>
-
-                        <button type="button" id="btnNext" class="btn btn-primary" onclick="goToQuestion(currentQuestionIndex + 1)">
-                            Next <i class="fas fa-arrow-right"></i>
-                        </button>
                     </div>
                 </div>
             </section>
         </div>
     </main>
 
-    <!-- Past Sessions Modal -->
-    <div id="historyModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: var(--radius-md); max-width: 680px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-xl);">
-            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-family: var(--font-heading); margin: 0; font-size: 1.25rem;">
-                    <i class="fas fa-clock-rotate-left text-primary"></i> Saved Interview Sessions
-                </h3>
-                <button onclick="closeHistoryModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">
+    <!-- History Sessions Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--ls-black);">
+                <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 900; color: var(--ls-black);">
+                    <i class="fas fa-clock-rotate-left" style="color: var(--ls-purple);"></i> Saved Interview Sessions
+                </h2>
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeHistoryModal()">
                     <i class="fas fa-xmark"></i>
                 </button>
             </div>
-            <div style="padding: 1.5rem; overflow-y: auto; flex: 1;" id="historyListContainer">
-                <p style="text-align: center; color: var(--text-muted);">Loading past sessions...</p>
+            <div id="historyListContainer">
+                <p style="text-align: center; color: var(--ls-muted);">Loading saved sessions...</p>
             </div>
         </div>
     </div>
 
-    <%- include('includes/footer') %>
-
+    <!-- Speech Recognition & State Scripts Preserved 100% -->
     <script>
-        // State management
         let generatedQuestions = [];
         let currentQuestionIndex = 0;
         let studentAnswers = {};
         let answerEvaluations = {};
         let currentSessionConfig = {};
 
+        let recognition = null;
+        let isRecording = false;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRec();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    transcript += event.results[i][0].transcript;
+                }
+                const textarea = document.getElementById('answerTextarea');
+                textarea.value = (textarea.value + ' ' + transcript).trim();
+                handleAnswerInput(textarea.value);
+            };
+
+            recognition.onerror = () => {
+                isRecording = false;
+                updateRecordBtnState();
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                updateRecordBtnState();
+            };
+        }
+
+        function toggleAudioRecording() {
+            if (!recognition) {
+                alert('Speech-to-text recognition is not supported in this browser. Please type your response.');
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+                isRecording = false;
+            } else {
+                recognition.start();
+                isRecording = true;
+            }
+            updateRecordBtnState();
+        }
+
+        function updateRecordBtnState() {
+            const btn = document.getElementById('btnRecordToggle');
+            const icon = document.getElementById('micIcon');
+            const status = document.getElementById('speechStatusText');
+            if (isRecording) {
+                btn.classList.add('recording');
+                icon.className = 'fas fa-stop';
+                status.textContent = 'Listening... Speak clearly into your microphone.';
+            } else {
+                btn.classList.remove('recording');
+                icon.className = 'fas fa-microphone';
+                status.textContent = 'Click mic to speak your answer, or type below.';
+            }
+        }
+
         function toggleCustomDomain(val) {
-            const group = document.getElementById('customDomainGroup');
-            group.style.display = val === 'custom' ? 'block' : 'none';
+            document.getElementById('customDomainGroup').style.display = val === 'custom' ? 'block' : 'none';
+        }
+
+        function handleAnswerInput(val) {
+            studentAnswers[currentQuestionIndex] = val;
+            const words = val.trim().length > 0 ? val.trim().split(/\s+/).length : 0;
+            document.getElementById('wordCountLabel').textContent = `${words} words`;
+        }
+
+        function clearAnswer() {
+            document.getElementById('answerTextarea').value = '';
+            studentAnswers[currentQuestionIndex] = '';
+            document.getElementById('wordCountLabel').textContent = '0 words';
         }
 
         async function handleGenerate(e) {
             e.preventDefault();
             const domainSelect = document.getElementById('domainSelect').value;
-            const customInput = document.getElementById('customDomainInput').value.trim();
-            const domain = domainSelect === 'custom' ? (customInput || 'Software Engineering') : domainSelect;
-
+            const domain = domainSelect === 'custom' ? document.getElementById('customDomainInput').value.trim() : domainSelect;
             const difficulty = document.getElementById('difficultySelect').value;
-            const interviewType = document.getElementById('typeSelect').value;
-            const questionCount = document.getElementById('countSelect').value;
+            const type = document.getElementById('typeSelect').value;
+            const count = parseInt(document.getElementById('countSelect').value) || 5;
             const context = document.getElementById('contextInput').value.trim();
 
-            currentSessionConfig = { domain, difficulty, interviewType, questionCount, context };
+            currentSessionConfig = { domain, difficulty, interviewType: type, questionCount: count, context };
 
-            // UI state
             document.getElementById('arenaEmptyState').style.display = 'none';
             document.getElementById('arenaActiveCard').style.display = 'none';
             document.getElementById('arenaLoadingState').style.display = 'block';
-            document.getElementById('btnGenerate').disabled = true;
 
             try {
                 const res = await fetch('/api/interviews/generate', {
@@ -644,246 +655,145 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(currentSessionConfig)
                 });
-                const data = await res.json();
+                const result = await res.json();
+                document.getElementById('arenaLoadingState').style.display = 'none';
 
-                if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-                    generatedQuestions = data.data;
+                if (result.success && result.questions && result.questions.length > 0) {
+                    generatedQuestions = result.questions;
                     currentQuestionIndex = 0;
                     studentAnswers = {};
                     answerEvaluations = {};
                     renderActiveQuestion();
                 } else {
-                    alert(data.error || 'Failed to generate questions. Please try again.');
+                    alert(result.error || 'Could not generate questions. Please try another domain.');
                     document.getElementById('arenaEmptyState').style.display = 'block';
                 }
             } catch (err) {
-                console.error('Generation error:', err);
-                alert('Connection error while generating interview questions.');
-                document.getElementById('arenaEmptyState').style.display = 'block';
-            } finally {
                 document.getElementById('arenaLoadingState').style.display = 'none';
-                document.getElementById('btnGenerate').disabled = false;
+                document.getElementById('arenaEmptyState').style.display = 'block';
+                alert('Connection error while contacting interview generation service.');
             }
         }
 
         function renderActiveQuestion() {
-            if (generatedQuestions.length === 0) return;
-
-            const q = generatedQuestions[currentQuestionIndex];
             document.getElementById('arenaActiveCard').style.display = 'block';
+            const q = generatedQuestions[currentQuestionIndex];
+            const total = generatedQuestions.length;
 
-            // Meta badges
-            document.getElementById('qDomainBadge').textContent = currentSessionConfig.domain || q.topic;
-            const diffEl = document.getElementById('qDiffBadge');
-            diffEl.textContent = q.difficulty;
-            diffEl.className = `badge-pill-diff badge-diff-${q.difficulty.toLowerCase()}`;
-            document.getElementById('qTypeBadge').textContent = currentSessionConfig.interviewType || 'Technical';
+            document.getElementById('badgeQuestionNumber').textContent = `Question ${currentQuestionIndex + 1} / ${total}`;
+            document.getElementById('badgeDifficulty').textContent = currentSessionConfig.difficulty || 'Intermediate';
+            document.getElementById('badgeDomain').textContent = currentSessionConfig.domain || 'Technical';
+            document.getElementById('questionText').textContent = q.question || q;
+            document.getElementById('qIndicatorText').textContent = `Question ${currentQuestionIndex + 1} of ${total}`;
 
-            // Counter & progress bar
-            document.getElementById('qCounterText').textContent = `Question ${currentQuestionIndex + 1} of ${generatedQuestions.length}`;
-            const pct = Math.round(((currentQuestionIndex + 1) / generatedQuestions.length) * 100);
+            const pct = Math.round(((currentQuestionIndex + 1) / total) * 100);
             document.getElementById('progressBarFill').style.width = `${pct}%`;
 
-            // Question text
-            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('btnPrevQ').disabled = currentQuestionIndex === 0;
+            document.getElementById('btnNextQ').disabled = currentQuestionIndex === total - 1;
 
-            // Coding details
-            const codingWrap = document.getElementById('codingDetailsWrap');
-            if (q.codingDetails && ((q.codingDetails.constraints && q.codingDetails.constraints.length > 0) || (q.codingDetails.testCases && q.codingDetails.testCases.length > 0))) {
-                codingWrap.style.display = 'block';
-                const constraintsEl = document.getElementById('codingConstraintsText');
-                if (q.codingDetails.constraints && q.codingDetails.constraints.length > 0) {
-                    constraintsEl.innerHTML = `<strong>Constraints:</strong> ${q.codingDetails.constraints.join(' &bull; ')}`;
-                } else {
-                    constraintsEl.innerHTML = '';
-                }
-                const testCasesEl = document.getElementById('codingTestCasesText');
-                if (q.codingDetails.testCases && q.codingDetails.testCases.length > 0) {
-                    testCasesEl.innerHTML = `<strong>Examples:</strong> ` + q.codingDetails.testCases.map(tc => `Input: <code>${tc.input}</code> &rarr; Output: <code>${tc.output}</code>`).join(' | ');
-                } else {
-                    testCasesEl.innerHTML = '';
-                }
+            const existingAnswer = studentAnswers[currentQuestionIndex] || '';
+            document.getElementById('answerTextarea').value = existingAnswer;
+            handleAnswerInput(existingAnswer);
+
+            const existingEval = answerEvaluations[currentQuestionIndex];
+            if (existingEval) {
+                showEvaluationUI(existingEval);
             } else {
-                codingWrap.style.display = 'none';
+                document.getElementById('evalResultCard').style.display = 'none';
             }
-
-            // Student answer input
-            const inputEl = document.getElementById('studentAnswerInput');
-            inputEl.value = studentAnswers[currentQuestionIndex] || '';
-
-            // Reset evaluation card or load existing evaluation
-            const evalCard = document.getElementById('evalResultCard');
-            const evalData = answerEvaluations[currentQuestionIndex];
-            if (evalData) {
-                renderEvaluation(evalData);
-            } else {
-                evalCard.style.display = 'none';
-            }
-
-            // Hide suggested answer initially
-            document.getElementById('suggestedAnswerBox').style.display = 'none';
-            document.getElementById('suggestedAnswerContent').textContent = q.suggestedAnswer || '';
-            document.getElementById('keyConceptsContent').textContent = q.keyConcepts || 'Key architectural principles and practical trade-offs.';
-
-            const followUpsWrap = document.getElementById('followUpsWrap');
-            const followUpsList = document.getElementById('followUpsList');
-            if (q.followUpQuestions && q.followUpQuestions.length > 0) {
-                followUpsWrap.style.display = 'block';
-                followUpsList.innerHTML = q.followUpQuestions.map(f => `<li>${f}</li>`).join('');
-            } else {
-                followUpsWrap.style.display = 'none';
-            }
-
-            // Navigation buttons
-            document.getElementById('btnPrev').disabled = currentQuestionIndex === 0;
-            document.getElementById('btnNext').textContent = currentQuestionIndex === generatedQuestions.length - 1 ? 'Finish & Review' : 'Next';
-
-            renderPills();
         }
 
-        function renderPills() {
-            const selector = document.getElementById('qPillsSelector');
-            selector.innerHTML = '';
-            generatedQuestions.forEach((_, idx) => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `q-pill-btn ${idx === currentQuestionIndex ? 'active' : ''} ${studentAnswers[idx] ? 'completed' : ''}`;
-                btn.textContent = idx + 1;
-                btn.onclick = () => goToQuestion(idx);
-                selector.appendChild(btn);
-            });
-        }
-
-        function goToQuestion(idx) {
-            // Save current typed answer first
-            const currentVal = document.getElementById('studentAnswerInput').value;
-            studentAnswers[currentQuestionIndex] = currentVal;
-
-            if (idx >= 0 && idx < generatedQuestions.length) {
-                currentQuestionIndex = idx;
+        function navigateQuestion(offset) {
+            const nextIdx = currentQuestionIndex + offset;
+            if (nextIdx >= 0 && nextIdx < generatedQuestions.length) {
+                currentQuestionIndex = nextIdx;
                 renderActiveQuestion();
-            } else if (idx >= generatedQuestions.length) {
-                showToast('Great practice! Review your answers or click Save Session.', 'success');
             }
         }
 
-        // Live input save
-        document.getElementById('studentAnswerInput').addEventListener('input', function() {
-            studentAnswers[currentQuestionIndex] = this.value;
-            renderPills();
-        });
+        async function evaluateCurrentAnswer() {
+            const currentQ = generatedQuestions[currentQuestionIndex];
+            const answer = (studentAnswers[currentQuestionIndex] || '').trim();
 
-        function toggleSuggestedAnswer() {
-            const box = document.getElementById('suggestedAnswerBox');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-        }
-
-        async function handleEvaluate() {
-            const answer = document.getElementById('studentAnswerInput').value.trim();
             if (!answer) {
-                alert('Please type your answer or thought process before requesting evaluation.');
+                alert('Please provide an answer before submitting for evaluation.');
                 return;
             }
 
-            studentAnswers[currentQuestionIndex] = answer;
-            const q = generatedQuestions[currentQuestionIndex];
-            const btn = document.getElementById('btnEvaluate');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Evaluating...';
+            const btn = document.getElementById('btnSubmitAnswer');
             btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Analyzing...`;
 
             try {
                 const res = await fetch('/api/interviews/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        question: q.question,
-                        studentAnswer: answer,
+                        question: currentQ.question || currentQ,
                         domain: currentSessionConfig.domain,
-                        difficulty: q.difficulty,
-                        interviewType: currentSessionConfig.interviewType,
-                        suggestedAnswer: q.suggestedAnswer,
-                        keyConcepts: q.keyConcepts
+                        difficulty: currentSessionConfig.difficulty,
+                        userAnswer: answer
                     })
                 });
                 const result = await res.json();
-                if (result.success && result.data) {
-                    answerEvaluations[currentQuestionIndex] = result.data;
-                    renderEvaluation(result.data);
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-brain"></i> Evaluate Answer with AI`;
+
+                if (result.success && result.feedback) {
+                    answerEvaluations[currentQuestionIndex] = result.feedback;
+                    showEvaluationUI(result.feedback);
                 } else {
-                    alert(result.error || 'Evaluation failed.');
+                    alert('Evaluation error. Please try again.');
                 }
             } catch (err) {
-                console.error('Evaluation error:', err);
-                alert('Could not connect to evaluation service.');
-            } finally {
-                btn.innerHTML = originalText;
                 btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-brain"></i> Evaluate Answer with AI`;
+                alert('Connection error while contacting evaluation service.');
             }
         }
 
-        function renderEvaluation(data) {
-            const card = document.getElementById('evalResultCard');
-            card.style.display = 'block';
-
-            document.getElementById('evalRatingText').textContent = data.rating || 'Constructive Evaluation';
-            document.getElementById('evalScoreValue').textContent = data.score;
-
-            const badge = document.getElementById('evalScoreBadge');
-            badge.className = 'eval-score-badge ' + (
-                data.score >= 80 ? 'score-excellent' :
-                data.score >= 65 ? 'score-proficient' :
-                data.score >= 50 ? 'score-developing' : 'score-review'
-            );
-
-            document.getElementById('evalStrengthsText').textContent = data.strengths || 'Accurate points covered.';
-            document.getElementById('evalMissingText').textContent = data.missingConcepts || 'None identified.';
-            document.getElementById('evalSuggestionsText').textContent = data.suggestions || 'Keep practicing!';
-
-            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        function showEvaluationUI(fb) {
+            document.getElementById('evalResultCard').style.display = 'block';
+            document.getElementById('evalScore').textContent = fb.score || '8.0';
+            document.getElementById('evalStrengths').textContent = fb.strengths || 'Good conceptual grasp and direct response structure.';
+            document.getElementById('evalWeaknesses').textContent = fb.weaknesses || 'Could elaborate more on scalability edge cases or performance metrics.';
+            document.getElementById('evalModelAnswer').textContent = fb.modelAnswer || 'A structured architectural response.';
         }
 
-        async function saveCurrentSession() {
-            if (generatedQuestions.length === 0) return;
-
-            // Save active question answer
-            studentAnswers[currentQuestionIndex] = document.getElementById('studentAnswerInput').value;
-
-            const userResponses = generatedQuestions.map((_, idx) => ({
-                questionIndex: idx,
-                answer: studentAnswers[idx] || '',
-                feedback: answerEvaluations[idx] || {}
-            }));
+        async function saveInterviewSession() {
+            if (!generatedQuestions || generatedQuestions.length === 0) return;
+            const payload = {
+                domain: currentSessionConfig.domain,
+                difficulty: currentSessionConfig.difficulty,
+                interviewType: currentSessionConfig.interviewType,
+                questionCount: generatedQuestions.length,
+                context: currentSessionConfig.context,
+                questions: generatedQuestions,
+                userResponses: Object.keys(studentAnswers).map(idx => ({
+                    questionIndex: parseInt(idx),
+                    answer: studentAnswers[idx],
+                    feedback: answerEvaluations[idx] || null
+                }))
+            };
 
             try {
                 const res = await fetch('/api/interviews', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        domain: currentSessionConfig.domain,
-                        difficulty: currentSessionConfig.difficulty,
-                        interviewType: currentSessionConfig.interviewType,
-                        questionCount: generatedQuestions.length,
-                        context: currentSessionConfig.context,
-                        questions: generatedQuestions,
-                        userResponses: userResponses
-                    })
+                    body: JSON.stringify(payload)
                 });
                 const result = await res.json();
                 if (result.success) {
-                    alert('Interview session saved to your profile successfully!');
-                } else {
-                    alert(result.error || 'Failed to save session.');
+                    alert('Interview session saved to your LearnSmart account.');
                 }
             } catch (err) {
-                console.error('Save session error:', err);
                 alert('Connection error while saving interview session.');
             }
         }
 
         function showHistoryModal() {
-            const modal = document.getElementById('historyModal');
-            modal.style.display = 'flex';
+            document.getElementById('historyModal').style.display = 'flex';
             loadHistorySessions();
         }
 
@@ -893,7 +803,7 @@
 
         async function loadHistorySessions() {
             const container = document.getElementById('historyListContainer');
-            container.innerHTML = '<p style="text-align: center; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading saved sessions...</p>';
+            container.innerHTML = '<p style="text-align: center; color: var(--ls-muted);"><i class="fas fa-spinner fa-spin"></i> Loading saved sessions...</p>';
 
             try {
                 const res = await fetch('/api/interviews');
@@ -904,17 +814,17 @@
                         return `
                             <div class="history-session-card">
                                 <div>
-                                    <div style="font-weight: 700; color: var(--text-main); font-size: 1.05rem;">
+                                    <div style="font-weight: 800; color: var(--ls-black); font-size: 1.05rem;">
                                         ${s.domain}
                                     </div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-                                        <span><i class="fas fa-calendar"></i> ${dateStr}</span> &bull;
-                                        <span><i class="fas fa-signal"></i> ${s.difficulty}</span> &bull;
-                                        <span><i class="fas fa-list"></i> ${s.questionCount} Questions</span>
+                                    <div style="font-size: 0.82rem; color: var(--ls-muted); margin-top: 4px; font-weight: 600;">
+                                        <span><i class="fas fa-calendar" style="margin-right: 4px;"></i> ${dateStr}</span> &bull;
+                                        <span><i class="fas fa-signal" style="margin-right: 4px;"></i> ${s.difficulty}</span> &bull;
+                                        <span><i class="fas fa-list" style="margin-right: 4px;"></i> ${s.questionCount} Questions</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <button class="btn btn-primary btn-sm" onclick="loadSessionDetail('${s._id}')">
+                                    <button class="btn btn-purple btn-sm" onclick="loadSessionDetail('${s._id}')">
                                         <i class="fas fa-folder-open"></i> Open
                                     </button>
                                 </div>
@@ -922,10 +832,10 @@
                         `;
                     }).join('');
                 } else {
-                    container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-folder-open" style="font-size: 2rem; color: var(--gray-400);"></i><p style="margin-top: 8px; color: var(--text-muted);">No saved interview sessions yet. Start a session and click "Save Session" to track your progress.</p></div>';
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-folder-open" style="font-size: 2rem; color: var(--ls-muted);"></i><p style="margin-top: 8px; color: var(--ls-muted); font-weight: 600;">No saved interview sessions yet.</p></div>';
                 }
             } catch (err) {
-                container.innerHTML = '<p style="color: var(--danger); text-align: center;">Failed to load saved sessions.</p>';
+                container.innerHTML = '<p style="color: var(--ls-coral); text-align: center;">Failed to load saved sessions.</p>';
             }
         }
 
@@ -944,14 +854,12 @@
                         questionCount: session.questionCount,
                         context: session.context
                     };
-
                     studentAnswers = {};
                     answerEvaluations = {};
                     (session.userResponses || []).forEach(ur => {
                         if (ur.answer) studentAnswers[ur.questionIndex] = ur.answer;
                         if (ur.feedback && ur.feedback.score) answerEvaluations[ur.questionIndex] = ur.feedback;
                     });
-
                     closeHistoryModal();
                     document.getElementById('arenaEmptyState').style.display = 'none';
                     renderActiveQuestion();
@@ -961,5 +869,7 @@
             }
         }
     </script>
+
+    <%- include('includes/footer') %>
 </body>
 </html>

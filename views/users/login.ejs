@@ -2,48 +2,176 @@
 <html lang="en">
 <head>
   <%- include('../includes/head') %>
-  <title>Login | LearnSmart</title>
+  <title>Sign In &mdash; LearnSmart</title>
+  <style>
+    /* ==========================================================================
+       Clean, Distraction-Free Login Screen (Zero Box Shadows, Crisp White Panel)
+       ========================================================================== */
+    .login-clean-wrap {
+      min-height: calc(100vh - 130px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      background-color: var(--ls-bg);
+      background-image: 
+        linear-gradient(rgba(17, 17, 17, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .login-clean-card {
+      max-width: 460px;
+      width: 100%;
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 2.25rem;
+      position: relative;
+    }
+
+    .role-toggle-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: #F4F4F2;
+      border: 1.5px solid var(--ls-black);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-toggle-btn {
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--ls-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition-fast);
+    }
+
+    .role-toggle-btn.active {
+      background: var(--ls-purple);
+      color: #FFFFFF;
+    }
+
+    .demo-chip-bar {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1.5px dashed #DCDCD8;
+      text-align: center;
+    }
+
+    .demo-chip-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--ls-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .demo-chips {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .demo-chip {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      background: #F5F5F3;
+      border: 1.5px solid var(--ls-black);
+      border-radius: var(--radius-sm);
+      color: var(--ls-black);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .demo-chip:hover {
+      background: var(--ls-yellow-subtle);
+      border-color: var(--ls-purple);
+    }
+  </style>
 </head>
 <body>
 
   <%- include('../includes/navbar', { currentPage: 'login' }) %>
 
-  <main class="ls-page-wrap-form">
-    <div class="ls-card" style="padding: 2.5rem 2.25rem;">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <div class="ls-brand-icon" style="width: 48px; height: 48px; font-size: 1.4rem; margin: 0 auto 1rem auto;">
+  <main class="login-clean-wrap">
+    <div class="login-clean-card">
+
+      <!-- Brand Header -->
+      <div style="text-align: center; margin-bottom: 1.75rem;">
+        <div class="ls-sidebar-brand-mark" style="width: 48px; height: 48px; font-size: 1.4rem; margin: 0 auto 0.75rem auto;">
           <i class="fas fa-brain"></i>
         </div>
-        <h1 style="font-family: var(--font-heading); font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">
-          Welcome Back to LearnSmart
+        <h1 style="font-size: 1.85rem; font-weight: 900; color: var(--ls-black); margin-bottom: 0.25rem;">
+          Sign In to LearnSmart
         </h1>
-        <p style="font-size: 0.92rem; color: var(--text-muted); margin: 0;">
-          Log in to continue your personalized learning journey
+        <p style="font-size: 0.9rem; color: var(--ls-muted); margin: 0;">
+          Access your personalized dashboard, study notes, and AI quizzes
         </p>
+      </div>
+
+      <!-- Flash Messages -->
+      <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+        <div style="background: var(--ls-coral-light); border: 1.5px solid var(--ls-coral); color: var(--ls-coral); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span><%= error %></span>
+        </div>
+      <% } %>
+
+      <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+        <div style="background: var(--ls-green-light); border: 1.5px solid var(--ls-green); color: var(--ls-green); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-circle-check"></i>
+          <span><%= success %></span>
+        </div>
+      <% } %>
+
+      <!-- Role Selector -->
+      <div class="role-toggle-bar">
+        <button type="button" class="role-toggle-btn active" id="studentRoleBtn" onclick="selectRole('student')">
+          <i class="fas fa-graduation-cap"></i> Student
+        </button>
+        <button type="button" class="role-toggle-btn" id="adminRoleBtn" onclick="selectRole('admin')">
+          <i class="fas fa-user-shield"></i> Administrator
+        </button>
       </div>
 
       <!-- Login Form -->
       <form action="/login" method="post" id="loginForm">
         <div class="form-group">
           <label class="form-label" for="username">
-            <i class="fas fa-user text-primary" style="margin-right: 4px;"></i> Username or Email
+            <i class="fas fa-user" style="color: var(--ls-purple); margin-right: 4px;"></i> Username or Email
           </label>
           <input 
             type="text" 
             name="username" 
             id="username" 
             class="form-control" 
-            placeholder="Enter your username or email" 
+            placeholder="e.g. Harshada or you@college.edu" 
             required 
             autocomplete="username"
           />
         </div>
 
-        <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-            <label class="form-label" for="password" style="margin-bottom: 0;">
-              <i class="fas fa-lock text-primary" style="margin-right: 4px;"></i> Password
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" for="password" style="margin: 0;">
+              <i class="fas fa-lock" style="color: var(--ls-purple); margin-right: 4px;"></i> Password
             </label>
+            <a href="javascript:void(0)" onclick="alert('Please contact your administrator to reset credentials.')" style="font-size: 0.8rem; font-weight: 700; color: var(--ls-blue);">
+              Forgot?
+            </a>
           </div>
           <div style="position: relative;">
             <input 
@@ -54,51 +182,97 @@
               placeholder="Enter your password" 
               required 
               autocomplete="current-password"
-              style="padding-right: 42px;"
             />
             <button 
               type="button" 
-              id="togglePassword" 
-              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; padding: 4px;"
-              aria-label="Toggle password visibility"
+              id="togglePwdBtn"
+              onclick="togglePasswordVisibility()" 
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--ls-muted); cursor: pointer; font-size: 0.95rem; padding: 4px;"
+              title="Show/hide password"
             >
-              <i class="fas fa-eye"></i>
+              <i class="fas fa-eye" id="pwdEyeIcon"></i>
             </button>
           </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.88rem;">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted);">
-            <input type="checkbox" id="rememberMe" style="accent-color: var(--primary);" /> Remember me
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: var(--ls-text); cursor: pointer; margin: 0;">
+            <input type="checkbox" name="remember" id="rememberMe" style="width: 16px; height: 16px; accent-color: var(--ls-purple); cursor: pointer;" />
+            <span>Remember this device</span>
           </label>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px; font-size: 1rem;">
-          <i class="fas fa-arrow-right-to-bracket"></i> Login to Account
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
+          <span>Sign In to LearnSmart</span>
+          <i class="fas fa-arrow-right"></i>
         </button>
       </form>
 
-      <div style="text-align: center; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.92rem; color: var(--text-muted);">
-        Don't have an account yet? 
-        <a href="/signup" style="font-weight: 700; color: var(--primary);">Create an account</a>
+      <!-- Demo Account Quick Fill -->
+      <div class="demo-chip-bar">
+        <div class="demo-chip-title">Quick Demo Login</div>
+        <div class="demo-chips">
+          <button type="button" class="demo-chip" onclick="fillCredentials('Harshada', '')" title="Fill student demo credentials">
+            <i class="fas fa-user-graduate" style="color: var(--ls-purple);"></i> Student Demo
+          </button>
+          <button type="button" class="demo-chip" onclick="fillCredentials('admin', 'Admin@12345')" title="Fill admin demo credentials">
+            <i class="fas fa-shield" style="color: var(--ls-orange);"></i> Admin Demo
+          </button>
+        </div>
       </div>
+
+      <!-- Links Footer -->
+      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1.5px solid #EAEAEA;">
+        <p style="font-size: 0.9rem; color: var(--ls-muted); margin-bottom: 0.5rem;">
+          Don't have an account yet? 
+          <a href="/signup" style="font-weight: 800; color: var(--ls-purple);">Create one free</a>
+        </p>
+        <a href="/" style="font-size: 0.85rem; font-weight: 700; color: var(--ls-muted); display: inline-flex; align-items: center; gap: 4px;">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+      </div>
+
     </div>
   </main>
 
-  <%- include('../includes/footer') %>
-
   <script>
-    const toggleBtn = document.getElementById('togglePassword');
-    const pwdInput = document.getElementById('password');
-    if (toggleBtn && pwdInput) {
-      toggleBtn.addEventListener('click', function() {
-        const isPassword = pwdInput.type === 'password';
-        pwdInput.type = isPassword ? 'text' : 'password';
-        const icon = toggleBtn.querySelector('i');
-        if (icon) {
-          icon.className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
-        }
-      });
+    function selectRole(role) {
+      const studentBtn = document.getElementById('studentRoleBtn');
+      const adminBtn = document.getElementById('adminRoleBtn');
+      const usernameInput = document.getElementById('username');
+
+      if (role === 'admin') {
+        adminBtn.classList.add('active');
+        studentBtn.classList.remove('active');
+        usernameInput.placeholder = 'e.g. admin or administrator@learnsmart.edu';
+      } else {
+        studentBtn.classList.add('active');
+        adminBtn.classList.remove('active');
+        usernameInput.placeholder = 'e.g. Harshada or you@college.edu';
+      }
+    }
+
+    function fillCredentials(user, pass) {
+      document.getElementById('username').value = user;
+      document.getElementById('password').value = pass;
+      if (user === 'admin') {
+        selectRole('admin');
+      } else {
+        selectRole('student');
+      }
+      document.getElementById('password').focus();
+    }
+
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('pwdEyeIcon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeIcon.className = 'fas fa-eye-slash';
+      } else {
+        pwdInput.type = 'password';
+        eyeIcon.className = 'fas fa-eye';
+      }
     }
   </script>
 

@@ -1,301 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <%- include('includes/head') %>
     <title><%= topic %> Quiz | LearnSmart</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-    <link rel="stylesheet" href="/css/learnsmart-theme.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-light: #e8edff;
-            --primary-dark: #3550d4;
-            --secondary: #7209b7;
-            --dark: #111827;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --bg-light: #f9fafb;
-            --bg-white: #ffffff;
-            --border-color: #e5e7eb;
-            --success: #06d6a0;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --border-radius: 12px;
-            --border-radius-lg: 24px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-family: 'Inter', sans-serif;
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-bg: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: var(--font-family);
-            background: var(--gradient-bg);
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        /* --- Consistent Navbar --- */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 1.5rem;
-            position: sticky; top: 0; z-index: 1000;
-        }
-        .nav-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.75rem; font-weight: 800; color: var(--primary); text-decoration: none; }
-        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-primary); font-weight: 500; transition: var(--transition); padding: 8px 12px; border-radius: 8px; }
-        .nav-links a:hover { color: var(--primary); background-color: var(--primary-light); }
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary); }
-        .btn { display: inline-block; padding: 0.7rem 1.5rem; border-radius: var(--border-radius); text-decoration: none; transition: var(--transition); font-weight: 600; box-shadow: var(--shadow-sm); border: 2px solid transparent; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: white; }
-
-        /* --- Quiz UI --- */
-        .quiz-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 2rem;
-        }
-
-        .quiz-header {
-            background: var(--bg-white);
-            padding: 2rem;
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 2rem;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .quiz-header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-        
-        .quiz-info {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            color: var(--text-secondary);
-            font-weight: 500;
+        .quiz-take-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem 1.5rem;
         }
 
         /* Progress Stepper */
-        .progress-stepper {
+        .quiz-stepper {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 2rem;
         }
 
-        .step {
+        .quiz-step-bar {
             flex: 1;
             height: 8px;
-            background-color: var(--border-color);
-            border-radius: 4px;
-            transition: var(--transition);
-        }
-        
-        .step.active {
-            background-color: var(--primary);
-            box-shadow: 0 0 15px rgba(67, 97, 238, 0.5);
+            background-color: #E2E2DF;
+            border: 1px solid var(--ls-black);
+            border-radius: var(--radius-full);
+            transition: var(--transition-fast);
         }
 
-        /* Question Block */
-        .question-block {
-            background: var(--bg-white);
-            padding: 2rem;
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-md);
+        .quiz-step-bar.active {
+            background-color: var(--ls-purple);
+        }
+
+        /* Question Block Card */
+        .question-card-block {
+            background: #FFFFFF;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-md);
+            box-shadow: none;
+            padding: 2rem 2.25rem;
             margin-bottom: 2rem;
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-        
-        .question-block.active {
-            border-color: var(--primary);
-            transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
+            transition: var(--transition-fast);
+            position: relative;
         }
 
-        .question-header {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 1rem;
+        .question-card-block:hover {
+            border-color: var(--ls-purple);
         }
 
-        .question {
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.5;
+        .quiz-option-radio {
+            display: none;
         }
 
-        .option-group {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        .option-label {
-            background-color: var(--bg-light);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
+        .quiz-option-label {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            font-weight: 500;
+            gap: 14px;
+            padding: 12px 18px;
+            border: 2px solid var(--ls-black);
+            border-radius: var(--radius-sm);
+            background: #FFFFFF;
+            cursor: pointer;
+            box-shadow: none;
+            transition: var(--transition-fast);
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--ls-black);
         }
 
-        .option-label:hover {
-            border-color: var(--primary);
-            background-color: var(--primary-light);
+        .quiz-option-label:hover {
+            border-color: var(--ls-purple);
+            background-color: #FAFAFA;
         }
 
-        .option-prefix {
-            font-weight: 700;
-            color: var(--primary);
-            border: 2px solid var(--primary-light);
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            display: inline-flex;
+        .quiz-option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1.5px solid var(--ls-black);
+            background: #FFFFFF;
+            display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: var(--ls-black);
+            flex-shrink: 0;
+            transition: var(--transition-fast);
         }
 
-        input[type="radio"] { display: none; }
-        
-        input[type="radio"]:checked + .option-label {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary-dark);
-            box-shadow: var(--shadow-md);
+        .quiz-option-radio:checked + .quiz-option-label {
+            background-color: var(--ls-purple-light);
+            border-color: var(--ls-purple);
+            box-shadow: none;
         }
 
-        input[type="radio"]:checked + .option-label .option-prefix {
-            background-color: white;
-            color: var(--primary);
-            border-color: white;
-        }
-        
-        input[type="radio"]:checked + .option-label .fa-check-circle {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .check-icon {
-            margin-left: auto;
-            color: white;
-            font-size: 1.25rem;
-            opacity: 0;
-            transform: scale(0.5);
-            transition: var(--transition);
-        }
-
-        .submit-btn-wrapper {
-            text-align: center;
-            margin-top: 2rem;
-        }
-        
-        .submit-btn {
-            padding: 1rem 3rem;
-            font-size: 1.1rem;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
-            box-shadow: var(--shadow-md);
-        }
-
-        .submit-btn:hover {
-            background-color: #059669;
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .mobile-menu-btn { display: block; }
-            .nav-links {
-                position: absolute; top: 100%; left: 0; width: 100%; background: #fff;
-                flex-direction: column; gap: 0; padding: 1rem 0; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-                display: none;
-            }
-            .nav-links.active { display: flex; }
-            .nav-links a { padding: 1rem; width: 100%; text-align: center; }
-            .nav-links .cta-button, .nav-links .login-button { margin: 0.5rem auto; display: block; width: 80%; text-align: center; }
-        }
-        
-        @media (max-width: 480px) {
-            .quiz-container { padding: 1rem; margin-top: 20px; }
-            .quiz-header { padding: 1.5rem; }
-            .quiz-header h1 { font-size: 1.8rem; }
-            .question-block { padding: 1.5rem; }
+        .quiz-option-radio:checked + .quiz-option-label .quiz-option-letter {
+            background-color: var(--ls-purple);
+            color: #FFFFFF;
+            border-color: var(--ls-purple);
         }
     </style>
 </head>
-
 <body>
+
     <%- include('includes/navbar', { currentPage: 'quiz' }) %>
 
-    <div class="quiz-container">
-        <div class="quiz-header">
-            <h1><%= topic %></h1>
-            <div class="quiz-info">
-                <span><i class="fas fa-question-circle"></i> <%= quiz.length %> Questions</span>
-                
+    <main class="quiz-take-wrap">
+        <!-- Header Banner with Topic -->
+        <header class="ls-hero-banner ls-yellow-grid" style="padding: 1.5rem 2rem; margin-bottom: 1.75rem;">
+            <div>
+                <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #444444;">
+                    Active Assessment
+                </div>
+                <h1 style="font-size: 2.2rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+                    <%= topic %>
+                </h1>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #2B2B2B;">
+                    <i class="fas fa-list-check" style="color: var(--ls-purple); margin-right: 6px;"></i>
+                    <%= quiz.length %> AI-Curated Questions
+                </div>
             </div>
-        </div>
-        
-        <div class="progress-stepper">
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="badge badge-coral" style="font-size: 0.95rem; padding: 6px 14px;">
+                    <i class="fas fa-clock"></i> <span id="timerText">10:00</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Stepper -->
+        <div class="quiz-stepper">
             <% quiz.forEach((q, index) => { %>
-                <div class="step" id="step-<%= index %>"></div>
+                <div class="quiz-step-bar" id="stepBar-<%= index %>"></div>
             <% }) %>
         </div>
 
-        <form action="/submit-quiz" method="POST">
-            <% quiz.forEach((quizs, index) => { %>
-                <div class="question-block" id="question-block-<%= index %>">
-                    <div class="question-header">Question <%= index + 1 %> of <%= quiz.length %></div>
-                    <div class="question"><%= quizs.question %></div>
-                    <div class="option-group">
-                        <% quizs.options.forEach((opt, i) => { %>
+        <!-- Quiz Form -->
+        <form action="/submit-quiz" method="POST" id="activeQuizForm">
+            <% quiz.forEach((qItem, index) => { %>
+                <div class="question-card-block" id="questionCard-<%= index %>">
+                    <!-- Card Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1.5px solid #EBEBEA;">
+                        <span style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: var(--ls-black);">
+                            Question <%= index + 1 %> of <%= quiz.length %>
+                        </span>
+                        <span class="badge badge-purple" style="font-size: 0.78rem;">Single Choice</span>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--ls-black); line-height: 1.45; margin-bottom: 1.5rem;">
+                        <%= qItem.question %>
+                    </h3>
+
+                    <!-- Option Group -->
+                    <div style="display: flex; flex-direction: column;">
+                        <% qItem.options.forEach((opt, optIdx) => { %>
                             <div>
-                                <input type="radio" id="q<%= index %>_<%= i %>" name="q<%= index %>" value="<%= opt %>" required>
-                                <label class="option-label" for="q<%= index %>_<%= i %>">
-                                    <span class="option-prefix"><%= String.fromCharCode(65 + i) %></span>
+                                <input 
+                                    type="radio" 
+                                    id="q<%= index %>_<%= optIdx %>" 
+                                    name="q<%= index %>" 
+                                    value="<%= opt %>" 
+                                    class="quiz-option-radio" 
+                                    required 
+                                    onchange="markStepAnswered(<%= index %>)"
+                                />
+                                <label class="quiz-option-label" for="q<%= index %>_<%= optIdx %>">
+                                    <span class="quiz-option-letter"><%= String.fromCharCode(65 + optIdx) %></span>
                                     <span><%= opt %></span>
-                                    <i class="fas fa-check-circle check-icon"></i>
                                 </label>
                             </div>
                         <% }) %>
@@ -303,60 +176,44 @@
                 </div>
             <% }) %>
 
+            <!-- Hidden Inputs Preserved -->
             <input type="hidden" name="answers" value='<%= JSON.stringify(quiz.map(q => q.answer)) %>' />
             <input type="hidden" name="questions" value='<%= JSON.stringify(quiz.map(q => q.question)) %>' />
             <input type="hidden" name="topic" value='<%= topic %>' />
 
-            <div class="submit-btn-wrapper">
-                <button class="submit-btn" type="submit">
-                    <i class="fas fa-paper-plane"></i> Submit Quiz
+            <!-- Submit Button Card -->
+            <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn btn-purple btn-lg" id="submitQuizBtn" style="padding: 14px 40px; font-size: 1.15rem;">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Submit &amp; View Results</span>
                 </button>
             </div>
         </form>
-    </div>
+    </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const navLinks = document.getElementById('navLinks');
-            mobileMenuBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-            });
+        function markStepAnswered(idx) {
+            const bar = document.getElementById(`stepBar-${idx}`);
+            if (bar) bar.classList.add('active');
+        }
 
-            // Intersection Observer for progress tracking
-            const questionBlocks = document.querySelectorAll('.question-block');
-            const steps = document.querySelectorAll('.step');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const index = entry.target.id.split('-')[2];
-                        
-                        // Update question card active state
-                        questionBlocks.forEach(block => block.classList.remove('active'));
-                        entry.target.classList.add('active');
-                        
-                        // Update stepper active state
-                        steps.forEach((step, i) => {
-                            if (i <= index) {
-                                step.classList.add('active');
-                            } else {
-                                step.classList.remove('active');
-                            }
-                        });
-                    }
-                });
-            }, {
-                rootMargin: '-50% 0px -50% 0px', // Trigger when the middle of the viewport hits the element
-                threshold: 0
-            });
-
-            questionBlocks.forEach(block => {
-                observer.observe(block);
-            });
-        });
+        // Timer Countdown
+        let secondsLeft = 600;
+        const timerEl = document.getElementById('timerText');
+        const interval = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft <= 0) {
+                clearInterval(interval);
+                alert("Time's up! Submitting your answers automatically.");
+                document.getElementById('activeQuizForm').submit();
+            } else {
+                const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+                const secs = String(secondsLeft % 60).padStart(2, '0');
+                if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+            }
+        }, 1000);
     </script>
+
     <%- include('includes/footer') %>
 </body>
 </html>

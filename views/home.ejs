@@ -1,606 +1,669 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnSmart - AI-Powered Learning</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/learnsmart-theme.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --primary-light: #e8edff;
-            --secondary: #7209b7;
-            --dark: #111827;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --bg-light: #f9fafb;
-            --bg-white: #ffffff;
-            --border-color: #e5e7eb;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --border-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --font-family: 'Inter', sans-serif;
-        }
+  <%- include('includes/head') %>
+  <title>LearnSmart &mdash; AI-Powered Academic Companion</title>
+  <style>
+    /* ==========================================================================
+       Clean, Editorial Home Page Layout (Zero Box Shadows, Generous Whitespace)
+       ========================================================================== */
+    .home-page {
+      background-color: var(--ls-bg);
+      color: var(--ls-text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    /* Hero Section with Clean Signature Yellow Grid Accent */
+    .home-hero {
+      padding: 3.5rem 1.5rem 4rem 1.5rem;
+      background-color: var(--ls-bg);
+      border-bottom: 2px solid var(--ls-black);
+      position: relative;
+    }
 
-        html {
-            scroll-behavior: smooth;
-        }
+    .home-hero-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        body {
-            font-family: var(--font-family);
-            line-height: 1.6;
-            color: var(--text-secondary);
-            background-color: var(--bg-light);
-        }
+    .home-hero-header-box {
+      background-color: var(--ls-yellow);
+      background-image: 
+        linear-gradient(rgba(17, 17, 17, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-lg);
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .home-hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      color: var(--ls-black);
+      border: 1.5px solid var(--ls-black);
+      border-radius: var(--radius-full);
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
 
-        /* --- Navigation Bar --- */
-        .navbar {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
+    .home-hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      color: var(--ls-black);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-        .navbar.scrolled {
-            box-shadow: var(--shadow-md);
-        }
+    .home-hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: #2D2D2D;
+      font-weight: 500;
+      line-height: 1.6;
+      max-width: 780px;
+      margin: 0 auto 2rem auto;
+    }
 
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .home-hero-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
 
-        .logo {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-        }
+    /* Key Modules Horizontal Grid (Clean 4-Card Strip) */
+    .home-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
+    .home-preview-card {
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition-fast);
+    }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 500;
-            transition: var(--transition);
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
+    .home-preview-card:hover {
+      border-color: var(--ls-purple);
+    }
 
-        .nav-links a:hover {
-            color: var(--primary);
-            background-color: var(--primary-light);
-        }
+    .home-preview-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--ls-black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
 
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-primary);
-        }
+    .home-preview-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--ls-black);
+      margin: 0;
+    }
 
-        .cta-button,
-        .login-button {
-            display: inline-block;
-            padding: 0.7rem 1.5rem;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-            border: 2px solid transparent;
-        }
+    .home-preview-desc {
+      font-size: 0.88rem;
+      color: var(--ls-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
 
-        .cta-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
+    /* Section Wrapper */
+    .home-section {
+      padding: 4.5rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-        .login-button {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
+    .home-section-header {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 3rem auto;
+    }
 
-        .login-button:hover {
-            background: var(--primary);
-            color: white;
-        }
+    .home-section-badge {
+      display: inline-block;
+      font-family: var(--font-editorial);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 12px;
+      background: var(--ls-yellow-subtle);
+      border: 1.5px solid var(--ls-black);
+      border-radius: var(--radius-full);
+      margin-bottom: 0.75rem;
+      color: var(--ls-black);
+    }
 
-        /* --- Hero Section --- */
-        .hero {
-            padding: 6rem 0;
-            background: var(--bg-light);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+    .home-section-title {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--ls-black);
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
-            border-radius: 50%;
-        }
+    .home-section-sub {
+      font-size: 1.05rem;
+      color: var(--ls-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
 
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -15%;
-            right: -5%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, var(--secondary-light) 0%, transparent 70%);
-            border-radius: 50%;
-        }
+    /* Core Capabilities 2x2 Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.75rem;
+    }
 
-        .hero .container {
-            position: relative;
-            z-index: 1;
-        }
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-            line-height: 1.2;
-        }
+    .feature-card-clean {
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: var(--transition-fast);
+    }
 
-        .hero h1 .highlight {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    .feature-card-clean:hover {
+      border-color: var(--ls-purple);
+    }
 
-        .hero p {
-            font-size: 1.25rem;
-            margin: 0 auto 2.5rem;
-            color: var(--text-secondary);
-            max-width: 700px;
-        }
+    .feature-icon-bubble {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--ls-black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
 
-        .hero-image-container {
-            margin-top: 4rem;
-        }
+    .feature-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--ls-black);
+      margin: 0;
+    }
 
-        .hero-image {
-            width: 100%;
-            max-width: 800px;
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            transition: var(--transition);
-        }
+    .feature-text {
+      font-size: 0.95rem;
+      color: var(--ls-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
 
-        .hero-image:hover {
-            transform: scale(1.02);
-        }
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
 
-        /* --- Features Section --- */
-        .features {
-            padding: 6rem 0;
-            background: var(--bg-white);
-        }
+    .feature-tag-chip {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border: 1px solid #D0D0D0;
+      border-radius: var(--radius-sm);
+      background: #F9F9F8;
+      color: #444444;
+    }
 
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
+    /* 3-Step Study Cycle */
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+    }
 
-        .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
+    @media (max-width: 860px) {
+      .workflow-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .section-header p {
-            max-width: 600px;
-            margin: 0 auto;
-            color: var(--text-secondary);
-        }
+    .step-card {
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-md);
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
+    .step-number {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--ls-purple);
+    }
 
-        .feature-card {
-            padding: 2.5rem;
-            text-align: center;
-            background: var(--bg-light);
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            border: 1px solid var(--border-color);
-        }
+    .step-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--ls-black);
+      margin: 0;
+    }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
-        }
+    .step-text {
+      font-size: 0.92rem;
+      color: var(--ls-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
 
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            width: 70px;
-            height: 70px;
-            background: var(--primary-light);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
+    /* Dual Audience Card Section */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+    }
 
-        .feature-card:hover .feature-icon {
-            background: var(--primary);
-            color: white;
-            transform: rotate(10deg);
-        }
+    @media (max-width: 768px) {
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
+    .audience-card {
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+    }
 
-        /* --- CTA Section --- */
-        .cta-section {
-            padding: 6rem 0;
-            background: var(--dark);
-            color: white;
-            text-align: center;
-        }
+    .audience-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 1.25rem 0 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-        .cta-section h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-        }
+    .audience-card li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.93rem;
+      color: #333333;
+      line-height: 1.45;
+    }
 
-        .cta-section p {
-            max-width: 600px;
-            margin: 0 auto 2.5rem;
-            opacity: 0.8;
-        }
+    .audience-card li i {
+      color: var(--ls-green);
+      font-size: 1rem;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
 
-        /* --- Footer --- */
-        footer {
-            background: var(--text-primary);
-            color: var(--bg-light);
-            padding: 3rem 0;
-            text-align: center;
-        }
+    /* Clean CTA Banner */
+    .cta-banner-clean {
+      background-color: var(--ls-yellow);
+      background-image: 
+        linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-xl);
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+      margin-bottom: 4rem;
+    }
 
-        footer p {
-            opacity: 0.7;
-        }
+    .cta-banner-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 900;
+      color: var(--ls-black);
+      margin-bottom: 0.75rem;
+    }
 
-        /* --- AI Chatbot --- */
-        .ai-chatbot-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .ai-chatbot-iframe {
-            width: 370px;
-            height: 550px;
-            border: none;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-xl);
-            transform-origin: bottom right;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 0;
-            transform: scale(0.9);
-            pointer-events: none;
-        }
-
-        .ai-chatbot-iframe.active {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-        }
-
-        .ai-chatbot-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.3s ease;
-            z-index: 1001;
-            border: none;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7);
-            }
-
-            70% {
-                box-shadow: 0 0 0 15px rgba(67, 97, 238, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
-            }
-        }
-
-        .ai-chatbot-toggle:hover {
-            transform: scale(1.1);
-            animation: none;
-        }
-
-        /* --- Animation on Scroll --- */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-
-        .animate-on-scroll.animated {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- Responsive Design --- */
-        @media (max-width: 992px) {
-            .nav-links {
-                gap: 1rem;
-            }
-
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .nav-links {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: var(--bg-white);
-                flex-direction: column;
-                gap: 0;
-                padding: 1rem 0;
-                box-shadow: var(--shadow-md);
-                transform: translateY(-10px);
-                opacity: 0;
-                pointer-events: none;
-                transition: var(--transition);
-            }
-
-            .nav-links.active {
-                transform: translateY(0);
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-            .nav-links a {
-                padding: 1rem;
-                width: 90%;
-                text-align: center;
-                margin: 0.25rem auto;
-            }
-
-            .cta-section,
-            .features,
-            .hero {
-                padding: 4rem 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .ai-chatbot-iframe {
-                width: calc(100vw - 40px);
-                height: 70vh;
-            }
-        }
-    </style>
+    .cta-banner-sub {
+      font-size: 1.05rem;
+      color: #2D2D2D;
+      max-width: 620px;
+      margin: 0 auto 1.75rem auto;
+      line-height: 1.55;
+    }
+  </style>
 </head>
+<body class="home-page">
 
-<body>
-    <%- include('includes/navbar', { currentPage: 'home' }) %>
+  <%- include('includes/navbar', { currentPage: 'home' }) %>
 
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content animate-on-scroll">
-                <h1>Unlock Your Full Potential with <span class="highlight">AI-Powered</span> Learning</h1>
-                <p>LearnSmart adapts to you, creating a personalized educational journey with custom quizzes, resources,
-                    and progress tracking.</p>
-                <% if (currentUser && !currentUser.isAdmin) { %>
-                    <a href="/quiz" class="cta-button">Start Your Free Assessment</a>
-                    <% } %>
-
-            </div>
-            <div class="hero-image-container animate-on-scroll" style="transition-delay: 0.2s;">
-                <img class="hero-image"
-                    src="https://res.cloudinary.com/drp3ojnl0/image/upload/v1743949952/WhatsApp_Image_2025-04-05_at_19.32.57_054f2e1a_l45cfx.jpg"
-                    alt="A student using a futuristic learning interface">
-            </div>
+  <!-- ==========================================================================
+       HERO SECTION: CLEAN EDITORIAL HEADLINE & CAPABILITIES OVERVIEW
+       ========================================================================== -->
+  <section class="home-hero">
+    <div class="home-hero-container">
+      <div class="home-hero-header-box">
+        <div class="home-hero-pill">
+          <i class="fas fa-sparkles" style="color: var(--ls-purple);"></i>
+          <span>AI-Powered Academic Intelligence</span>
         </div>
-    </section>
 
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header animate-on-scroll">
-                <h2>Why Choose LearnSmart?</h2>
-                <p>We leverage cutting-edge technology to make your learning experience more effective, efficient, and
-                    engaging.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card animate-on-scroll" style="transition-delay: 0.1s;">
-                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
-                    <h3>AI-Powered Recommendations</h3>
-                    <p>Get content and quizzes tailored to your unique learning style and current knowledge level.</p>
-                </div>
-                <div class="feature-card animate-on-scroll" style="transition-delay: 0.2s;">
-                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3>Intelligent Progress Tracking</h3>
-                    <p>Monitor your learning journey with detailed analytics and see your improvement over time.</p>
-                </div>
-                <div class="feature-card animate-on-scroll" style="transition-delay: 0.3s;">
-                    <div class="feature-icon"><i class="fas fa-book-open"></i></div>
-                    <h3>Dynamic Resource Generation</h3>
-                    <p>Access personalized videos, articles, and interactive exercises based on your performance.</p>
-                </div>
-            </div>
+        <h1 class="home-hero-title">
+          The Intelligent Study Workspace for Modern Students
+        </h1>
+
+        <p class="home-hero-sub">
+          LearnSmart combines custom AI practice quizzes, structured lecture notebooks, prioritized daily tasks, and technical interview preparation into one clean, distraction-free environment.
+        </p>
+
+        <div class="home-hero-actions">
+          <% if (currentUser) { %>
+            <a href="<%= currentUser.isAdmin ? '/admin/dashboard' : '/dashboard' %>" class="btn btn-primary btn-lg">
+              <i class="fas fa-gauge-high"></i> Open Your Dashboard
+            </a>
+            <a href="/quiz" class="btn btn-outline btn-lg">
+              <i class="fas fa-brain"></i> Take an AI Quiz
+            </a>
+          <% } else { %>
+            <a href="/signup" class="btn btn-primary btn-lg">
+              <i class="fas fa-user-plus"></i> Get Started Free
+            </a>
+            <a href="/login" class="btn btn-outline btn-lg">
+              <i class="fas fa-right-to-bracket"></i> Sign In to Account
+            </a>
+          <% } %>
         </div>
-    </section>
+      </div>
 
-    <section class="cta-section">
-        <div class="container animate-on-scroll">
-            <h2>Ready to Transform Your Learning?</h2>
-            <p>Join thousands of learners who are achieving their goals faster with LearnSmart. It's free to get
-                started!</p>
-            <a href="/signup" class="cta-button">Sign Up For Free</a>
+      <!-- Quick Modules Overview (Clean, Crisp 4-Card Strip) -->
+      <div class="home-preview-grid">
+        <div class="home-preview-card">
+          <div class="home-preview-icon" style="background: var(--ls-blue-light); color: var(--ls-blue);">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h2 class="home-preview-title">Adaptive AI Quizzes</h2>
+          <p class="home-preview-desc">
+            Custom curriculum-aligned assessments with instant step-by-step explanations on any technical topic.
+          </p>
         </div>
-    </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <%= new Date().getFullYear() %> LearnSmart. "Empowering minds, shaping the future."</p>
+        <div class="home-preview-card">
+          <div class="home-preview-icon" style="background: var(--ls-purple-light); color: var(--ls-purple);">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h2 class="home-preview-title">My Study Lab</h2>
+          <p class="home-preview-desc">
+            Organize lecture notes, key formulas, and code summaries categorized by subject with revision flags.
+          </p>
         </div>
-    </footer>
 
-    <div class="ai-chatbot-container">
-        <iframe class="ai-chatbot-iframe" src="https://sameet-ai-updated.vercel.app/" title="AI Chatbot"
-            allow="microphone" id="aiChatbotIframe"></iframe>
-        <button class="ai-chatbot-toggle" id="aiChatbotToggle" title="Toggle AI Assistant">
-            <i class="fas fa-robot"></i>
-        </button>
+        <div class="home-preview-card">
+          <div class="home-preview-icon" style="background: var(--ls-orange-light); color: var(--ls-orange);">
+            <i class="fas fa-list-check"></i>
+          </div>
+          <h2 class="home-preview-title">Prioritized To-Dos</h2>
+          <p class="home-preview-desc">
+            Track daily assignments, syllabus targets, and exam milestones with High, Medium, and Low urgencies.
+          </p>
+        </div>
+
+        <div class="home-preview-card">
+          <div class="home-preview-icon" style="background: var(--ls-green-light); color: var(--ls-green);">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <h2 class="home-preview-title">Interview Coach</h2>
+          <p class="home-preview-desc">
+            Practice real technical questions and HR interview simulations with AI-guided feedback and scoring.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SECTION 1: WHAT LEARNSMART DOES (CORE CAPABILITIES)
+       ========================================================================== -->
+  <section class="home-section" id="features">
+    <div class="home-section-header">
+      <div class="home-section-badge">Platform Capabilities</div>
+      <h2 class="home-section-title">Everything You Need to Study & Excel</h2>
+      <p class="home-section-sub">
+        LearnSmart replaces scattered study documents, flashcard apps, and generic question banks with a cohesive academic operating system.
+      </p>
     </div>
 
+    <div class="features-grid">
+      <!-- Feature 1: AI Quiz Generator -->
+      <div class="feature-card-clean">
+        <div class="feature-icon-bubble" style="background: var(--ls-blue-light); color: var(--ls-blue);">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <h3 class="feature-title">AI Quiz Generator & Diagnostics</h3>
+        <p class="feature-text">
+          Generate targeted multiple-choice practice tests on any computer science or engineering topic. Configure question quantity, choose from Easy, Medium, or Hard difficulty, and get instant explanations for every option.
+        </p>
+        <div class="feature-tags">
+          <span class="feature-tag-chip">Data Structures</span>
+          <span class="feature-tag-chip">DBMS</span>
+          <span class="feature-tag-chip">Web Dev</span>
+          <span class="feature-tag-chip">Operating Systems</span>
+          <span class="feature-tag-chip">C++ & Java</span>
+        </div>
+      </div>
 
+      <!-- Feature 2: My Study Lab -->
+      <div class="feature-card-clean">
+        <div class="feature-icon-bubble" style="background: var(--ls-purple-light); color: var(--ls-purple);">
+          <i class="fas fa-note-sticky"></i>
+        </div>
+        <h3 class="feature-title">My Study Lab & Notes Repository</h3>
+        <p class="feature-text">
+          Keep all your study notes structured and searchable. Add revision tags, mark crucial exam topics, record quick formulas, and edit summaries directly in a clean markdown-friendly interface.
+        </p>
+        <div class="feature-tags">
+          <span class="feature-tag-chip">Subject Filters</span>
+          <span class="feature-tag-chip">Revision Tags</span>
+          <span class="feature-tag-chip">Quick Search</span>
+          <span class="feature-tag-chip">Instant Edit</span>
+        </div>
+      </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Mobile Menu Toggle ---
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const navLinks = document.getElementById('navLinks');
-            const mobileIcon = mobileMenuBtn.querySelector('i');
+      <!-- Feature 3: Task & Milestone Planner -->
+      <div class="feature-card-clean">
+        <div class="feature-icon-bubble" style="background: var(--ls-orange-light); color: var(--ls-orange);">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3 class="feature-title">Prioritized Study Task Tracker</h3>
+        <p class="feature-text">
+          Stay on top of semester deliverables. Categorize study tasks into High, Medium, and Low urgencies, track due dates, mark completed items, and maintain steady daily momentum without stress.
+        </p>
+        <div class="feature-tags">
+          <span class="feature-tag-chip">Urgency Badges</span>
+          <span class="feature-tag-chip">Status Tabs</span>
+          <span class="feature-tag-chip">Due Dates</span>
+          <span class="feature-tag-chip">Daily Milestones</span>
+        </div>
+      </div>
 
-            mobileMenuBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                if (navLinks.classList.contains('active')) {
-                    mobileIcon.classList.remove('fa-bars');
-                    mobileIcon.classList.add('fa-times');
-                } else {
-                    mobileIcon.classList.remove('fa-times');
-                    mobileIcon.classList.add('fa-bars');
-                }
-            });
+      <!-- Feature 4: Interview Preparation -->
+      <div class="feature-card-clean">
+        <div class="feature-icon-bubble" style="background: var(--ls-green-light); color: var(--ls-green);">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h3 class="feature-title">AI Technical & HR Interview Prep</h3>
+        <p class="feature-text">
+          Prepare for engineering placements with authentic interview questions. Practice answering technical concepts, system design basics, and behavioral HR prompts with AI-driven sample solutions.
+        </p>
+        <div class="feature-tags">
+          <span class="feature-tag-chip">Campus Placements</span>
+          <span class="feature-tag-chip">HR Prompts</span>
+          <span class="feature-tag-chip">Technical Concepts</span>
+          <span class="feature-tag-chip">AI Evaluation</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            // --- AI Chatbot Toggle ---
-            const chatbotToggle = document.getElementById('aiChatbotToggle');
-            const chatbotIframe = document.getElementById('aiChatbotIframe');
-            const chatbotIcon = chatbotToggle.querySelector('i');
-            let chatbotOpen = false;
+  <!-- ==========================================================================
+       SECTION 2: HOW IT WORKS (THE 3-STEP STUDY CYCLE)
+       ========================================================================== -->
+  <section class="home-section" id="workflow" style="border-top: 1.5px solid #E5E5E2; padding-top: 4rem;">
+    <div class="home-section-header">
+      <div class="home-section-badge">How It Works</div>
+      <h2 class="home-section-title">The Active-Recall Study Cycle</h2>
+      <p class="home-section-sub">
+        LearnSmart is built around proven active recall and spaced repetition principles to ensure high exam retention.
+      </p>
+    </div>
 
-            chatbotToggle.addEventListener('click', () => {
-                chatbotOpen = !chatbotOpen;
-                chatbotIframe.classList.toggle('active');
+    <div class="workflow-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3 class="step-title">Organize Your Syllabus</h3>
+        <p class="step-text">
+          Add your subjects and create comprehensive revision notes. Break your semester curriculum down into prioritized daily task goals.
+        </p>
+      </div>
 
-                if (chatbotOpen) {
-                    chatbotToggle.style.animation = 'none';
-                    chatbotIcon.classList.remove('fa-robot');
-                    chatbotIcon.classList.add('fa-times');
-                } else {
-                    chatbotToggle.style.animation = 'pulse 2s infinite';
-                    chatbotIcon.classList.remove('fa-times');
-                    chatbotIcon.classList.add('fa-robot');
-                }
-            });
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3 class="step-title">Test Knowledge with AI</h3>
+        <p class="step-text">
+          Launch on-demand quizzes with Gemini AI. Answer targeted multiple-choice questions with a live timer and receive immediate diagnostic rationales.
+        </p>
+      </div>
 
-            // --- Navbar Scroll Effect ---
-            const navbar = document.getElementById('navbar');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3 class="step-title">Track Mastery & Improve</h3>
+        <p class="step-text">
+          Monitor your accuracy percentages and study streaks on your personal dashboard. Review historical quiz logs to identify and strengthen weak areas.
+        </p>
+      </div>
+    </div>
+  </section>
 
-            // --- Animate on Scroll ---
-            const scrollElements = document.querySelectorAll('.animate-on-scroll');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animated');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
+  <!-- ==========================================================================
+       SECTION 3: FOR STUDENTS & EDUCATORS
+       ========================================================================== -->
+  <section class="home-section" style="border-top: 1.5px solid #E5E5E2; padding-top: 4rem;">
+    <div class="home-section-header">
+      <div class="home-section-badge">Designed for Campus Life</div>
+      <h2 class="home-section-title">Built for Learners and Academic Leaders</h2>
+      <p class="home-section-sub">
+        Whether you are an independent student preparing for finals or an educator monitoring batch progress.
+      </p>
+    </div>
 
-            scrollElements.forEach(el => observer.observe(el));
-        });
-    </script>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem;">
+          <div class="ls-metric-icon purple" style="width: 44px; height: 44px; font-size: 1.15rem;">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--ls-black); margin: 0;">For Students</h3>
+            <span style="font-size: 0.8rem; color: var(--ls-muted); font-weight: 600;">Self-paced academic mastery</span>
+          </div>
+        </div>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Instant practice tests on any syllabus subject whenever you study.</li>
+          <li><i class="fas fa-check-circle"></i> Clear explanation for every question to eliminate misunderstandings.</li>
+          <li><i class="fas fa-check-circle"></i> Centralized repository for all your notes, to-dos, and formulas.</li>
+          <li><i class="fas fa-check-circle"></i> Streak counters and accuracy charts to stay motivated every day.</li>
+        </ul>
+      </div>
 
-    <%- include('includes/footer') %>
+      <div class="audience-card">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem;">
+          <div class="ls-metric-icon orange" style="width: 44px; height: 44px; font-size: 1.15rem;">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--ls-black); margin: 0;">For Administrators</h3>
+            <span style="font-size: 0.8rem; color: var(--ls-muted); font-weight: 600;">Institutional oversight & reporting</span>
+          </div>
+        </div>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Comprehensive React 18 + Redux student management directory.</li>
+          <li><i class="fas fa-check-circle"></i> Departmental distribution analytics across Computer Science, AI, IT, etc.</li>
+          <li><i class="fas fa-check-circle"></i> Complete quiz attempt logs and student performance archives.</li>
+          <li><i class="fas fa-check-circle"></i> Platform-wide activity summaries and institutional health metrics.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       SECTION 4: CALL TO ACTION BANNER
+       ========================================================================== -->
+  <section style="max-width: 1200px; margin: 0 auto 4rem auto; padding: 0 1.5rem; width: 100%;">
+    <div class="cta-banner-clean">
+      <h2 class="cta-banner-title">Ready to Transform Your Study Routine?</h2>
+      <p class="cta-banner-sub">
+        Join students using LearnSmart to master technical subjects, retain core concepts, and prepare for exams and placements.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+        <% if (currentUser) { %>
+          <a href="/dashboard" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-right"></i> Continue to Dashboard
+          </a>
+        <% } else { %>
+          <a href="/signup" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus"></i> Create Free Account
+          </a>
+          <a href="/login" class="btn btn-outline btn-lg">
+            <i class="fas fa-right-to-bracket"></i> Sign In
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <%- include('includes/footer') %>
 
 </body>
-
 </html>

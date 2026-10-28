@@ -8,27 +8,27 @@
 
   <%- include('includes/navbar', { currentPage: 'notes' }) %>
 
-  <main class="ls-page-wrap-narrow">
+  <main style="max-width: 760px; margin: 2rem auto 4rem auto; padding: 0 1.5rem;">
     <div style="margin-bottom: 1.5rem;">
       <a href="/notes" class="btn btn-outline btn-sm">
-        <i class="fas fa-arrow-left"></i> Back to Notes
+        <i class="fas fa-arrow-left"></i> Back to Study Lab Notes
       </a>
     </div>
 
     <div class="ls-card">
       <div class="ls-card-header">
         <h2 class="ls-card-title">
-          <i class="fas fa-pen-to-square text-primary"></i> Edit Study Note
+          <i class="fas fa-pen-to-square" style="color: var(--ls-purple);"></i> Edit Study Note
         </h2>
-        <span class="badge badge-primary"><i class="fas fa-sync"></i> Editing note #<%= index + 1 %></span>
+        <span class="badge badge-purple">Editing Note #<%= parseInt(index) + 1 %></span>
       </div>
 
       <form action="/notes/edit/<%= index %>" method="POST">
         <div class="form-group">
-          <label class="form-label" for="editNoteTitle">Note Title</label>
+          <label class="form-label" for="editNoteTitle">Subject or Note Title</label>
           <input 
             type="text" 
-            id="editNoteTitle"
+            id="editNoteTitle" 
             name="title" 
             value="<%= note.title %>" 
             required 
@@ -37,19 +37,19 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="editNoteContent">Note Content</label>
+          <label class="form-label" for="editNoteContent">Note Content & Key Takeaways</label>
           <textarea 
-            id="editNoteContent"
+            id="editNoteContent" 
             name="content" 
             required 
-            class="form-control"
-            rows="6"
+            class="form-control" 
+            rows="7"
           ><%= note.content %></textarea>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
           <a href="/notes" class="btn btn-outline">Cancel</a>
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-purple">
             <i class="fas fa-floppy-disk"></i> Save Changes
           </button>
         </div>
@@ -58,6 +58,5 @@
   </main>
 
   <%- include('includes/footer') %>
-
 </body>
 </html>

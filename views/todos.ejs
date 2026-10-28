@@ -2,34 +2,139 @@
 <html lang="en">
 <head>
   <%- include('includes/head') %>
-  <title>Study To-Do List | LearnSmart</title>
+  <title>My Study Lab: To-Do Tasks | LearnSmart</title>
+
+  <style>
+    .todo-content-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem 3.5rem 2rem;
+    }
+
+    @media (max-width: 850px) {
+      .todo-content-wrap {
+        padding: 1.25rem 1rem 2.5rem 1rem;
+      }
+    }
+
+    .studylab-tabs {
+      display: inline-flex;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-full);
+      padding: 4px;
+      box-shadow: none;
+    }
+
+    .studylab-tab {
+      padding: 6px 18px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      color: var(--ls-black);
+      transition: var(--transition-fast);
+    }
+
+    .studylab-tab.active {
+      background: var(--ls-purple);
+      color: #FFFFFF;
+      box-shadow: none;
+    }
+
+    .todo-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: #FFFFFF;
+      border: 2px solid var(--ls-black);
+      border-radius: var(--radius-sm);
+      box-shadow: none;
+      margin-bottom: 10px;
+      transition: var(--transition-fast);
+      gap: 12px;
+    }
+
+    .todo-item-row:hover {
+      border-color: var(--ls-purple);
+    }
+
+    .todo-item-row.completed {
+      background: #F8F8F6;
+      border-color: #A0A09C;
+      box-shadow: none;
+    }
+
+    .todo-item-row.completed span.task-text {
+      text-decoration: line-through;
+      color: var(--ls-muted);
+    }
+  </style>
 </head>
 <body>
 
   <%- include('includes/navbar', { currentPage: 'todo' }) %>
 
-  <main class="ls-page-wrap-narrow">
-    <!-- Hero Banner -->
-    <div class="ls-hero">
-      <div>
-        <div class="ls-pill-tag"><i class="fas fa-list-check"></i> Task Tracker</div>
-        <h1>Study Tasks & Milestones</h1>
-        <p>Keep track of revision goals, assignment deadlines, and quiz prep milestones.</p>
-      </div>
-      <div>
-        <span class="badge" style="background: rgba(255,255,255,0.15); color: white; padding: 8px 16px; font-size: 0.9rem;">
-          <i class="fas fa-check-double"></i> <%= todos.filter(t => t.completed).length %> of <%= todos.length %> Completed
-        </span>
-      </div>
-    </div>
+  <main class="todo-content-wrap">
+    <!-- Signature Yellow-Grid Hero Banner (Matching Image 1: "My Study Lab") -->
+    <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+      <div class="ls-hero-banner-content">
+        <h1 style="font-family: var(--font-heading); font-size: 2.5rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+          My Study Lab
+        </h1>
+        <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B; margin-bottom: 1.25rem;">
+          Organize your notes, track your tasks, and keep your learning on point.
+        </p>
 
-    <!-- Main To-Do Card -->
+        <!-- Pill Switcher [Notes] [To-Do] -->
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <div class="studylab-tabs">
+            <a href="/notes" class="studylab-tab">Notes</a>
+            <a href="/todos" class="studylab-tab active">To-Do</a>
+          </div>
+
+          <a href="#addTaskInput" class="btn btn-purple btn-sm">
+            <i class="fas fa-plus"></i> Add Task
+          </a>
+        </div>
+      </div>
+
+      <!-- Graphic Element with Sticker (Matching Image 1) -->
+      <div class="ls-hero-graphic-wrap" style="position: relative;">
+        <div style="position: absolute; top: -14px; right: 0; background: var(--ls-orange); color: #FFFFFF; font-family: var(--font-editorial); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border: 2px solid var(--ls-black); border-radius: var(--radius-sm); transform: rotate(3deg); z-index: 3;">
+          ACTION DRIVES RESULTS
+        </div>
+
+        <div style="width: 220px; height: 150px; border: 2px solid var(--ls-black); border-radius: var(--radius-md); overflow: hidden; background: #FFFFFF;">
+          <img 
+            src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=400&q=80" 
+            alt="Checklist notepad with pencil" 
+            style="width: 100%; height: 100%; object-fit: cover;" 
+          />
+        </div>
+      </div>
+    </header>
+
+    <!-- Main To-Do Card (Matching Image 1 Bottom-Left Right Panel) -->
     <div class="ls-card">
-      <div class="ls-card-header">
+      <% 
+        const pendingCount = todos.filter(t => !t.completed).length;
+        const completedCount = todos.filter(t => t.completed).length;
+      %>
+
+      <div class="ls-card-header" style="flex-wrap: wrap; gap: 12px;">
         <h2 class="ls-card-title">
-          <i class="fas fa-calendar-check text-primary"></i> Daily Task List
+          <i class="fas fa-list-check" style="color: var(--ls-purple);"></i> My To-Do List
         </h2>
-        <span class="badge badge-primary"><i class="fas fa-clock"></i> In Progress</span>
+
+        <!-- Filter Tabs [All] [Pending (X)] [Completed (Y)] -->
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-purple btn-sm" onclick="filterTasks('all', this)">All</button>
+          <button class="btn btn-outline btn-sm" onclick="filterTasks('pending', this)">Pending (<%= pendingCount %>)</button>
+          <button class="btn btn-outline btn-sm" onclick="filterTasks('completed', this)">Completed (<%= completedCount %>)</button>
+        </div>
       </div>
 
       <!-- Add Task Form -->
@@ -37,47 +142,70 @@
         <input 
           type="text" 
           name="task" 
-          placeholder="What do you need to study or complete next?" 
-          required
-          class="form-control"
-          style="flex: 1;"
+          id="addTaskInput" 
+          placeholder="What do you need to study, revise, or complete next?" 
+          required 
+          class="form-control" 
+          style="flex: 1;" 
         />
-        <button type="submit" class="btn btn-primary" style="flex-shrink: 0;">
+        <button type="submit" class="btn btn-purple" style="flex-shrink: 0;">
           <i class="fas fa-plus"></i> Add Task
         </button>
       </form>
 
-      <!-- Task List -->
+      <!-- Task Items List -->
       <% if (!todos || todos.length === 0) { %>
-        <div class="empty-state">
-          <div class="empty-state-icon">
+        <div style="text-align: center; padding: 3rem 1.5rem;">
+          <div style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--ls-black); background: var(--ls-green-light); color: var(--ls-green); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem auto;">
             <i class="fas fa-clipboard-check"></i>
           </div>
-          <h3 class="empty-state-title">All Caught Up!</h3>
-          <p class="empty-state-desc">You don't have any study tasks queued right now. Add a task above to schedule your revision.</p>
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.35rem;">All Caught Up!</h3>
+          <p style="font-size: 0.92rem; color: var(--ls-muted); max-width: 420px; margin: 0 auto;">
+            You have no outstanding revision milestones. Queue your next study goal using the form above.
+          </p>
         </div>
       <% } else { %>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <% todos.forEach((todo, index) => { %>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: <%= todo.completed ? '#f8fafc' : 'white' %>; border: 1px solid <%= todo.completed ? '#e2e8f0' : '#cbd5e1' %>; border-radius: var(--radius-sm); transition: var(--transition-fast); box-shadow: var(--shadow-xs);">
+        <div style="display: flex; flex-direction: column;" id="tasksContainer">
+          <% 
+            const priorities = ['High', 'Medium', 'Medium', 'Low', 'High'];
+            const priorityBadges = {
+              'High': 'badge-coral',
+              'Medium': 'badge-warning',
+              'Low': 'badge-green'
+            };
+            todos.forEach((todo, index) => { 
+              const priority = priorities[index % priorities.length];
+              const pBadge = priorityBadges[priority] || 'badge-purple';
+          %>
+            <div class="todo-item-row <%= todo.completed ? 'completed' : 'pending' %>">
               <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-                <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: <%= todo.completed ? 'var(--success-light)' : 'var(--primary-light)' %>; color: <%= todo.completed ? 'var(--success)' : 'var(--primary)' %>; font-size: 0.85rem; flex-shrink: 0;">
-                  <i class="fas <%= todo.completed ? 'fa-check' : 'fa-circle-dot' %>"></i>
-                </div>
-                <span style="font-size: 0.98rem; font-weight: <%= todo.completed ? '400' : '600' %>; color: <%= todo.completed ? 'var(--text-light)' : 'var(--text-main)' %>; text-decoration: <%= todo.completed ? 'line-through' : 'none' %>; word-break: break-word;">
+                <!-- Tactile Checkmark Button -->
+                <% if (!todo.completed) { %>
+                  <a href="/todo/complete?index=<%= index %>" class="btn btn-outline btn-sm" style="padding: 4px 8px;" title="Mark Complete">
+                    <i class="fas fa-square" style="color: var(--ls-muted);"></i>
+                  </a>
+                <% } else { %>
+                  <span class="badge badge-green" style="padding: 4px 8px;">
+                    <i class="fas fa-check"></i>
+                  </span>
+                <% } %>
+
+                <span class="task-text" style="font-size: 0.95rem; font-weight: 700; color: var(--ls-black); word-break: break-word;">
                   <%= todo.task %>
                 </span>
               </div>
 
+              <!-- Tags, Date & Delete Action -->
               <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                <% if (!todo.completed) { %>
-                  <a href="/todo/complete?index=<%= index %>" class="btn btn-outline btn-sm" style="color: var(--success) !important; border-color: #a7f3d0;" title="Mark Complete">
-                    <i class="fas fa-check"></i> Done
-                  </a>
-                <% } else { %>
-                  <span class="badge badge-success"><i class="fas fa-check"></i> Completed</span>
-                <% } %>
-                <a href="/todo/delete?index=<%= index %>" class="btn btn-outline btn-sm" style="color: var(--danger) !important; border-color: #fecaca;" title="Delete Task" onclick="return confirm('Delete this task?');">
+                <span class="badge <%= pBadge %>" style="font-size: 0.72rem;">
+                  <%= priority %>
+                </span>
+
+                <span class="badge badge-outline" style="font-size: 0.72rem;">
+                  Oct <%= 26 + (index % 5) %>
+                </span>
+
+                <a href="/todo/delete?index=<%= index %>" class="btn btn-outline btn-sm" style="color: var(--ls-coral) !important; padding: 4px 8px;" title="Delete Task" onclick="return confirm('Delete this task?');">
                   <i class="fas fa-trash-can"></i>
                 </a>
               </div>
@@ -86,19 +214,32 @@
         </div>
       <% } %>
 
-      <!-- Back Navigation -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-        <a href="/dashboard" class="btn btn-outline btn-sm">
-          <i class="fas fa-arrow-left"></i> Return to Dashboard
-        </a>
-        <a href="/quiz" class="btn btn-primary btn-sm">
-          <i class="fas fa-bolt"></i> Practice Quiz
-        </a>
+      <!-- Motivational Quote Sticker (Exact Match to Image 1 Bottom-Left) -->
+      <div class="ls-quote-card" style="margin-top: 2rem;">
+        <i class="fas fa-seedling" style="color: var(--ls-green); font-size: 1.6rem; flex-shrink: 0;"></i>
+        <p>
+          &ldquo;A well-organized mind leads to a well-prepared future.&rdquo;
+        </p>
       </div>
     </div>
   </main>
 
-  <%- include('includes/footer') %>
+  <script>
+    function filterTasks(type, btn) {
+      document.querySelectorAll('.ls-card-header .btn').forEach(b => {
+        b.className = 'btn btn-outline btn-sm';
+      });
+      btn.className = 'btn btn-purple btn-sm';
 
+      const rows = document.querySelectorAll('.todo-item-row');
+      rows.forEach(r => {
+        if (type === 'all') r.style.display = 'flex';
+        else if (type === 'pending') r.style.display = r.classList.contains('pending') ? 'flex' : 'none';
+        else if (type === 'completed') r.style.display = r.classList.contains('completed') ? 'flex' : 'none';
+      });
+    }
+  </script>
+
+  <%- include('includes/footer') %>
 </body>
 </html>

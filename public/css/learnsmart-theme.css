@@ -1,71 +1,110 @@
 /* ==========================================================================
-   LearnSmart Design System — Core Stylesheet
-   Unified Theme, Colors, Typography, Components & Navigation
+   LearnSmart Design System — Master Core Stylesheet
+   Strict Reference Match | One Unified Design System | Editorial Neo-Brutalist
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Colors */
-  --primary: #4361ee;
-  --primary-light: #eef2ff;
-  --primary-dark: #3144c9;
-  --primary-hover: #3a54d6;
-  --secondary: #7209b7;
-  --secondary-light: #f5f3ff;
-  --secondary-dark: #5a0791;
-  --accent: #4cc9f0;
+  /* ==========================================================================
+     A. Signature Color Palette (Strict Reference Authority)
+     ========================================================================== */
+  --ls-yellow: #FFD12F;
+  --ls-yellow-light: #FFE066;
+  --ls-yellow-subtle: #FFF8D6;
+  --ls-black: #111111;
+  --ls-sidebar: #111318;
+  --ls-sidebar-hover: #1D212A;
+  --ls-white: #FFFFFF;
+  --ls-blue: #2457FF;
+  --ls-blue-hover: #1844D6;
+  --ls-blue-light: #EBF0FF;
+  --ls-purple: #5B20FF;
+  --ls-purple-hover: #4510DF;
+  --ls-purple-light: #F0EBFF;
+  --ls-orange: #FF7628;
+  --ls-orange-light: #FFF0E6;
+  --ls-coral: #F45145;
+  --ls-coral-light: #FEECEB;
+  --ls-green: #22A65A;
+  --ls-green-light: #E7F7EE;
+  --ls-bg: #F4F4F2;
+  --ls-border: #111111;
+  --ls-border-subtle: #D0D0CE;
+  --ls-muted: #646464;
+  --ls-text: #111111;
 
-  --success: #10b981;
-  --success-light: #ecfdf5;
-  --warning: #f59e0b;
-  --warning-light: #fef3c7;
-  --danger: #ef4444;
-  --danger-light: #fee2e2;
-  --info: #0284c7;
-  --info-light: #e0f2fe;
+  /* Backward Compatibility Aliases */
+  --primary: #5B20FF;
+  --primary-hover: #4510DF;
+  --primary-light: #F0EBFF;
+  --primary-dark: #320BB5;
+  --secondary: #2457FF;
+  --secondary-light: #EBF0FF;
+  --secondary-dark: #1844D6;
+  --accent: #FF7628;
+  --success: #22A65A;
+  --success-light: #E7F7EE;
+  --warning: #FFD12F;
+  --warning-light: #FFF8D6;
+  --danger: #F45145;
+  --danger-light: #FEECEB;
+  --info: #2457FF;
+  --info-light: #EBF0FF;
+  --dark: #111111;
+  --card-bg: #FFFFFF;
+  --bg-page: #F4F4F2;
+  --bg-surface: #FFFFFF;
+  --bg-light: #F4F4F2;
+  --bg-white: #FFFFFF;
+  --border-color: #111111;
+  --text-main: #111111;
+  --text-primary: #111111;
+  --text-secondary: #646464;
+  --text-light: #888888;
+  --text-muted: #646464;
 
-  --bg-page: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-subtle: #f1f5f9;
-  --border-color: #e2e8f0;
-  --border-focus: #4361ee;
-
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  --text-inverse: #ffffff;
-
-  /* Typography */
+  /* ==========================================================================
+     B. Typography System
+     ========================================================================== */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Outfit', sans-serif;
-  --font-code: 'JetBrains Mono', monospace;
+  --font-heading: 'Outfit', 'Space Grotesk', -apple-system, sans-serif;
+  --font-editorial: 'Space Grotesk', 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
-  --gradient-surface: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-  --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  /* ==========================================================================
+     C. Defined Offset Shadows - Set to NONE across all boxes and elements
+     ========================================================================== */
+  --ls-shadow-card: none;
+  --ls-shadow-raised: none;
+  --ls-shadow-button: none;
+  --ls-shadow-sm: none;
+  --ls-shadow-hover: none;
+  --ls-shadow-pressed: none;
 
-  /* Radii */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+
+  /* Corner Radii */
+  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
-  --shadow-lg: 0 10px 20px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.03);
-  --shadow-xl: 0 20px 30px -5px rgb(67 97 238 / 0.12);
+  --border-radius: 12px;
+  --border-radius-lg: 16px;
 
   /* Transitions */
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: all 0.15s ease;
+  --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.14s ease;
 }
 
-/* Global Reset */
+/* ==========================================================================
+   Global Reset & Defaults
+   ========================================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -79,468 +118,981 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--bg-page);
-  color: var(--text-main);
+  background-color: var(--ls-bg);
+  color: var(--ls-text);
   line-height: 1.6;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
   display: flex;
   flex-direction: column;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* Typography Helpers */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  color: var(--text-main);
-  line-height: 1.25;
-  font-weight: 700;
-}
-
-h1 { font-size: 2.25rem; font-weight: 800; }
-h2 { font-size: 1.75rem; font-weight: 700; }
-h3 { font-size: 1.35rem; font-weight: 700; }
-h4 { font-size: 1.15rem; font-weight: 600; }
-
-p {
-  color: var(--text-muted);
-  font-size: 0.96rem;
-}
-
-a {
-  color: var(--primary);
-  text-decoration: none;
-  transition: var(--transition-fast);
-}
-a:hover {
-  color: var(--primary-dark);
-}
-
-/* Page Containers */
-.ls-container {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  width: 100%;
-}
-
-.ls-page-wrap {
-  max-width: 1240px;
-  margin: 2rem auto 4rem auto;
-  padding: 0 1.5rem;
-  width: 100%;
-  flex: 1;
-}
-
-.ls-page-wrap-narrow {
-  max-width: 860px;
-  margin: 2rem auto 4rem auto;
-  padding: 0 1.5rem;
-  width: 100%;
-  flex: 1;
-}
-
-.ls-page-wrap-form {
-  max-width: 540px;
-  margin: 3rem auto 4rem auto;
-  padding: 0 1.25rem;
-  width: 100%;
-  flex: 1;
-}
-
-/* ==========================================================================
-   Shared LearnSmart Navigation Bar
-   ========================================================================== */
-.ls-navbar {
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0.8rem 1.75rem;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: var(--shadow-xs);
-}
-
-.ls-nav-container {
-  max-width: 1240px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ls-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: var(--primary);
-  font-family: var(--font-heading);
-  font-size: 1.35rem;
+  color: var(--ls-black);
+  line-height: 1.2;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
-.ls-brand-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--gradient-primary);
-  color: white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 10px rgba(67, 97, 238, 0.28);
+h1 { font-size: 2.25rem; font-weight: 900; }
+h2 { font-size: 1.75rem; font-weight: 800; }
+h3 { font-size: 1.35rem; font-weight: 700; }
+h4 { font-size: 1.15rem; font-weight: 700; }
+
+p {
+  color: var(--ls-muted);
 }
 
-.ls-nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  list-style: none;
-}
-
-.ls-nav-link {
+a {
+  color: var(--ls-purple);
   text-decoration: none;
-  color: var(--text-muted);
-  font-weight: 500;
-  font-size: 0.92rem;
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--ls-purple-hover);
+}
+
+/* ==========================================================================
+   Signature Yellow Grid Background Pattern
+   ========================================================================== */
+.ls-grid-pattern, .ls-yellow-grid, .ls-hero-banner {
+  background-color: var(--ls-yellow);
+  background-image: 
+    linear-gradient(rgba(17, 17, 17, 0.08) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.08) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+  background-position: -1px -1px;
+}
+
+.ls-grid-pattern-subtle {
+  background-color: var(--ls-yellow);
+  background-image: 
+    linear-gradient(rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ==========================================================================
+   Unified Application Layout Shell (Black Sidebar + Browser Top Bar)
+   ========================================================================== */
+.ls-app-layout {
   display: flex;
-  align-items: center;
-  gap: 7px;
+  min-height: 100vh;
+  background-color: var(--ls-bg);
+  position: relative;
 }
 
-.ls-nav-link i {
-  font-size: 0.95rem;
-  opacity: 0.85;
+/* Black Navigation Sidebar */
+.ls-sidebar {
+  width: 250px;
+  background-color: var(--ls-sidebar);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 2px solid var(--ls-black);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+  padding: 1.25rem 1rem 1.25rem 1rem;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-.ls-nav-link:hover {
-  color: var(--primary);
-  background: var(--primary-light);
-}
-
-.ls-nav-link.active {
-  color: var(--primary);
-  background: var(--primary-light);
-  font-weight: 700;
-}
-
-.ls-nav-actions {
+.ls-sidebar-brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 0.5rem 0.5rem 1.25rem 0.5rem;
+  text-decoration: none;
+  color: #FFFFFF;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.25rem;
 }
 
-.ls-mobile-toggle {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.35rem;
-  color: var(--text-main);
-  cursor: pointer;
-  padding: 6px;
-}
-
-@media (max-width: 900px) {
-  .ls-mobile-toggle {
-    display: block;
-  }
-  .ls-nav-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: white;
-    flex-direction: column;
-    padding: 1rem 1.5rem;
-    box-shadow: var(--shadow-lg);
-    border-bottom: 1px solid var(--border-color);
-    display: none;
-  }
-  .ls-nav-menu.show {
-    display: flex;
-  }
-  .ls-nav-link {
-    width: 100%;
-    padding: 10px 14px;
-  }
-}
-
-/* ==========================================================================
-   Buttons
-   ========================================================================== */
-.btn {
-  display: inline-flex;
+.ls-sidebar-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #FF7628 0%, #FFD12F 50%, #2457FF 100%);
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 18px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  font-weight: 900;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+
+.ls-sidebar-brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+
+.ls-sidebar-role-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: var(--ls-purple);
+  color: #FFFFFF;
+  margin-left: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Sidebar Navigation Menu */
+.ls-sidebar-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.ls-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: #A3A8B5;
   text-decoration: none;
-  transition: var(--transition);
-  cursor: pointer;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 0.82rem;
-  border-radius: 6px;
-}
-
-.btn-lg {
-  padding: 12px 26px;
-  font-size: 1.05rem;
+  font-size: 0.93rem;
+  font-weight: 600;
   border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  border: 1px solid transparent;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white !important;
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
-}
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(67, 97, 238, 0.35);
+.ls-sidebar-link i {
+  font-size: 1.05rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
-.btn-secondary {
-  background: var(--secondary);
-  color: white !important;
-  box-shadow: 0 4px 12px rgba(114, 9, 183, 0.25);
-}
-.btn-secondary:hover {
-  background: var(--secondary-dark);
-  transform: translateY(-1px);
+.ls-sidebar-link:hover {
+  color: #FFFFFF;
+  background-color: var(--ls-sidebar-hover);
 }
 
-.btn-outline {
-  border-color: var(--border-color);
-  color: var(--text-main) !important;
-  background: white;
-}
-.btn-outline:hover {
-  border-color: var(--primary);
-  color: var(--primary) !important;
-  background: var(--primary-light);
+.ls-sidebar-link.active {
+  background-color: var(--ls-purple);
+  color: #FFFFFF;
+  font-weight: 700;
+  border: 1.5px solid var(--ls-black);
+  box-shadow: none;
 }
 
-.btn-danger {
-  background: var(--danger);
-  color: white !important;
-}
-.btn-danger:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
+.ls-sidebar-link.active i {
+  color: #FFFFFF;
 }
 
-.btn-success {
-  background: var(--success);
-  color: white !important;
+/* Sidebar Footer Sticker Card */
+.ls-sidebar-sticker {
+  margin-top: auto;
+  padding: 1rem;
+  background: #181B22;
+  border: 1.5px solid #2B303C;
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
 }
-.btn-success:hover {
-  background: #059669;
+
+.ls-sidebar-sticker-text {
+  font-family: var(--font-editorial);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ls-yellow);
+}
+
+.ls-sidebar-sticker-sub {
+  font-size: 0.72rem;
+  color: #8C92A4;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.ls-sidebar-sticker-icon {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  color: var(--ls-orange);
+  font-size: 1.4rem;
+  opacity: 0.85;
+}
+
+/* Application Main Area */
+.ls-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--ls-bg);
+}
+
+/* Browser-style Top Bar */
+.ls-browser-bar {
+  background-color: #FFFFFF;
+  border-bottom: 2px solid var(--ls-black);
+  padding: 0.75rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.ls-browser-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  max-width: 580px;
+}
+
+.ls-browser-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ls-browser-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.ls-browser-dot.red { background-color: #FF5F56; }
+.ls-browser-dot.yellow { background-color: #FFBD2E; }
+.ls-browser-dot.green { background-color: #27C93F; }
+
+/* Browser Search Bar */
+.ls-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--ls-black);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  width: 100%;
+  box-shadow: none;
+  transition: var(--transition-fast);
+}
+
+.ls-search-bar:focus-within {
+  box-shadow: none;
+  border-color: var(--ls-purple);
+}
+
+.ls-search-bar i {
+  color: var(--ls-muted);
+  font-size: 0.9rem;
+}
+
+.ls-search-bar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--ls-black);
+  width: 100%;
+}
+
+.ls-search-bar input::placeholder {
+  color: #8C8C8C;
+}
+
+/* Browser Right Controls */
+.ls-browser-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ls-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ls-black);
+  background-color: #FFFFFF;
+  color: var(--ls-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: none;
+  transition: var(--transition-fast);
+}
+
+.ls-icon-btn:hover {
+  background-color: #F4F4F2;
+  box-shadow: none;
+}
+
+.ls-icon-btn:active {
+  background-color: #EAEAEA;
+  box-shadow: none;
+}
+
+.ls-icon-btn .badge-dot {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--ls-coral);
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+}
+
+/* User Profile Badge */
+.ls-user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px 4px 6px;
+  border: 1.5px solid var(--ls-black);
+  background-color: #FFFFFF;
+  border-radius: var(--radius-full);
+  box-shadow: none;
+  text-decoration: none;
+  color: var(--ls-black);
+}
+
+.ls-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ls-purple) 0%, var(--ls-blue) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1px solid var(--ls-black);
+  overflow: hidden;
+}
+
+.ls-user-info-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.ls-user-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ls-black);
+}
+
+.ls-user-role {
+  font-size: 0.7rem;
+  color: var(--ls-muted);
+  font-weight: 600;
+}
+
+/* Mobile Sidebar Toggle Button */
+.ls-sidebar-mobile-toggle {
+  display: none;
+  background: #FFFFFF;
+  border: 1.5px solid var(--ls-black);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+/* Main Content Container */
+.ls-content-container {
+  padding: 1.75rem 2rem 3rem 2rem;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* ==========================================================================
-   Card Component
+   D. Signature Yellow-Grid Hero Banner
    ========================================================================== */
-.ls-card {
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  padding: 1.75rem;
-  transition: var(--transition);
+.ls-hero-banner {
+  border: 2px solid var(--ls-black);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  padding: 2rem 2.25rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.ls-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: #cbd5e1;
+.ls-hero-banner-content {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.ls-hero-banner-title {
+  font-family: var(--font-heading);
+  font-size: 2.35rem;
+  font-weight: 900;
+  color: var(--ls-black);
+  line-height: 1.15;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ls-hero-banner-sub {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #2B2B2B;
+  margin-bottom: 1rem;
+}
+
+.ls-hero-doodle-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-editorial);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ls-black);
+  background: rgba(255, 255, 255, 0.65);
+  padding: 3px 10px;
+  border: 1.5px solid var(--ls-black);
+  border-radius: var(--radius-full);
+  box-shadow: none;
+  transform: rotate(-1.5deg);
+  margin-top: 4px;
+}
+
+.ls-hero-graphic-wrap {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   E. Card System (Thick Defined Borders, Crisp Flat Look, No Box Shadows)
+   ========================================================================== */
+.ls-card, .card, .content-card, .stat-card-kpi, .admin-kpi-card, .note-card, .feature-card {
+  background-color: var(--ls-white);
+  border: 2px solid var(--ls-border);
+  border-radius: var(--radius-md);
+  box-shadow: none !important;
+  padding: 1.5rem;
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.ls-card:hover, .note-card:hover {
+  border-color: var(--ls-purple);
+  box-shadow: none !important;
 }
 
 .ls-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1.5px solid #EBEBEA;
 }
 
 .ls-card-title {
   font-family: var(--font-heading);
   font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--ls-black);
   display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* ==========================================================================
-   Hero Banners
-   ========================================================================== */
-.ls-hero {
-  background: var(--gradient-dark);
-  color: white;
-  border-radius: var(--radius-lg);
-  padding: 2.75rem 2.25rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-xl);
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-
-.ls-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, rgba(114, 9, 183, 0.35) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.ls-hero h1 {
-  color: white;
-  margin-bottom: 0.5rem;
-}
-
-.ls-hero p {
-  color: #cbd5e1;
-  font-size: 1.05rem;
-}
-
-.ls-pill-tag {
-  display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 5px 14px;
-  border-radius: var(--radius-full);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #93c5fd;
-  margin-bottom: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+}
+
+/* Metric / KPI Cards */
+.ls-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.ls-metric-card {
+  background-color: #FFFFFF;
+  border: 2px solid var(--ls-black);
+  border-radius: var(--radius-md);
+  box-shadow: none !important;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: var(--transition-fast);
+}
+
+.ls-metric-card:hover {
+  border-color: var(--ls-purple);
+  box-shadow: none !important;
+}
+
+.ls-metric-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--ls-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  box-shadow: none;
+}
+
+.ls-metric-icon.orange { background-color: var(--ls-orange-light); color: var(--ls-orange); }
+.ls-metric-icon.green { background-color: var(--ls-green-light); color: var(--ls-green); }
+.ls-metric-icon.purple { background-color: var(--ls-purple-light); color: var(--ls-purple); }
+.ls-metric-icon.blue { background-color: var(--ls-blue-light); color: var(--ls-blue); }
+.ls-metric-icon.yellow { background-color: var(--ls-yellow-light); color: #B38600; }
+.ls-metric-icon.coral { background-color: var(--ls-coral-light); color: var(--ls-coral); }
+
+.ls-metric-value {
+  font-family: var(--font-heading);
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--ls-black);
+}
+
+.ls-metric-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ls-muted);
+  margin-top: 4px;
 }
 
 /* ==========================================================================
-   Form Controls
+   F. Tactile Button System (Clean Flat, Smooth Transitions, No Block Shadows)
    ========================================================================== */
-.form-group {
+.btn, button.btn, a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.65rem 1.35rem;
+  font-family: var(--font-body);
+  font-size: 0.93rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ls-black);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: var(--transition-fast);
+  line-height: 1.25;
+}
+
+.btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: none !important;
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: none !important;
+}
+
+/* Button Variants */
+.btn-primary, .btn-purple {
+  background-color: var(--ls-purple) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-primary:hover, .btn-purple:hover {
+  background-color: var(--ls-purple-hover) !important;
+}
+
+.btn-blue, .btn-cobalt {
+  background-color: var(--ls-blue) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-blue:hover, .btn-cobalt:hover {
+  background-color: var(--ls-blue-hover) !important;
+}
+
+.btn-yellow {
+  background-color: var(--ls-yellow) !important;
+  color: var(--ls-black) !important;
+}
+
+.btn-outline, .btn-white {
+  background-color: #FFFFFF !important;
+  color: var(--ls-black) !important;
+}
+
+.btn-outline:hover, .btn-white:hover {
+  background-color: #F8F8F8 !important;
+}
+
+.btn-danger, .btn-coral {
+  background-color: var(--ls-coral) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.82rem;
+  box-shadow: none !important;
+}
+
+.btn-lg {
+  padding: 0.85rem 1.75rem;
+  font-size: 1.05rem;
+  box-shadow: none !important;
+}
+
+/* ==========================================================================
+   G. Form Controls & Inputs
+   ========================================================================== */
+.form-group, .filter-field {
   margin-bottom: 1.25rem;
 }
 
 .form-label {
   display: block;
   font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 0.4rem;
+  font-weight: 700;
+  color: var(--ls-black);
+  margin-bottom: 6px;
 }
 
-.form-control, .form-select {
+.form-control, .form-select, input[type="text"], input[type="email"], input[type="password"], select, textarea {
   width: 100%;
   padding: 10px 14px;
+  background-color: #FFFFFF;
+  border: 2px solid var(--ls-black);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--text-main);
-  background-color: #fff;
-  transition: var(--transition-fast);
+  font-size: 0.93rem;
+  color: var(--ls-black);
+  box-shadow: none !important;
   outline: none;
+  transition: var(--transition-fast);
+  box-sizing: border-box;
 }
 
-.form-control:focus, .form-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+.form-control:focus, .form-select:focus, input:focus, select:focus, textarea:focus {
+  border-color: var(--ls-purple);
+  box-shadow: none !important;
+  background-color: #FFFFFF;
 }
 
-textarea.form-control {
-  min-height: 110px;
-  resize: vertical;
+/* Radio & Checkbox Cards */
+.ls-option-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border: 2px solid var(--ls-black);
+  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: var(--transition-fast);
+  margin-bottom: 10px;
+}
+
+.ls-option-card:hover {
+  border-color: var(--ls-purple);
+  background-color: #FAFAFA;
+  box-shadow: none !important;
+  transform: none;
+}
+
+.ls-option-card.selected {
+  border-color: var(--ls-purple);
+  background-color: var(--ls-purple-light);
+  box-shadow: none !important;
+}
+
+.ls-option-letter {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ls-black);
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--ls-black);
+  flex-shrink: 0;
+}
+
+.ls-option-card.selected .ls-option-letter {
+  background-color: var(--ls-purple);
+  color: #FFFFFF;
+  border-color: var(--ls-purple);
 }
 
 /* ==========================================================================
-   Badges & Pills
+   H. Badges, Pills & Stickers
    ========================================================================== */
-.badge {
+.badge, .ls-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   padding: 4px 10px;
+  border: 1.5px solid var(--ls-black);
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  box-shadow: none !important;
 }
 
-.badge-primary { background: var(--primary-light); color: var(--primary); }
-.badge-success { background: var(--success-light); color: #047857; }
-.badge-warning { background: var(--warning-light); color: #b45309; }
-.badge-danger { background: var(--danger-light); color: #b91c1c; }
-.badge-secondary { background: var(--secondary-light); color: var(--secondary); }
+.badge-primary, .badge-purple { background-color: var(--ls-purple); color: #FFFFFF; }
+.badge-blue, .badge-cobalt { background-color: var(--ls-blue); color: #FFFFFF; }
+.badge-success, .badge-green { background-color: var(--ls-green); color: #FFFFFF; }
+.badge-warning, .badge-yellow { background-color: var(--ls-yellow); color: var(--ls-black); }
+.badge-danger, .badge-coral { background-color: var(--ls-coral); color: #FFFFFF; }
+.badge-outline { background-color: #FFFFFF; color: var(--ls-black); }
 
-/* ==========================================================================
-   Empty States
-   ========================================================================== */
-.empty-state {
-  text-align: center;
-  padding: 3.5rem 1.5rem;
-  background: white;
+/* Playful Hand-drawn Style Stickers */
+.ls-sticker {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 2px solid var(--ls-black);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-editorial);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: none !important;
+}
+
+.ls-sticker.yellow { background-color: var(--ls-yellow); color: var(--ls-black); transform: rotate(-2deg); }
+.ls-sticker.orange { background-color: var(--ls-orange); color: #FFFFFF; transform: rotate(2deg); }
+.ls-sticker.green { background-color: var(--ls-green); color: #FFFFFF; transform: rotate(-1deg); }
+.ls-sticker.purple { background-color: var(--ls-purple); color: #FFFFFF; transform: rotate(1.5deg); }
+
+/* Quote Sticker Card */
+.ls-quote-card {
+  background-color: var(--ls-yellow-subtle);
+  border: 2px solid var(--ls-black);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  padding: 1.15rem 1.35rem;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.empty-state-icon {
-  font-size: 3rem;
-  color: var(--primary);
-  margin-bottom: 1rem;
-}
-
-.empty-state-title {
-  font-family: var(--font-heading);
-  font-size: 1.35rem;
+.ls-quote-card p {
+  font-size: 0.92rem;
   font-weight: 700;
-  margin-bottom: 0.4rem;
-}
-
-.empty-state-desc {
-  color: var(--text-muted);
-  max-width: 480px;
-  margin: 0 auto 1.5rem auto;
-  font-size: 0.95rem;
+  color: var(--ls-black);
+  line-height: 1.35;
+  margin: 0;
 }
 
 /* ==========================================================================
-   Footer
+   I. Tables & Data Grids
    ========================================================================== */
-.ls-footer {
-  margin-top: auto;
-  background: white;
-  border-top: 1px solid var(--border-color);
-  padding: 1.5rem 0;
-  text-align: center;
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border: 2px solid var(--ls-black);
+  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  box-shadow: none !important;
+}
+
+table, .ls-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+table th, .ls-table th {
+  background-color: #F8F8F6;
+  color: var(--ls-black);
+  font-family: var(--font-heading);
+  font-weight: 800;
   font-size: 0.88rem;
-  color: var(--text-muted);
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--ls-black);
+  letter-spacing: 0.3px;
+}
+
+table td, .ls-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #E5E5E3;
+  color: var(--ls-black);
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+table tr:last-child td, .ls-table tr:last-child td {
+  border-bottom: none;
+}
+
+table tbody tr:hover, .ls-table tbody tr:hover {
+  background-color: #FFFDF2;
+}
+
+/* ==========================================================================
+   J. Public Site Styles (Landing Page & Auth Matching Image 2)
+   ========================================================================== */
+.ls-public-navbar {
+  background-color: #FFFFFF;
+  border-bottom: 2px solid var(--ls-black);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0.85rem 2rem;
+}
+
+.ls-public-nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ls-public-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: var(--ls-black);
+}
+
+.ls-public-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.ls-public-nav-links a {
+  color: var(--ls-black);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.ls-public-nav-links a:hover {
+  background-color: var(--ls-yellow-subtle);
+  color: var(--ls-black);
+}
+
+.ls-public-hero-split {
+  display: grid;
+  grid-template-columns: 1fr 440px 1.15fr;
+  gap: 2rem;
+  align-items: center;
+  max-width: 1360px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+@media (max-width: 1100px) {
+  .ls-public-hero-split {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+}
+
+/* ==========================================================================
+   K. Responsive Behaviors
+   ========================================================================== */
+@media (max-width: 900px) {
+  .ls-sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    bottom: 0;
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 6px 0 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .ls-sidebar.open {
+    left: 0;
+  }
+
+  .ls-sidebar-mobile-toggle {
+    display: flex;
+  }
+
+  .ls-content-container {
+    padding: 1.25rem 1rem 2rem 1rem;
+  }
+
+  .ls-hero-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+
+  .ls-browser-bar {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* ==========================================================================
+   L. Universal Box-Shadow Removal (Clean, Flat, Crisp Modern Aesthetic)
+   ========================================================================== */
+*, *::before, *::after,
+.card, .ls-card, .stat-card, .content-card, .ls-metric-card, .note-card,
+.todo-item-card, .admin-kpi-card, .feature-card, .box, .panel, .login-card,
+.signup-card, .home-center-card, .home-photo-card, .cta-yellow-box,
+.feature-box, .stat-card-kpi, .content-panel, .feature-list-card,
+.modal-content, .table-responsive, .dropdown-menu,
+.btn, button.btn, a.btn, input, select, textarea {
+  box-shadow: none !important;
 }

@@ -1,1013 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnSmart - Student Performance Dashboard</title>
+    <%- include('../includes/head') %>
+    <title>Student Performance Dashboard | LearnSmart Admin</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/learnsmart-theme.css">
-    
+
     <style>
-      :root {
-          --primary: #4361ee;
-          --primary-light: #e8edff;
-          --secondary: #7209b7;
-          --success: #06d6a0;
-          --warning: #ffd166;
-          --danger: #ef476f;
-          --dark: #1e1e2e;
-          --light: #f8f9ff;
-          --gray-100: #f3f4f8;
-          --gray-200: #e2e5ec;
-          --gray-300: #c5cbd7;
-          --gray-600: #6b7280;
-          --gray-800: #374151;
-          --gray-900: #1f2937;
-          --card-shadow: 0 10px 20px rgba(135, 138, 171, 0.1);
-          --hover-shadow: 0 15px 30px rgba(135, 138, 171, 0.2);
-          --border-radius: 16px;
-          --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      }
+        .admin-scores-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.75rem 2rem 3.5rem 2rem;
+        }
 
-      * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-      }
+        @media (max-width: 850px) {
+            .admin-scores-wrap {
+                padding: 1.25rem 1rem 2.5rem 1rem;
+            }
+        }
 
-      body {
-          font-family: var(--font-family);
-          background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
-          color: var(--gray-800);
-          line-height: 1.6;
-          min-height: 100vh;
-          padding: 0;
-      }
+        .charts-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-      /* Navbar Styles */
-      .navbar {
-          background: white;
-          box-shadow: 0 4px 12px rgba(135, 138, 171, 0.12);
-          padding: 0.8rem 1.5rem;
-          position: sticky;
-          top: 0;
-          z-index: 1000;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      }
+        @media (max-width: 1024px) {
+            .charts-grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
 
-      .navbar-brand {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          text-decoration: none;
-          color: var(--dark);
-      }
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 44px;
+            padding: 8px;
+            background: #F8F8F6;
+            border: 1.5px solid var(--ls-black);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+        }
 
-      .logo {
-          width: 40px;
-          height: 40px;
-          background: var(--primary);
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: 700;
-          font-size: 20px;
-      }
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--ls-purple);
+            color: #FFFFFF;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid var(--ls-black);
+            box-shadow: none;
+        }
 
-      .brand-text {
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--dark);
-      }
+        .tag-pill.subject-tag {
+            background: var(--ls-blue);
+        }
 
-      .navbar-nav {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-      }
-
-      .nav-link {
-          padding: 10px 16px;
-          border-radius: 10px;
-          text-decoration: none;
-          color: var(--gray-800);
-          font-weight: 500;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-      }
-
-      .nav-link:hover, .nav-link.active {
-          background: var(--primary-light);
-          color: var(--primary);
-      }
-
-      .nav-link.active {
-          font-weight: 600;
-      }
-
-      .nav-link i {
-          font-size: 18px;
-      }
-
-      .btn {
-          padding: 10px 20px;
-          border-radius: 10px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          border: none;
-          font-size: 14px;
-      }
-
-      .btn-danger {
-          background: var(--danger);
-          color: white;
-      }
-
-      .btn-danger:hover {
-          background: #e53665;
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(239, 71, 111, 0.3);
-      }
-
-      .mobile-toggle {
-          display: none;
-          background: none;
-          border: none;
-          font-size: 24px;
-          cursor: pointer;
-          color: var(--dark);
-      }
-
-      .container {
-          max-width: 1600px;
-          margin: 0 auto;
-          padding: 32px 24px;
-      }
-
-      .dashboard-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 32px;
-          padding: 16px 0;
-          flex-wrap: wrap;
-          gap: 16px;
-      }
-
-      .header-content h1 {
-          font-size: 28px;
-          font-weight: 700;
-          color: var(--dark);
-          margin-bottom: 8px;
-      }
-
-      .header-content p {
-          color: var(--gray-600);
-          font-size: 16px;
-          font-weight: 400;
-      }
-
-      .header-actions {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-      }
-
-      .stats-container {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-          gap: 20px;
-          margin-bottom: 28px;
-      }
-
-      .stat-card {
-          background: white;
-          border-radius: var(--border-radius);
-          padding: 24px;
-          box-shadow: var(--card-shadow);
-          display: flex;
-          align-items: center;
-          transition: all 0.3s ease;
-      }
-
-      .stat-card:hover {
-          transform: translateY(-5px);
-          box-shadow: var(--hover-shadow);
-      }
-
-      .stat-icon {
-          width: 56px;
-          height: 56px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 16px;
-          font-size: 24px;
-      }
-
-      .stat-content h3 {
-          font-size: 24px;
-          font-weight: 700;
-          margin-bottom: 4px;
-          color: var(--dark);
-      }
-
-      .stat-content p {
-          color: var(--gray-600);
-          font-size: 14px;
-      }
-
-      .card {
-          background: white;
-          border-radius: var(--border-radius);
-          padding: 24px;
-          box-shadow: var(--card-shadow);
-          margin-bottom: 24px;
-          transition: all 0.3s ease;
-          border: 1px solid var(--gray-200);
-      }
-
-      .card:hover {
-          transform: translateY(-3px);
-          box-shadow: var(--hover-shadow);
-      }
-
-      .card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-          flex-wrap: wrap;
-          gap: 12px;
-      }
-
-      .card-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: var(--dark);
-          display: flex;
-          align-items: center;
-          gap: 10px;
-      }
-
-      .filters-card {
-          padding: 20px;
-      }
-
-      .filter-row {
-          display: flex;
-          gap: 16px;
-          align-items: flex-end;
-          flex-wrap: wrap;
-      }
-
-      .filter-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          flex: 1;
-          min-width: 200px;
-      }
-
-      label {
-          font-weight: 500;
-          font-size: 14px;
-          color: var(--gray-800);
-      }
-
-      select, input {
-          padding: 12px 16px;
-          border: 1px solid var(--gray-200);
-          border-radius: 12px;
-          font-size: 14px;
-          background-color: white;
-          transition: all 0.2s ease;
-          font-family: var(--font-family);
-      }
-
-      select:focus, input:focus {
-          outline: none;
-          border-color: var(--primary);
-          box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-      }
-
-      button {
-          background: var(--primary);
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 12px;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 600;
-          transition: all 0.2s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-      }
-
-      button:hover {
-          background: #3550d4;
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-      }
-
-      button:disabled {
-          background-color: var(--gray-300);
-          cursor: not-allowed;
-          box-shadow: none;
-          transform: none;
-      }
-
-      .charts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-          gap: 24px;
-          margin-bottom: 24px;
-      }
-
-      .chart-container {
-          position: relative;
-          height: 350px;
-          width: 100%;
-      }
-
-      .comparison-section {
-          background: linear-gradient(135deg, var(--primary-light) 0%, #e6eeff 100%);
-          border: 1px solid rgba(67, 97, 238, 0.2);
-      }
-
-      .selection-controls {
-          background-color: white;
-          padding: 24px;
-          border-radius: 12px;
-          margin-top: 16px;
-          border: 1px solid var(--gray-200);
-      }
-
-      .dropdown-section {
-          display: flex;
-          gap: 20px;
-          margin-bottom: 20px;
-          flex-wrap: wrap;
-      }
-
-      .tags-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          min-height: 52px;
-          padding: 12px;
-          border: 1px dashed var(--gray-300);
-          border-radius: 12px;
-          background-color: var(--gray-100);
-          margin-top: 8px;
-      }
-
-      .tag {
-          background: var(--primary);
-          color: white;
-          padding: 8px 16px;
-          border-radius: 100px;
-          font-size: 14px;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2);
-      }
-
-      .tag.subject {
-          background: var(--secondary);
-      }
-
-      .tag .remove-btn {
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          color: white;
-          border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          font-size: 14px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background-color 0.2s ease;
-      }
-
-      .tag .remove-btn:hover {
-          background: rgba(255, 255, 255, 0.4);
-      }
-
-      .action-buttons {
-          display: flex;
-          gap: 12px;
-          margin-top: 24px;
-          flex-wrap: wrap;
-      }
-
-      .action-buttons button[onclick*="updateComparison"] {
-          background: var(--success);
-      }
-
-      .action-buttons button[onclick*="updateComparison"]:hover {
-          background: #05b389;
-      }
-
-      .action-buttons button[onclick*="clearAllSelections"] {
-          background: var(--danger);
-      }
-
-      .action-buttons button[onclick*="clearAllSelections"]:hover {
-          background: #e53665;
-      }
-
-      .no-data {
-          text-align: center;
-          padding: 60px 20px;
-          background: white;
-          border: 2px dashed var(--gray-200);
-          border-radius: var(--border-radius);
-          margin: 40px 0;
-      }
-
-      .no-data i {
-          font-size: 48px;
-          color: var(--gray-300);
-          margin-bottom: 16px;
-      }
-
-      .no-data h3 {
-          font-size: 20px;
-          color: var(--gray-800);
-          margin-bottom: 12px;
-      }
-
-      .no-data p {
-          color: var(--gray-600);
-          max-width: 500px;
-          margin: 0 auto;
-      }
-
-      /* Responsive Styles */
-      @media (max-width: 992px) {
-          .navbar-nav {
-              display: none;
-              position: absolute;
-              top: 100%;
-              left: 0;
-              right: 0;
-              background: white;
-              flex-direction: column;
-              align-items: stretch;
-              padding: 20px;
-              box-shadow: 0 10px 20px rgba(135, 138, 171, 0.15);
-              border-top: 1px solid var(--gray-200);
-          }
-          
-          .navbar-nav.active {
-              display: flex;
-          }
-          
-          .nav-link {
-              width: 100%;
-              justify-content: center;
-              padding: 14px 20px;
-              text-align: center;
-          }
-
-          .navbar-actions {
-              margin-top: 12px;
-              padding-top: 12px;
-              border-top: 1px solid var(--gray-200);
-          }
-
-          .navbar-actions .btn {
-              width: 100%;
-              justify-content: center;
-          }
-          
-          .mobile-toggle {
-              display: block;
-          }
-      }
-
-      @media (max-width: 768px) {
-          .container {
-              padding: 24px 16px;
-          }
-          
-          .dashboard-header {
-              flex-direction: column;
-              align-items: flex-start;
-          }
-          
-          .header-actions {
-              width: 100%;
-          }
-          .header-actions button {
-              flex-grow: 1;
-              justify-content: center;
-          }
-          
-          .stats-container {
-              grid-template-columns: 1fr;
-          }
-          
-          .filter-row {
-              flex-direction: column;
-              align-items: stretch;
-          }
-          
-          .dropdown-section {
-              flex-direction: column;
-          }
-          
-          .action-buttons {
-              flex-direction: column;
-          }
-          .action-buttons button {
-              justify-content: center;
-          }
-      }
-
-      @media (max-width: 576px) {
-          .navbar {
-              padding: 0.8rem 1rem;
-          }
-          
-          .brand-text {
-              display: none;
-          }
-          
-          .logo {
-              width: 36px;
-              height: 36px;
-              font-size: 18px;
-          }
-          
-          .header-content h1 {
-              font-size: 24px;
-          }
-          
-          .charts-grid {
-              grid-template-columns: 1fr;
-          }
-      }
+        .tag-remove {
+            cursor: pointer;
+            margin-left: 4px;
+        }
     </style>
 </head>
 <body>
+
     <%- include('../includes/navbar', { currentPage: 'scores' }) %>
 
-    <div class="container" id="dashboard-content">
-        <header class="dashboard-header">
-            <div class="header-content">
-                <h1>Student Performance Dashboard</h1>
-                <p>Comprehensive overview of student scores and academic progress</p>
+    <main class="admin-scores-wrap" id="dashboard-content">
+        <!-- Signature Yellow-Grid Hero Banner -->
+        <header class="ls-hero-banner ls-yellow-grid" style="margin-bottom: 2rem;">
+            <div class="ls-hero-banner-content">
+                <div class="ls-sticker orange" style="font-size: 0.75rem; margin-bottom: 8px;">
+                    STUDENT SCORES &bull; PERFORMANCE DIAGNOSTICS
+                </div>
+                <h1 style="font-family: var(--font-heading); font-size: 2.4rem; font-weight: 900; color: var(--ls-black); margin-bottom: 4px;">
+                    Quiz Performance Hub
+                </h1>
+                <p style="font-size: 1.05rem; font-weight: 600; color: #2B2B2B; margin-bottom: 1.25rem;">
+                    Comprehensive institutional overview of individual scores, multi-student benchmarks, and topic distributions.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" id="exportBtn" onclick="exportReport()" class="btn btn-purple btn-sm">
+                        <i class="fas fa-download"></i> Export PDF Report
+                    </button>
+                    <button type="button" onclick="refreshData()" class="btn btn-outline btn-sm">
+                        <i class="fas fa-arrows-rotate"></i> Refresh Data
+                    </button>
+                    <a href="/admin/dashboard" class="btn btn-outline btn-sm">
+                        <i class="fas fa-table-cells-large"></i> Admin Hub
+                    </a>
+                </div>
             </div>
-            <div class="header-actions">
-                <button id="exportBtn" onclick="exportReport()"><i class="fas fa-download"></i> Export Report</button>
-                <button onclick="refreshData()"><i class="fas fa-sync"></i> Refresh Data</button>
+
+            <!-- Campus Graphic Element -->
+            <div class="ls-hero-graphic-wrap" style="position: relative;">
+                <div style="position: absolute; top: -14px; right: 0; background: var(--ls-purple); color: #FFFFFF; font-family: var(--font-editorial); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border: 2px solid var(--ls-black); border-radius: var(--radius-sm); transform: rotate(3deg); z-index: 3;">
+                    INSTITUTIONAL METRICS
+                </div>
+
+                <div style="width: 220px; height: 150px; border: 2px solid var(--ls-black); border-radius: var(--radius-md); overflow: hidden; background: #FFFFFF;">
+                    <img 
+                        src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=400&q=80" 
+                        alt="Academic exam evaluation" 
+                        style="width: 100%; height: 100%; object-fit: cover;" 
+                    />
+                </div>
             </div>
         </header>
 
+        <% 
+            const uniqueStudents = scores.length > 0 ? [...new Set(scores.map(s => s.username))] : [];
+            const uniqueTopics = scores.length > 0 ? [...new Set(scores.map(s => s.topic))] : [];
+            let totalScore = scores.reduce((sum, score) => sum + parseFloat(score.avgScore), 0);
+            const overallAvg = scores.length > 0 ? (totalScore / scores.length).toFixed(1) : '0';
+            const maxScore = scores.length > 0 ? Math.max(...scores.map(s => parseFloat(s.avgScore))).toFixed(1) : '0';
+        %>
+
         <% if (scores.length > 0) { %>
-            <%
-                const uniqueStudents = [...new Set(scores.map(s => s.username))];
-                const uniqueTopics = [...new Set(scores.map(s => s.topic))];
-                let totalScore = scores.reduce((sum, score) => sum + parseFloat(score.avgScore), 0);
-                const overallAvg = (totalScore / scores.length).toFixed(1);
-                const maxScore = Math.max(...scores.map(s => parseFloat(s.avgScore)));
-            %>
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(67, 97, 238, 0.1); color: var(--primary);">
+            <!-- 4-Metric Balanced KPI Grid -->
+            <section class="ls-metric-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 2rem;">
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon blue">
                         <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat-content">
-                        <h3><%= uniqueStudents.length %></h3>
-                        <p>Total Students</p>
+                    <div>
+                        <div class="ls-metric-value"><%= uniqueStudents.length %></div>
+                        <div class="ls-metric-label">Total Students</div>
                     </div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(114, 9, 183, 0.1); color: var(--secondary);">
+
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon purple">
                         <i class="fas fa-book"></i>
                     </div>
-                    <div class="stat-content">
-                        <h3><%= uniqueTopics.length %></h3>
-                        <p>Subjects Tracked</p>
+                    <div>
+                        <div class="ls-metric-value"><%= uniqueTopics.length %></div>
+                        <div class="ls-metric-label">Subjects Tracked</div>
                     </div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(6, 214, 160, 0.1); color: var(--success);">
+
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon green">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="stat-content">
-                        <h3><%= overallAvg %>%</h3>
-                        <p>Average Performance</p>
+                    <div>
+                        <div class="ls-metric-value"><%= overallAvg %>%</div>
+                        <div class="ls-metric-label">Average Performance</div>
                     </div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(239, 71, 111, 0.1); color: var(--danger);">
+
+                <div class="ls-metric-card">
+                    <div class="ls-metric-icon orange">
                         <i class="fas fa-trophy"></i>
                     </div>
-                    <div class="stat-content">
-                        <h3><%= maxScore.toFixed(1) %>%</h3>
-                        <p>Highest Score</p>
+                    <div>
+                        <div class="ls-metric-value"><%= maxScore %>%</div>
+                        <div class="ls-metric-label">Peak Score Record</div>
                     </div>
                 </div>
-            </div>
+            </section>
         <% } %>
 
-        <div class="card filters-card">
+        <!-- Filter Controls Card -->
+        <section class="ls-card" style="margin-bottom: 2rem;">
+            <div class="ls-card-header">
+                <h3 class="ls-card-title"><i class="fas fa-filter" style="color: var(--ls-purple);"></i> Filter Scores</h3>
+                <span class="badge badge-outline">Live Database Filter</span>
+            </div>
+
             <form method="GET" action="/admin/scores">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label for="topicSelect"><i class="fas fa-filter"></i> Filter by Topic</label>
-                        <select name="topic" id="topicSelect">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; align-items: end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="topicSelect">Filter by Topic</label>
+                        <select name="topic" id="topicSelect" class="form-select">
                             <option value="">All Topics</option>
                             <% uniqueTopics.forEach(t => { %>
-                                <option value="<%= t %>" <%= topic === t ? 'selected' : '' %>><%= t %></option>
+                                <option value="<%= t %>" <%= (typeof topic !== 'undefined' && topic === t) ? 'selected' : '' %>><%= t %></option>
                             <% }) %>
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <label for="studentSelect"><i class="fas fa-user-graduate"></i> Filter by Student</label>
-                        <select name="student" id="studentSelect">
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="studentSelect">Filter by Student</label>
+                        <select name="student" id="studentSelect" class="form-select">
                             <option value="">All Students</option>
                             <% uniqueStudents.forEach(s => { %>
-                                <option value="<%= s %>" <%= student === s ? 'selected' : '' %>><%= s %></option>
+                                <option value="<%= s %>" <%= (typeof student !== 'undefined' && student === s) ? 'selected' : '' %>><%= s %></option>
                             <% }) %>
                         </select>
                     </div>
-                    <button type="submit"><i class="fas fa-check"></i> Apply Filter</button>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="btn btn-purple" style="flex: 1;">
+                            <i class="fas fa-check"></i> Apply Filter
+                        </button>
+                        <a href="/admin/scores" class="btn btn-outline">Reset</a>
+                    </div>
                 </div>
             </form>
-        </div>
+        </section>
 
         <% if (scores.length > 0) { %>
-            <div class="charts-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-chart-bar"></i> Average Scores</h3>
+            <!-- 2 Charts Grid -->
+            <section class="charts-grid-2col">
+                <div class="ls-card">
+                    <div class="ls-card-header">
+                        <h3 class="ls-card-title"><i class="fas fa-chart-bar" style="color: var(--ls-blue);"></i> Average Scores by Student</h3>
                     </div>
-                    <div class="chart-container">
+                    <div style="height: 260px; position: relative;">
                         <canvas id="scoreChart"></canvas>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-chart-pie"></i> Topic Performance</h3>
+
+                <div class="ls-card">
+                    <div class="ls-card-header">
+                        <h3 class="ls-card-title"><i class="fas fa-chart-pie" style="color: var(--ls-purple);"></i> Performance by Topic</h3>
                     </div>
-                    <div class="chart-container">
+                    <div style="height: 260px; position: relative;">
                         <canvas id="topicChart"></canvas>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="card comparison-section">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-compress-alt"></i> Compare Performance</h3>
-                </div>
-                <div class="selection-controls">
-                    <div class="dropdown-section">
-                        <div class="filter-group">
-                            <label>Add Student to Comparison</label>
-                            <select id="studentDropdown" onchange="addStudent()">
-                                <option value="">-- Select Student --</option>
-                                <% uniqueStudents.forEach(student => { %>
-                                    <option value="<%= student %>"><%= student %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label>Add Subject to Comparison</label>
-                            <select id="subjectDropdown" onchange="addSubject()">
-                                <option value="">-- Select Subject --</option>
-                                <% uniqueTopics.forEach(topic => { %>
-                                    <option value="<%= topic %>"><%= topic %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                    </div>
-
-                    <label>Selected Students</label>
-                    <div id="selectedStudents" class="tags-container"></div>
-                    
-                    <label style="margin-top: 15px;">Selected Subjects</label>
-                    <div id="selectedSubjects" class="tags-container"></div>
-                    
-                    <div class="action-buttons">
-                        <button onclick="updateComparison()"><i class="fas fa-sync"></i> Compare</button>
-                        <button onclick="clearAllSelections()"><i class="fas fa-trash"></i> Clear All</button>
+            <!-- Multi-Student & Subject Comparison Card -->
+            <section class="ls-card" style="margin-bottom: 2rem;">
+                <div class="ls-card-header">
+                    <h3 class="ls-card-title"><i class="fas fa-compress-alt" style="color: var(--ls-purple);"></i> Compare Performance Across Candidates</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-purple btn-sm" onclick="updateComparison()">
+                            <i class="fas fa-arrows-rotate"></i> Compare
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="clearAllSelections()">
+                            <i class="fas fa-trash-can"></i> Clear All
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-analytics"></i> Comparison Results</h3>
-                    <div class="chart-options">
-                        <select id="chartType">
-                            <option value="bar" selected>Bar Chart</option>
-                            <option value="line">Line Chart</option>
-                            <option value="radar">Radar Chart</option>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+                    <div>
+                        <label class="form-label">Add Candidate to Compare</label>
+                        <select id="studentDropdown" class="form-select" onchange="addStudent()">
+                            <option value="">-- Select Candidate --</option>
+                            <% uniqueStudents.forEach(s => { %>
+                                <option value="<%= s %>"><%= s %></option>
+                            <% }) %>
                         </select>
+                        <div id="selectedStudents" class="tags-container" style="margin-top: 8px;"></div>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Add Subject to Compare</label>
+                        <select id="subjectDropdown" class="form-select" onchange="addSubject()">
+                            <option value="">-- Select Subject --</option>
+                            <% uniqueTopics.forEach(t => { %>
+                                <option value="<%= t %>"><%= t %></option>
+                            <% }) %>
+                        </select>
+                        <div id="selectedSubjects" class="tags-container" style="margin-top: 8px;"></div>
                     </div>
                 </div>
-                <div class="chart-container">
+
+                <div style="height: 300px; position: relative;">
                     <canvas id="comparisonChart"></canvas>
                 </div>
-            </div>
-            
+            </section>
+
         <% } else { %>
-            <div class="no-data">
-                <i class="fas fa-inbox"></i>
-                <h3>No Scores Found</h3>
-                <p>Try adjusting your filter criteria or wait for students to complete quizzes.</p>
-                <button style="margin-top: 20px;" onclick="resetFilters()"><i class="fas fa-redo"></i> Reset Filters</button>
+            <div class="ls-card" style="text-align: center; padding: 4rem 2rem;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--ls-black); background: var(--ls-yellow-light); color: var(--ls-black); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1rem auto;">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--ls-black); margin-bottom: 0.4rem;">No Scores Found</h3>
+                <p style="font-size: 0.95rem; color: var(--ls-muted); max-width: 440px; margin: 0 auto 1.5rem auto;">
+                    Try adjusting your topic or student filter, or wait for students to complete practice quizzes.
+                </p>
+                <a href="/admin/scores" class="btn btn-purple">
+                    <i class="fas fa-rotate"></i> Reset Filters
+                </a>
             </div>
         <% } %>
-    </div>
+    </main>
 
-<script>
-    const scoresData = <%- JSON.stringify(scores) %>;
-    const uniqueStudents = <%- JSON.stringify(uniqueStudents) %>;
-    const uniqueTopics = <%- JSON.stringify(uniqueTopics) %>;
-    
-    // --- Global Chart Settings ---
-    Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = '#6b7280';
-    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(30, 30, 46, 0.9)';
-    Chart.defaults.plugins.tooltip.padding = 12;
-    Chart.defaults.plugins.tooltip.cornerRadius = 8;
-    Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 14 };
-    Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+    <%- include('../includes/footer') %>
 
-    let scoreChart, topicChart, comparisonChart;
-    let selectedStudents = [], selectedSubjects = [];
+    <!-- Preserved Comparison & Export Scripts -->
+    <script>
+        const scoresData = <%- JSON.stringify(scores || []) %>;
+        const uniqueStudents = <%- JSON.stringify(uniqueStudents || []) %>;
+        const uniqueTopics = <%- JSON.stringify(uniqueTopics || []) %>;
 
-    // --- Helper to create chart gradients ---
-    function createGradient(ctx, color1, color2) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, color1);
-        gradient.addColorStop(1, color2);
-        return gradient;
-    }
+        let selectedStudentsList = [];
+        let selectedSubjectsList = [];
+        let scoreChart = null;
+        let topicChart = null;
+        let comparisonChart = null;
 
-    // --- Chart Initialization ---
-    function initializeCharts() {
-        if (scoresData.length === 0) return;
+        function refreshData() {
+            window.location.reload();
+        }
 
-        // 1. Average Scores Chart (Bar)
-        const ctx1 = document.getElementById('scoreChart').getContext('2d');
-        const gradient1 = createGradient(ctx1, 'rgba(67, 97, 238, 0.8)', 'rgba(67, 97, 238, 0.2)');
-        scoreChart = new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: scoresData.map(s => `${s.username} (${s.topic})`),
-                datasets: [{
-                    label: 'Average Score (%)',
-                    data: scoresData.map(s => parseFloat(s.avgScore)),
-                    backgroundColor: gradient1,
-                    borderColor: 'rgba(67, 97, 238, 1)',
+        function exportReport() {
+            const element = document.getElementById('dashboard-content');
+            html2canvas(element, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 190;
+                const pageHeight = 295;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                pdf.save('LearnSmart-Performance-Report.pdf');
+            });
+        }
+
+        function addStudent() {
+            const dropdown = document.getElementById('studentDropdown');
+            const student = dropdown.value;
+            if (student && !selectedStudentsList.includes(student)) {
+                selectedStudentsList.push(student);
+                renderTags();
+                dropdown.value = '';
+            }
+        }
+
+        function removeStudent(student) {
+            selectedStudentsList = selectedStudentsList.filter(s => s !== student);
+            renderTags();
+        }
+
+        function addSubject() {
+            const dropdown = document.getElementById('subjectDropdown');
+            const subject = dropdown.value;
+            if (subject && !selectedSubjectsList.includes(subject)) {
+                selectedSubjectsList.push(subject);
+                renderTags();
+                dropdown.value = '';
+            }
+        }
+
+        function removeSubject(subject) {
+            selectedSubjectsList = selectedSubjectsList.filter(s => s !== subject);
+            renderTags();
+        }
+
+        function clearAllSelections() {
+            selectedStudentsList = [];
+            selectedSubjectsList = [];
+            renderTags();
+            updateComparison();
+        }
+
+        function renderTags() {
+            const studentContainer = document.getElementById('selectedStudents');
+            if (studentContainer) {
+                studentContainer.innerHTML = selectedStudentsList.map(s => `
+                    <span class="tag-pill">
+                        ${s} <i class="fas fa-times tag-remove" onclick="removeStudent('${s}')"></i>
+                    </span>
+                `).join('');
+            }
+
+            const subjectContainer = document.getElementById('selectedSubjects');
+            if (subjectContainer) {
+                subjectContainer.innerHTML = selectedSubjectsList.map(sub => `
+                    <span class="tag-pill subject-tag">
+                        ${sub} <i class="fas fa-times tag-remove" onclick="removeSubject('${sub}')"></i>
+                    </span>
+                `).join('');
+            }
+        }
+
+        function updateComparison() {
+            if (!comparisonChart) return;
+
+            const studentsToCompare = selectedStudentsList.length > 0 ? selectedStudentsList : uniqueStudents.slice(0, 5);
+            const subjectsToCompare = selectedSubjectsList.length > 0 ? selectedSubjectsList : uniqueTopics.slice(0, 5);
+
+            const palette = ['#5B20FF', '#2457FF', '#22A65A', '#FF7628', '#F45145'];
+
+            const datasets = studentsToCompare.map((student, idx) => {
+                const studentScores = subjectsToCompare.map(subject => {
+                    const match = scoresData.find(s => s.username === student && s.topic === subject);
+                    return match ? parseFloat(match.avgScore) : 0;
+                });
+
+                return {
+                    label: student,
+                    data: studentScores,
+                    backgroundColor: palette[idx % palette.length],
+                    borderColor: '#111111',
                     borderWidth: 2,
-                    borderRadius: 8,
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } },
-                plugins: { legend: { display: false } }
-            }
-        });
+                    borderRadius: 4
+                };
+            });
 
-        // 2. Topic Performance Chart (Doughnut)
-        const topicData = {};
-        scoresData.forEach(s => {
-            if (!topicData[s.topic]) topicData[s.topic] = [];
-            topicData[s.topic].push(parseFloat(s.avgScore));
-        });
-        const topicAvgs = Object.keys(topicData).map(topic => ({
-            topic,
-            avg: (topicData[topic].reduce((a, b) => a + b, 0) / topicData[topic].length).toFixed(2)
-        }));
-        const ctx2 = document.getElementById('topicChart').getContext('2d');
-        topicChart = new Chart(ctx2, {
-            type: 'doughnut',
-            data: {
-                labels: topicAvgs.map(t => t.topic),
-                datasets: [{
-                    data: topicAvgs.map(t => parseFloat(t.avg)),
-                    backgroundColor: ['#4361ee', '#7209b7', '#06d6a0', '#ffd166', '#ef476f', '#17a2b8'],
-                    borderColor: 'white', borderWidth: 3, hoverOffset: 12
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, cutout: '65%',
-                plugins: { legend: { position: 'right' } }
-            }
-        });
-        
-        // 3. Comparison Chart (initially empty)
-        recreateComparisonChart('bar');
-    }
-
-    // --- Comparison Chart Logic ---
-    function recreateComparisonChart(type) {
-        if (comparisonChart) {
-            comparisonChart.destroy();
+            comparisonChart.data.labels = subjectsToCompare;
+            comparisonChart.data.datasets = datasets;
+            comparisonChart.update();
         }
-        const ctx = document.getElementById('comparisonChart').getContext('2d');
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'top' } }
-        };
 
-        if (type === 'radar') {
-            chartOptions.scales = {
-                r: {
-                    beginAtZero: true,
-                    max: 100,
-                    pointLabels: { font: { size: 13, weight: 500 } },
-                    grid: { color: 'rgba(226, 229, 236, 0.7)' },
-                    angleLines: { color: 'rgba(226, 229, 236, 0.7)' }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (scoresData.length > 0) {
+                // Score Chart by Student
+                const scoreCtx = document.getElementById('scoreChart');
+                if (scoreCtx) {
+                    const studentMap = {};
+                    scoresData.forEach(s => {
+                        if (!studentMap[s.username]) studentMap[s.username] = [];
+                        studentMap[s.username].push(parseFloat(s.avgScore));
+                    });
+
+                    const labels = Object.keys(studentMap);
+                    const data = labels.map(u => {
+                        const arr = studentMap[u];
+                        return (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+                    });
+
+                    scoreChart = new Chart(scoreCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Average Score (%)',
+                                data: data,
+                                backgroundColor: '#2457FF',
+                                borderColor: '#111111',
+                                borderWidth: 2,
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { min: 0, max: 100, grid: { color: '#EBEBEA' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
                 }
-            };
-        } else { // Bar or Line
-            chartOptions.scales = {
-                y: { beginAtZero: true, max: 100, title: { display: true, text: 'Average Score (%)' } },
-                x: { title: { display: true, text: 'Subjects' } }
-            };
-        }
 
-        comparisonChart = new Chart(ctx, {
-            type: type,
-            data: { labels: [], datasets: [] },
-            options: chartOptions
+                // Topic Chart
+                const topicCtx = document.getElementById('topicChart');
+                if (topicCtx) {
+                    const topicMap = {};
+                    scoresData.forEach(s => {
+                        if (!topicMap[s.topic]) topicMap[s.topic] = [];
+                        topicMap[s.topic].push(parseFloat(s.avgScore));
+                    });
+
+                    const labels = Object.keys(topicMap);
+                    const data = labels.map(t => {
+                        const arr = topicMap[t];
+                        return (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+                    });
+
+                    topicChart = new Chart(topicCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: ['#5B20FF', '#2457FF', '#22A65A', '#FF7628', '#F45145'],
+                                borderWidth: 2,
+                                borderColor: '#111111'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '70%',
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
+
+                // Comparison Chart
+                const compCtx = document.getElementById('comparisonChart');
+                if (compCtx) {
+                    comparisonChart = new Chart(compCtx, {
+                        type: 'bar',
+                        data: { labels: [], datasets: [] },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { min: 0, max: 100, grid: { color: '#EBEBEA' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                    updateComparison();
+                }
+            }
         });
-    }
-
-    document.getElementById('chartType')?.addEventListener('change', function() {
-        const currentData = comparisonChart.data;
-        recreateComparisonChart(this.value);
-        comparisonChart.data = currentData;
-        comparisonChart.update();
-    });
-
-    function addStudent() {
-        const student = document.getElementById('studentDropdown').value;
-        if (student && !selectedStudents.includes(student)) {
-            selectedStudents.push(student);
-            updateSelectedDisplay();
-        }
-        document.getElementById('studentDropdown').value = '';
-    }
-
-    function addSubject() {
-        const subject = document.getElementById('subjectDropdown').value;
-        if (subject && !selectedSubjects.includes(subject)) {
-            selectedSubjects.push(subject);
-            updateSelectedDisplay();
-        }
-        document.getElementById('subjectDropdown').value = '';
-    }
-
-    function removeStudent(student) {
-        selectedStudents = selectedStudents.filter(s => s !== student);
-        updateSelectedDisplay();
-    }
-
-    function removeSubject(subject) {
-        selectedSubjects = selectedSubjects.filter(s => s !== subject);
-        updateSelectedDisplay();
-    }
-
-    function updateSelectedDisplay() {
-        document.getElementById('selectedStudents').innerHTML = selectedStudents.map(student =>
-            `<div class="tag">${student} <button class="remove-btn" onclick="removeStudent('${student}')">&times;</button></div>`
-        ).join('');
-        document.getElementById('selectedSubjects').innerHTML = selectedSubjects.map(subject =>
-            `<div class="tag subject">${subject} <button class="remove-btn" onclick="removeSubject('${subject}')">&times;</button></div>`
-        ).join('');
-    }
-
-    function clearAllSelections() {
-        selectedStudents = [];
-        selectedSubjects = [];
-        updateSelectedDisplay();
-        comparisonChart.data.labels = [];
-        comparisonChart.data.datasets = [];
-        comparisonChart.update();
-    }
-
-    function updateComparison() {
-        if (selectedStudents.length === 0 || selectedSubjects.length === 0) {
-            alert('Please select at least one student and one subject.');
-            return;
-        }
-
-        const colors = ['#4361ee', '#ef476f', '#06d6a0', '#ffd166', '#7209b7'];
-        const transparentColors = ['rgba(67, 97, 238, 0.2)', 'rgba(239, 71, 111, 0.2)', 'rgba(6, 214, 160, 0.2)', 'rgba(255, 209, 102, 0.2)', 'rgba(114, 9, 183, 0.2)'];
-        
-        const datasets = selectedStudents.map((student, index) => {
-            const data = selectedSubjects.map(subject => {
-                const scoreEntry = scoresData.find(s => s.username === student && s.topic === subject);
-                return scoreEntry ? parseFloat(scoreEntry.avgScore) : 0;
-            });
-            return {
-                label: student,
-                data: data,
-                backgroundColor: transparentColors[index % colors.length],
-                borderColor: colors[index % colors.length],
-                pointBackgroundColor: colors[index % colors.length],
-                borderWidth: 2,
-                fill: true,
-                tension: 0.3,
-            };
-        });
-
-        comparisonChart.data.labels = selectedSubjects;
-        comparisonChart.data.datasets = datasets;
-        comparisonChart.update();
-    }
-
-    // --- Page Actions ---
-    function exportReport() {
-        const exportButton = document.getElementById('exportBtn');
-        const originalText = exportButton.innerHTML;
-        exportButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Exporting...`;
-        exportButton.disabled = true;
-
-        const { jsPDF } = window.jspdf;
-        const content = document.getElementById('dashboard-content');
-        
-        html2canvas(content, {
-            scale: 2, // Higher scale for better quality
-            useCORS: true,
-            logging: false,
-        }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'pt',
-                format: [canvas.width, canvas.height]
-            });
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save('LearnSmart_Performance_Report.pdf');
-            
-            exportButton.innerHTML = originalText;
-            exportButton.disabled = false;
-        }).catch(err => {
-            console.error("Error exporting PDF:", err);
-            alert("Could not export report. See console for details.");
-            exportButton.innerHTML = originalText;
-            exportButton.disabled = false;
-        });
-    }
-
-    function refreshData() {
-        window.location.reload();
-    }
-
-    function resetFilters() {
-        window.location.href = '/admin/scores';
-    }
-
-    // --- Mobile Navbar Toggle ---
-    document.getElementById('mobileToggle').addEventListener('click', function() {
-        const nav = document.getElementById('navbarNav');
-        nav.classList.toggle('active');
-    });
-
-    // Initialize everything on page load
-    window.addEventListener('load', initializeCharts);
-</script>
-
+    </script>
 </body>
 </html>
