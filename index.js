@@ -12,7 +12,7 @@ const crypto = require("crypto");
 const MongoStore = require("connect-mongo");
 require("dotenv").config();
 
-const dburl = process.env.ATLAS_URL || process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/learnsmart";
+const dburl = process.env.ATLAS_URL || process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL || "mongodb://127.0.0.1:27017/learnsmart";
 const rawApiKey = process.env.api_Key || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GEMINI_KEY || process.env.API_KEY || "";
 const apiKey = typeof rawApiKey === "string" ? rawApiKey.trim().replace(/^["']|["']$/g, "") : "";
 
@@ -54,22 +54,19 @@ const isProduction = process.env.NODE_ENV === "production";
 let resolvedSessionSecret = process.env.SESSION_SECRET;
 
 if (isProduction) {
-  if (!resolvedSessionSecret || resolvedSessionSecret.trim().length < 16) {
-    console.error(
-      "\n=======================================================\n" +
-      " [FATAL SECURITY CONFIGURATION ERROR]\n" +
-      " In production (NODE_ENV=production), a strong\n" +
-      " SESSION_SECRET (minimum 16 characters) must be set\n" +
-      " in environment variables before the server can start.\n" +
-      "=======================================================\n"
-    );
-    process.exit(1);
-  }
   // Enable trust proxy behind reverse proxies (Nginx / ALB / Render / Cloudflare)
   app.set("trust proxy", 1);
-} else {
-  if (!resolvedSessionSecret) {
-    resolvedSessionSecret = crypto.randomBytes(32).toString("hex");
+}
+
+if (!resolvedSessionSecret || resolvedSessionSecret.trim().length < 16) {
+  resolvedSessionSecret = crypto.randomBytes(32).toString("hex");
+  if (isProduction) {
+    console.warn(
+      "[SECURITY NOTICE] No strong SESSION_SECRET (minimum 16 characters) specified in environment variables. " +
+      "Generated an ephemeral cryptographic secret for this runtime session. " +
+      "To ensure sessions persist across service restarts, define SESSION_SECRET in Render Environment Variables."
+    );
+  } else {
     console.warn(
       "[SECURITY NOTICE] No SESSION_SECRET specified in development. " +
       "Using an ephemeral cryptographically generated secret for this session. " +
